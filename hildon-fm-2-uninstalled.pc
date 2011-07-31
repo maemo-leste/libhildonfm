@@ -1,0 +1,11 @@
+prefix=${pcfiledir}
+exec_prefix=${prefix}
+libdir=${exec_prefix}/hildon-fm/.libs
+includedir=${prefix}
+
+Name: hildon-fm
+Description: Hildon file management widgets (uninstalled)
+Requires: gtk+-2.0 >= 2.14.0 gconf-2.0 gnome-vfs-2.0
+Version: 2.20
+Libs: -L${libdir} -lhildonfm
+Cflags: -I${includedir}

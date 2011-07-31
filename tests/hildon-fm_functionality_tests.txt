@@ -1,0 +1,93 @@
+hildon-fm functionality checklist
+---------------------------------
+
+Image version:          30.14
+Application version:    3037
+Library version:        2.27
+Updated (Date):         27.7.2009
+Tester (Name):          Mikko Tuhkanen
+
+
+**********************
+
+
+* Filetree
+    default folders are shown correctly:        |       PASSED
+      - documents, camera, images, video clips, audio clips
+    external mmc is visible in root:            |       PASSED
+    mmc item disappears after it is physically removed: FAILED
+    mmc item appears after mmc is inserted:     |       FAILED
+    mmc details dialog opens from csm:          |       PASSED
+    thumbnail sizes are same in filetree:       |       -
+
+    layout of the tree is correct:              |       PASSED
+       icon sizes, file date/time/size (what is shown depends of the filetype)
+    normal mode:                                |       PASSED
+    edit mode:                                  |       PASSED
+    choose item:                                |       PASSED
+       - opens from copy/delete/move buttons from main menu
+    select multiple items:                      |       PASSED
+
+
+* New Folder Dialog
+    layout of the dialog is correct:            |       PASSED
+    Ok/cancel functionality:                    |       PASSED
+      - folder is / is not created
+    Create folder with a same name twice:       |       PASSED
+      - proper error message is shown
+    create folder in read only location:        |       -, not able to create read only folder
+      - proper error message is shown
+
+
+* Rename Dialog
+    layout of the dialog is correct:            |       PASSED
+    use same name as the old folder/file:       |       PASSED
+    special characters in name:                 |       PASSED
+
+
+* Move To Dialog
+    layout of the dialog is correct:            |       PASSED
+    Ok/cancel button functionality:             |       PASSED
+    state after the move operation:             |       PASSED
+       - test that item is in new place
+
+
+* File Details Dialog
+    layout of the dialog is correct:            |       PASSED
+    shows details:                              |       PASSED
+      name, type, location, memory, date, time, size
+
+
+* Select application dialog
+    layout of the dialog is correct:            |       PASSED
+
+
+* Sort dialog
+    layout of the dialog is correct:            |       PASSED
+
+
+* Open Dialog  (test from scetch)
+    layout of the dialog is correct:            |       PASSED
+    external mmc is shown:                      |       PASSED
+
+
+* Save as  (test from scetch)
+    layout of the dialog is correct:            |       PASSED
+    try to save file with same name twice:      |       PASSED
+    change file type:                           |       PASSED
+
+
+* Change Folder Dialog  (open scetch, click save as, change folder)
+    layout of the dialog is correct:            |       PASSED
+    external mmc is visible:                    |       PASSED
+    internal mmc is visible:                    |       PASSED
+    bluetooth device is visible:                |       PASSED
+    root of root items are correct:             |       PASSED
+    new button opens new folder dialog:         |       PASSED
+    default folders are shown correctly:        |       PASSED
+      - documents, camera, images, videos, music
+
+
+* Save objects dialog  (used by email to save attachments)
+    layout of the dialog is correct:            |       -
+    files become visible in filesystem:         |       -

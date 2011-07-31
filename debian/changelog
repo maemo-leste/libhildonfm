@@ -1,0 +1,1456 @@
+libhildonfm (1:2.28.21+0m5) unstable; urgency=low
+
+  * This entry has been added by BIFH queue processor
+    version has been changed to 1:2.28.21+0m5
+
+ -- Gary Birkett <ext-gary.2.birkett@nokia.com>  Thu, 02 Sep 2010 14:06:35 +0300
+
+libhildonfm (1:2.28.21) unstable; urgency=low
+
+  * Fixes: NB#176119: HildonFileChooser shows no confirmation dialog
+
+ -- Alberto Garcia <agarcia@igalia.com>  Mon, 30 Aug 2010 12:34:22 +0200
+
+libhildonfm (1:2.28.20) unstable; urgency=low
+
+  * Fixes: NB#122401 Integrate libhildonfm2 API doc package to repository
+    creating a -doc .deb and moving gtk-doc from -dev to -doc
+  * Fixes: NB#119302 HildonFileDetailsDialog documentation: tab properties not deprecated
+    applying patches from pasztory r41635 in trunk but not integrated yet
+  * Fixes: NB#119009 hildon-fm documentation: No descriptions available
+    applying patches from pasztory r41635 in trunk but not integrated yet
+    plus some fixes and updates by cosimo.
+
+ -- Cosimo Alfarano <cosimo.alfarano@collabora.co.uk>  Tue, 08 Jun 2010 15:17:30 +0100
+
+libhildonfm (1:2.28.19) unstable; urgency=low
+
+  * Fixes: NB#121431 Critical warnings, patches by Claudio Saavedra
+  * Fixes: NB#165083 Fix Live Search for polish Ł
+
+ -- Alban Crequy <alban.crequy@collabora.co.uk>  Tue, 01 Jun 2010 16:51:34 +0100
+
+libhildonfm (1:2.28.18) unstable; urgency=low
+
+  * Fixed  NB#159595 Capitalization on accents
+  * Fixed  NB#158638 Case sensitive in Russian
+  * Fixed  NB#159587 Accented characters
+  * Fixed  NB#159205 Live text search uniform across Media player and File manager
+  * Fixed  NB#159592 specific letters not recognized in lower case
+
+ -- Alban Crequy <alban.crequy@collabora.co.uk>  Tue, 13 Apr 2010 09:52:46 +0100
+
+libhildonfm (1:2.28.17) unstable; urgency=low
+
+  * Fixes: NB#104238 Duplication of folders in File Manager application
+  * Fixes: NB#158422 Closing of live search after changing directory
+
+ -- Alban Crequy <alban.crequy@collabora.co.uk>  Thu, 25 Feb 2010 15:14:11 +0000
+
+libhildonfm (1:2.28.16) unstable; urgency=low
+
+  * Fixes: NB#140251 LiveSearch: not case sensitive
+
+ -- Alban Crequy <alban.crequy@collabora.co.uk>  Tue, 23 Feb 2010 12:18:19 +0000
+
+libhildonfm (1:2.28.15) unstable; urgency=low
+
+  * Fixes: NB#140251 Support Live Search
+
+ -- Alban Crequy <alban.crequy@collabora.co.uk>  Mon, 22 Feb 2010 15:17:00 +0000
+
+libhildonfm (1:2.28.14) unstable; urgency=low
+
+  * Fixes: NB#104238 Always check for duplicates when new files are added
+    Fix by Thomas Thurman <thomas.thurman@collabora.co.uk>
+
+ -- Alban Crequy <alban.crequy@collabora.co.uk>  Mon, 22 Feb 2010 10:17:52 +0000
+
+libhildonfm (1:2.28.13) unstable; urgency=low
+
+  * Fixes: NB#155007 Backwards compatibility with strict version dependency
+
+ -- Alban Crequy <alban.crequy@collabora.co.uk>  Thu, 11 Feb 2010 15:31:04 +0000
+
+libhildonfm (1:2.28.12) unstable; urgency=low
+
+  * Fix a use-after-free introduced in 2.28.10 in
+    hildon_file_chooser_update_path_button
+
+ -- Alban Crequy <alban.crequy@collabora.co.uk>  Thu, 10 Dec 2009 17:36:58 +0000
+
+libhildonfm (1:2.28.11) unstable; urgency=low
+
+  * Fixes: NB#140239 File manager to use album art
+
+ -- Alban Crequy <alban.crequy@collabora.co.uk>  Thu, 10 Dec 2009 15:56:05 +0000
+
+libhildonfm (1:2.28.10) unstable; urgency=low
+
+  * Fixes: NB#134301 More memory leaks fixed
+
+ -- Alban Crequy <alban.crequy@collabora.co.uk>  Mon, 23 Nov 2009 15:56:21 +0000
+
+libhildonfm (1:2.28.9) unstable; urgency=low
+
+  * Fixes: NB#145262 FM hangs if WLAn is disconnected while copying
+    files from shared media to device 
+
+ -- Alban Crequy <alban.crequy@collabora.co.uk>  Wed, 18 Nov 2009 13:04:42 +0000
+
+libhildonfm (1:2.28.8) unstable; urgency=low
+
+  * Fixes: NB#140752: icon for the internal memory card
+
+ -- Alban Crequy <alban.crequy@collabora.co.uk>  Wed, 11 Nov 2009 17:36:53 +0000
+
+libhildonfm (1:2.28.7) unstable; urgency=low
+
+  * Fixes: NB#145572 bad free of model_node->info when the file changes
+  * Fixes partially NB#140752 Name of the memory card
+
+ -- Alban Crequy <alban.crequy@collabora.co.uk>  Tue, 10 Nov 2009 15:28:09 +0000
+
+libhildonfm (1:2.28.6) unstable; urgency=low
+
+  * Fixes: NB#145572 Crash on double free of model_node->info
+
+ -- Alban Crequy <alban.crequy@collabora.co.uk>  Fri, 06 Nov 2009 13:34:32 +0000
+
+libhildonfm (1:2.28.5) unstable; urgency=low
+
+  * Fixes: NB#134301 Multiple memory leaks filesystem-ui
+
+ -- Alban Crequy <alban.crequy@collabora.co.uk>  Wed, 04 Nov 2009 19:22:03 +0000
+
+libhildonfm (1:2.28.4) unstable; urgency=low
+
+  * Fixes: NB#144071 External mmc name is not getting reflected even after renaming
+
+ -- Alban Crequy <alban.crequy@collabora.co.uk>  Mon, 02 Nov 2009 17:04:57 +0000
+
+libhildonfm (1:2.28.3) unstable; urgency=low
+
+  * Fixes NB#134301 Multiple memory leaks filesystem-ui
+    Partially fixed
+
+ -- Alban Crequy <alban.crequy@collabora.co.uk>  Wed, 21 Oct 2009 15:15:42 +0100
+
+libhildonfm (1:2.28.2) unstable; urgency=low
+
+  * Fixes NB#143637 File Manager crashed after moving file that is in use
+
+ -- Alban Crequy <alban.crequy@collabora.co.uk>  Wed, 21 Oct 2009 14:39:41 +0100
+
+libhildonfm (1:2.28.1) unstable; urgency=low
+
+  * Fixes: NB#121760 Incorrect size value is shown for large file on eMMC
+  * Fixes: NB#140799 filemanager calls a method on D-Bus 60 times per second
+
+ -- Alban Crequy <alban.crequy@collabora.co.uk>  Mon, 19 Oct 2009 16:23:34 +0100
+
+libhildonfm (1:2.28) unstable; urgency=low
+
+  * New: Release 1:2.28
+  * Using g_get_user_special_dir() to retrieve safe folders.
+    (needed to fix bug #127506)
+  * Fixes: NB#129173 GLib criticals at start
+
+ -- Akos Pasztory <akos.pasztory@d\igia.com>  Thu, 30 Jul 2009 10:49:00 +0300
+
+libhildonfm (1:2.27) unstable; urgency=low
+
+  * New: Release 1:2.27
+  * Fixes: NB#128060 Crash observed while opening the copied folder in grid view from filter by folder sub dialog.
+  * Fixes: NB#101232 Upnp shared folders are not updated to FM when changing from Cellular NW to WLAN
+
+ -- Mikko Tuhkanen <mikko.tuhkanen@d\igia.com>  Mon, 27 Jul 2009 14:54:33 +0300
+
+libhildonfm (1:2.26) unstable; urgency=low
+
+   * New: Release 1:2.26
+   * Fixed height of 'new folder' dialog's entry field.
+   * Removed unnecessary gtk_widget_set_size_request() for folder-up
+     button.
+   * Fixes: NB#118391
+   * Fixes: NB#118110
+
+ -- Akos Pasztory <akos.pasztory@d\igia.com>  Tue, 21 Jul 2009 11:26:29 +0300
+
+libhildonfm (1:2.25) unstable; urgency=low
+
+  * New: Release 1:2.25
+  * Unified logging.
+
+ -- Akos Pasztory <akos.pasztory@d\igia.com>  Wed, 15 Jul 2009 16:43:07 +0300
+
+libhildonfm (1:2.24) unstable; urgency=low
+
+  * New: Release 1:2.24
+  * Fixes: NB#121696 - Folder contents are not showing when back cover has been removed
+	
+ -- Yang Li <yang.li@d\igia.com>  Tue, 14 Jul 2009 16:49:08 +0300
+
+libhildonfm (1:2.23) unstable; urgency=low
+
+  * New: Release 1:2.24
+  * Fixes: NB#126642 - Icons in File manager look scaled
+  * Update: Prepare thumbnails code for performance optimization
+
+ -- Valentin Rabinovich <valentin.rabinovich@d\igia.com>  Tue, 14 Jul 2009 14:42:39 +0300
+
+libhildonfm (1:2.22) unstable; urgency=low
+
+  * New: Release 1:2.22
+  * Fixes: NB#118293 - Memory leaks in select folder filechooser
+
+ -- Valentin Rabinovich <valentin.rabinovich@d\igia.com>  Thu, 09 Jul 2009 13:32:13 +0300
+
+libhildonfm (1:2.21) unstable; urgency=low
+
+  * New: Release 1:2.21
+  * Fixes: NB#100456 - After creation new folder isn't shown in the Folder path button
+  * Fixes: NB#123976 - After creation nested folders with the same name everything is blocked
+  * Fixes: NB#125570 - Not able to format internal memory
+  * Updated: Remove libxi-dev and libxt-dev dependencies.
+
+ -- Mikko Tuhkanen <mikko.tuhkanen@d\igia.com>  Fri, 03 Jul 2009 14:51:37 +0300
+
+libhildonfm (1:2.20) unstable; urgency=low
+
+  * Updated: Split the local device visibility handling again so that we have a callback for mounted and unmounted each, and check the device URI more carefully as it turns out the previous changes were based on wrong assumptions.
+  * Fixes: NB#123719 HildonFileChooserDialog blocks other windows in multi stack application
+  * Fixes: NB#116136 POSIX, Incorrect date format in details dialog.
+  * Updated: Merge the handling of the visibility of the local device into one function.
+  * Fixes: NB#122980 Folder can not be changed in 'Location' field when mmc card was removed
+  * Updated: Obtain the volume from the path via GnomeVfs instead of iterating over all devices.
+  * Updated: Revise navigation_pane_filter_func to be more redable.
+
+ -- Mikko Tuhkanen <mikko.tuhkanen@d\igia.com>  Fri, 26 Jun 2009 12:24:58 +0300
+
+libhildonfm (1:2.19) unstable; urgency=low
+  Fixes: NB#122325 Applications crash while "Rename" or "Format" else
+  "Mass storage" operation is done on Memory card while an Hildon-fm
+  dialog open in the application.
+  get the local device uri dynamically
+  Fixes: NB#113020 /dev/mmcblk1p1 is shown below memory card in UI
+  Check if 'uri' is set and use MYDOCSDIR.
+  Store tracker client in the private.
+  Fixes: NB#112668  No files/folders displayed even when images are present
+
+ -- Mikko Tuhkanen <mikko.tuhkanen@d\igia.com>  Thu, 18 Jun 2009 15:07:56 +0300
+
+libhildonfm (1:2.18) unstable; urgency=low
+  Turn bluetooth related criticals to warnings.
+  Adjust GtkFileSystem deprecations.
+  Deprecate any API using GtkFileSystem.
+
+ -- Mikko Tuhkanen <mikko.tuhkanen@d\igia.com>  Thu, 11 Jun 2009 14:40:37 +0300
+
+libhildonfm (1:2.17) unstable; urgency=low
+
+  Fixes: NB#121006 HildonFileChooserDialog using deprecated GTK_CHECK* macros
+  Bump required Gtk to 2.14.	
+  Fixes: NB#113020 /dev/mmcblk1p1 is shown below memory card in UI
+  Fixes: NB#115427 Unable to rename external memory card
+  Fixes: NB#111630 File manager- "Name already in use for item in root folder" 
+  sfil_ib_card_name_in_use_for_file is not shown and mmc gets corrupted
+  Fixes: NB#117480 Unable to format the external memory card.
+  Reopen NB#113020 /dev/mmcblk1p1 is shown below memory card in UI, because of the cause of regression
+  Fixes: NB#112030 File size units in File manager are in English
+  for all languages.
+  Add user-dirs.defaults.in	
+  Fixes: NB#119442 NXX root folder is still shown in mass storage mode after reopening file manager
+  Fixes: NB#119418 read only property is visible in details dialog of writable file
+  Fixes: NB#100456 After creation new folder isn't shown in the Folder
+  path button
+
+ -- Valentin Rabinovich <valentin.rabinovich@d\igia.com>  Fri, 05 Jun 2009 16:42:32 +0300
+
+libhildonfm (1:2.16.2) unstable; urgency=low
+
+  * Install intern copy of gtkfilesystem/gtkfilesystem.h
+
+ -- Claudio Saavedra <csaavedra@igalia.com>  Fri, 05 Jun 2009 09:26:55 +0300
+
+libhildonfm (1:2.16) unstable; urgency=low
+
+  Include an internal copy of GtkFileSystem from Gtk 2.12 which was
+  removed with Gtk2.14, but we still needed it in our code until we
+  migrate to GIO, work done by Michael Natterer.
+  Fixes: NB#112668 No files/folders displayed even when images are present
+  Fixes: NB#104228 Files are seen in Move to dialog
+  Fixes: NB#112198 Browser- Behavior of "My bookmarks" folder
+  Fixes: NB#101205 Internal memory card folders are not removed from UI after selecting mass storage mode
+  Fixes: NB#111929 Internal memory card folders are not refreshed immediately after disconnecting mass storage
+  Fixes: NB#112230 Internal mmc contents are accesable from device in mass storage mode
+  Fixes: NB#111518 User is allowed to create files\folders in Documents folder when mass storage mode is active
+
+ -- Valentin Rabinovich <valentin.rabinovich@d\igia.com>  Tue, 26 May 2009 14:17:10 +0300
+
+libhildonfm (1:2.15) unstable; urgency=low
+
+  Fixes: NB#101205 Internal memory card folders are not removed from UI after selecting mass storage mode
+  Fixes: NB#111929 Internal memory card folders are not refreshed immediately after disconnecting mass storage
+  Fixes: NB#112230 Internal mmc contents are accesable from device in mass storage mode
+  Fixes: NB#116703 libhildonfm2-dev .pc file should require gconf-2.0 and gnome-vfs-2.0
+  Fixes: NB#112198 Browser- Behavior of "My bookmarks" folder
+  Fixes: NB#115680 Memory card icon is shown for the root folder.
+  Fixes: NB#112367 NB#114301 hide the upnp from the file chooser dialogs
+
+ -- Valentin Rabinovich <valentin.rabinovich@d\igia.com>  Fri, 15 May 2009 15:17:09 +0300
+
+libhildonfm (1:2.14) unstable; urgency=low
+
+  Fixes: NB#108306 Setting property "HildonFileChooserDialog::title"
+  doesn't lead to any consequences.
+  Add a function hildon_file_selection_set_empty_text to customize "No files".
+  Allow adding custom labels with the new hildon_file_details_dialog_add_label_with_value.
+  Fixes: NB#96042 custom fields are missing in the details dialog
+  Fixes: NB#100181 Dialog is not shown when a corrupted memory card is inserted.
+  Fixes: NB#105994 Intellisync :Modest "check_for_location_update" crashed once when 
+  Intellisync account is defined and device is left idle
+  Fixes: NB#111377 browser-6-1335.rcore.lzo crashed
+  Fixes: NB#112659 Crash on connecting and disconnecting usb cable
+
+ -- Valentin Rabinovich <valentin.rabinovich@d\igia.com>  Fri, 08 May 2009 11:49:39 +0300
+
+libhildonfm (1:2.13) unstable; urgency=low
+
+  Fixes: NB#111439 Modest crashes when attaching files to the editor
+  Fixes: NB#113465 Autonaming folder is not working for folder located
+  directly under device root folder.
+  Fixes: NB#111198 Use progress indicator instead of animation banner
+  Fixes: NB#113020 /dev/mmcblk1p1 is shown below memory card in UI
+  Fixes: NB#110364 libhildonfm2 shouln't depned on osso-gnomevfs-extra
+
+ -- Valentin Rabinovich <valentin.rabinovich@d\igia.com>  Mon, 04 May 2009 16:11:33 +0300
+
+libhildonfm (1:2.12) unstable; urgency=low
+
+  Fixes: NB#109855 Displaying thumbnails in list view in file manager
+  taking long time.
+  Fixes: NB#105117 Size information is presented for image files in
+  content pane
+  Fixes: NB#103061 Thumbnail of replaced image is not updated
+  Fixes: NB#104527 Artist name is not displayed in list view in content pane.
+  Fixes: NB#109118 Reverse sorting taking place in case of Date (newest first) & 
+  Date (oldest first
+  Fixes: NB#109475 Sorting is not working correctly in fm for all option except Name(A-Z)
+
+ -- Valentin Rabinovich <valentin.rabinovich@d\igia.com>  Fri, 24 Apr 2009 10:36:45 +0300
+
+libhildonfm (1:2.11) unstable; urgency=low
+
+  Fixes: NB#104965 "update hildonfm icon names"
+
+ -- Valentin Rabinovich <valentin.rabinovich@d\igia.com>  Wed, 15 Apr 2009 14:53:46 +0300
+
+libhildonfm (1:2.10) unstable; urgency=low
+
+  Fixes: NB#95854, NB#109433
+
+ -- Valentin Rabinovich <valentin.rabinovich@d\igia.com>  Mon, 06 Apr 2009 14:44:07 +0300
+
+libhildonfm (1:2.9) unstable; urgency=low
+
+  Fixes: NB#106251
+
+ -- Valentin Rabinovich <valentin.rabinovich@d\igia.com>  Tue, 31 Mar 2009 15:36:55 +0300
+
+libhildonfm (1:2.8) unstable; urgency=low
+
+  * Fixes: NB#107268
+  * Refactoring
+
+ -- Mikko Tuhkanen <mikko.tuhkanen@d\igia.com>  Fri, 27 Mar 2009 15:26:06 +0200
+
+libhildonfm (1:2.7) unstable; urgency=low
+
+  * hildon-fm/hildon-file-system-settings.c: removed bt-gconf.h
+
+ -- Valentin Rabinovich <valentin.rabinovich@d\igia.com>  Thu, 19 Mar 2009 12:08:56 +0200
+
+libhildonfm (1:2.6) unstable; urgency=low
+
+  * Fixes: NB#106137, NB#102621, NB#104644, NB#106225, NB#105154, NB#100983, NB#104449
+
+ -- Valentin Rabinovich <valentin.rabinovich@d\igia.com>  Wed, 18 Mar 2009 15:40:36 +0200
+
+libhildonfm (1:2.5) unstable; urgency=low
+
+  * Fixes: NB#99116, NB#99380, NB#100974
+
+ -- Valentin Rabinovich <valentin.rabinovich@d\igia.com>  Wed, 11 Mar 2009 16:12:15 +0200
+
+libhildonfm (1:2.4) unstable; urgency=low
+
+  * Fixes: NB#93444, NB#99139, NB#102435, NB#95104, NB#100401, NB#100779, NB#100814.	
+
+ -- Valentin Rabinovich <valentin.rabinovich@d\igia.com>  Tue, 10 Mar 2009 16:12:06 +0200
+
+libhildonfm (1:2.3) unstable; urgency=low
+
+  * Fixes NB#99891, NB#101871, NB#99861
+
+ -- Valentin Rabinovich <valentin.rabinovich@d\igia.com>  Tue, 24 Feb 2009 15:02:50 +0300
+
+libhildonfm (1:2.2) unstable; urgency=low
+
+  * Fixes: NB#100948, NB#99730, NB#101878, NB#95564, NB#102391, NB101842
+  * don't filter out root-of-roots
+  * check node before emitting
+  * enable the New button when multi-root is set (for bookmarks)
+
+ -- Valentin Rabinovich <valentin.rabinovich@d\igia.com>  Tue, 20 Feb 2009 16:02:50 +0300
+
+libhildonfm (1:2.1.8) unstable; urgency=low
+
+  * Fixes: NB#99000, NB#95932, NB#97759, NB#98741, NB#93817
+  * don't set cursor in edit mode
+  * tests
+
+ -- Valentin Rabinovich <valentin.rabinovich@d\igia.com>  Tue, 10 Feb 2009 16:02:50 +0300
+
+libhildonfm (1:2.1.7) unstable; urgency=low
+
+  * Fixes: NB#99009
+  * safe folder .camera added
+  * no files in select folder dialog
+  * unused code removed
+
+ -- Valentin Rabinovich <valentin.rabinovich@d\igia.com>  Tue, 03 Feb 2009 16:02:50 +0300
+
+libhildonfm (1:2.1.6) unstable; urgency=low
+
+  * Fixes: NB#89751
+  * show-folders property of the file-selection added
+  * unused code removed
+
+ -- Valentin Rabinovich <valentin.rabinovich@d\igia.com>  Fri, 27 Jan 2009 16:02:50 +0300
+
+libhildonfm (1:2.1.5) unstable; urgency=low
+
+  * Fixes: NB#97851, NB#90637
+  * save button is not dimmed anymore
+  * use PickerDialog for type selection
+
+ -- Valentin Rabinovich <valentin.rabinovich@d\igia.com>  Fri, 23 Jan 2009 16:02:50 +0300
+
+libhildonfm (1:2.1.4) unstable; urgency=low
+  
+  * Don't install the gtk-file-chooser-backend property, it's always there
+  * remove HFS_get_selected_files() API call
+  * make CSM work without tree selection
+
+ -- Valentin Rabinovich <valentin.rabinovich@d\igia.com>  Thu, 15 Jan 2009 17:02:50 +0300
+
+libhildonfm (1:2.1.3) unstable; urgency=low
+  
+  * unset current_row when sort_model is destroyed
+  * correct icon sizes
+  * connect signals for the artificial root
+
+ -- Valentin Rabinovich <valentin.rabinovich@d\igia.com>  Tue, 19 Dec 2008 18:02:50 +0300
+
+libhildonfm (1:2.1.2) unstable; urgency=low
+  
+  * new icons taken into use
+  * correct signals for root nodes
+
+ -- Valentin Rabinovich <valentin.rabinovich@d\igia.com>  Tue, 16 Dec 2008 18:02:50 +0300
+
+
+libhildonfm (1:2.1.1) unstable; urgency=low
+  
+  * removed number of items reported for folders in thumb-view
+
+ -- Valentin Rabinovich <valentin.rabinovich@d\igia.com>  Thu, 11 Dec 2008 18:02:50 +0300
+
+libhildonfm (1:2.1.0) unstable; urgency=low
+
+  * bump version for a major update 
+  * Fixes: NB#89727, NB#89940, NB#90637, NB#92706, NB#90693, NB#92414,
+    NB#89121 
+
+ -- Richard Sun <richard.sun@nokia.com>  Thu, 04 Dec 2008 17:30:30 +0200
+
+libhildonfm (1:2.0.11) unstable; urgency=low
+
+  * New property for HildonFileSelection - current_row
+  * Don't rely on GtkTreeSelection in NORMAL_MODE
+
+ -- Valentin Rabinovich <valentin.rabinovich@d\igia.com>  Thu, 27 Nov 2008 18:02:50 +0300
+
+libhildonfm (1:2.0.10) unstable; urgency=low
+
+  * New property "edit-mode" introduced
+  * List view is replaced by a dummy GtkTreeView and hidden
+  * No more row insensitive message in Hildon 2.2 UI style
+  * Speed up populating of a file system model by skipping search when 
+    adding new nodes. Few other enhancements too.
+
+ -- Valentin Rabinovich <valentin.rabinovich@d\igia.com>  Thu, 02 Oct 2008 15:02:50 +0300
+
+libhildonfm (1:2.0.7) unstable; urgency=low
+
+  * Ported "Change Folder", "Move to folder", "Open file" and "Select file
+    type" dialogs to Fremantle UI.
+
+  * File details dialog - don't set iter twice for the same file. Fixes NB#85998.
+
+  * File details dialog - show infonote instead of infobanner when read-only flag 
+    couldn't be changed. Fixes NB#N84860.
+
+  * File selection - unset cursor_goal_uri when selection is changed. Fixes NB#84851.
+
+ -- Valentin Rabinovich <valentin.rabinovich@d\igia.com>  Tue, 26 Aug 2008 16:27:28 +0300
+
+libhildonfm (1:2.0.6) unstable; urgency=low
+
+  [ Kimmo Hämäläinen ]
+  * Patch to add voldev-mounted signal. Related to NB#76324
+
+  [ Marius Vollmer ]
+  * Do not make the bluetooth root node inaccessible. Fixes: NB#81561.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Fri, 23 May 2008 18:27:28 +0300
+
+libhildonfm (1:2.0.5) unstable; urgency=low
+
+  * Add checks to hildon-file-system-smb.c signal handlers to avoid a crash.
+    Fixes: NB#79106
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 28 Apr 2008 18:28:44 +0300
+
+libhildonfm (1:2.0.4) unstable; urgency=low
+
+  * Make read-only check insensitive in the Details dialog when the
+    permissions can not be changed.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Thu, 17 Apr 2008 19:18:13 +0300
+
+libhildonfm (1:2.0.3) unstable; urgency=low
+
+  * Fixes: NB#79697, NB#77225, NB#83593, NB#83955, NB#77409.
+  * Add "currently-dragging" property to HildonFileSelection. Related to
+    NB#83827
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Thu, 17 Apr 2008 19:17:28 +0300
+
+libhildonfm (1:2.0.2) unstable; urgency=low
+
+  * Reverted the patch for NB#79697, it made Bookmarks to crash in startup.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 18 Mar 2008 16:56:44 +0200
+
+libhildonfm (1:2.0.1) unstable; urgency=low
+
+  * Fixes: NB#76517, NB#79427, NB#76380, NB#76271, NB#79697.
+  * Fixes: NB#76327, NB#74397, NB#75049, NB#80021, NB#81354.
+  * Fixes: NB#79056.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Thu, 06 Mar 2008 18:42:34 +0200
+
+libhildonfm (1:2.0.0) unstable; urgency=low
+
+  * Re-released 1:1.9.49 as 1:2.0.0 for the Hildon 2.0 release.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Wed, 09 Jan 2008 12:32:45 +0200
+
+libhildonfm (1:1.9.49) unstable; urgency=low
+
+  * Fixes: NB#75960.
+  * Reopens: NB#71845.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Fri, 16 Nov 2007 14:57:37 +0200
+
+libhildonfm (1:1.9.48) unstable; urgency=low
+
+  * Fixes: NB#74281, NB#71845.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon, 12 Nov 2007 15:35:31 +0200
+
+libhildonfm (1:1.9.47) unstable; urgency=low
+
+  * Fixes: NB#37279, NB#69201, NB#72950, NB#73898, NB#71153.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Thu, 01 Nov 2007 19:06:53 +0200
+
+libhildonfm (1:1.9.46) unstable; urgency=low
+
+  * Replace obsolete dependency osso-thumbnail-dev for
+    libhildon-thumbnail-dev for libhildonfm2-dev package
+
+ -- Natalia Dobrovolskaya <natalia.dobrovolskaya@nokia.com>  Tue, 16 Oct 2007 11:07:00 +0300
+
+libhildonfm (1:1.9.45) unstable; urgency=low
+
+  * Do not block on first_root_scan_completed when using the
+    gtkfilesystemmemorybackend.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Fri, 12 Oct 2007 13:52:51 +0300
+
+libhildonfm (1:1.9.44) unstable; urgency=low
+
+  * Fixes: NB#72033.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Tue, 09 Oct 2007 13:00:40 +0300
+
+libhildonfm (1:1.9.43) unstable; urgency=low
+
+  * Fixes: NB#53155, NB#61856, NB#66095.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Tue, 09 Oct 2007 11:29:00 +0300
+
+libhildonfm (1:1.9.42.1) unstable; urgency=low
+
+  * Patch up stupid mistakes in 1.9.42 release.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Tue, 02 Oct 2007 14:45:25 +0300
+
+libhildonfm (1:1.9.42) unstable; urgency=low
+
+  * Fixes: NB#71426.
+  * Listen to memory card cover Gconf key changes.
+  * Prettify "Repair" view.
+  * Don't show "Updating" banner in repair view.
+  
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Tue, 02 Oct 2007 14:15:55 +0300
+
+libhildonfm (1:1.9.41) unstable; urgency=low
+
+  * Fixes: NB#71163, NB#71170, NB#71144, NB#71168, NB#69754.
+  * Fixes: NB#70816, NB#68746, NB#70479, NB#71265, NB#66336.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Fri, 28 Sep 2007 17:41:40 +0300
+
+libhildonfm (1:1.9.40) unstable; urgency=low
+
+  * Fixes: NB#63339, NB#63171, NB#59490, NB#66361, NB#68695.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon, 17 Sep 2007 23:13:51 +0300
+
+libhildonfm (1:1.9.39) unstable; urgency=low
+
+  * Fixes: NB#52803.
+  * Do not show USB mass storage device when no volumes are mounted.
+    Fixes: NB#62319.
+  * Correct sort order of top-level items.  Fixes: NB#65611.
+  * Fixes: NB#65543, NB#67080, NB#66863, NB#64420, NB#64425.
+  * Fixes: NB#65966, NB#61944, NB#63125, NB#68166, NB#66158.
+  * Make libhildonfm2 depend on gnome-vfs-filechooser-backend since it
+    doesn't really work with any other backend for now.  Fixes: NB#59466.
+  * Fixes: NB#59284, NB#60626, NB#67758, NB#68881, NB#53155.
+  * Fixes: NB#66733, NB#69593, NB#68619, NB#69058, NB#69611.
+  
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon, 17 Sep 2007 23:12:02 +0300
+
+libhildonfm (1:1.9.38) unstable; urgency=low
+
+  * Recognize a non-special root node as a folder so that waiting for it
+    to load works.  This prevents a crash of the bookmarks application.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon, 13 Aug 2007 20:54:38 +0300
+
+libhildonfm (1:1.9.37) unstable; urgency=low
+
+  * Removed most of the video game character of folder listing by relying
+    on the asynchronous GtkFilesystem API instead of doing our own magic.
+  * Fixes: NB#62101, NB#52599, NB#62546, NB#62972, NB#55972, NB#60272.
+    Fixes: NB#64004, NB#64453, NB#52827, NB#53155, NB61730, NB#58786.
+    Fixes: NB#59520.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon, 30 Jul 2007 20:09:58 +0300
+
+libhildonfm (1:1.9.36) unstable; urgency=low
+
+  * Save pane position of file chooser dialog.
+  * Initialize HildonFileSelection widget properly so that File Manager
+    doesn't show empty content pane on startup.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon, 30 Jul 2007 18:10:27 +0300
+
+libhildonfm (1:1.9.35) unstable; urgency=low
+
+  * Added code to detect whether memory cards are shared over USB and should
+    not be visible. This requires two new GConf keys from ke-recv:
+    /system/osso/af/mmc-mount-point and /system/osso/af/mmc-device-name
+    Fixes: NB#62440, NB#60259, NB#51728, NB#59097, NB#61292
+  * Added a check for a NULL pointer. Fixes: NB#63350
+  * Add two logical IDs that were added to the UI spec ("Common", "Data")
+  * Add two instances of missing GDK_THREADS_ENTER/GDK_THREADS_LEAVE pairs.
+  * Fixes: NB#63995.
+  * Show information note sfil_ni_target_foldername_long instead of
+    information banner file_ib_name_too_long. Fixes: NB#36630
+  * Fixes: NB#59274
+  * Patch from Markku for irritating focus bug. Fixes: NB#49941
+  
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 30 Jul 2007 10:10:11 +0300
+
+libhildonfm (1:1.9.34) unstable; urgency=low
+
+  [ Richard Hult ]
+  * Clarify API doc comments about the storage root URIs for the storage
+    details dialog, fix a small unlikely leak and only do fast MIME type
+    checking.
+  * Fixes: NB#63101. mmc-undefined-name in hildon-file-system-storage-dialog
+    for memory card.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Wed, 18 Jul 2007 19:43:44 +0300
+
+libhildonfm (1:1.9.33) unstable; urgency=low
+
+  * Fixes: NB#59187. File/Folder operations in MMC through PC does not 
+    update in MMC.
+  * Fixes: NB#59429. Application crashes on cancelling the 'open image' dialog
+    more than once.
+
+ -- Richard Hult <richard@i\mendio.com>  Tue, 26 Jun 2007 14:32:51 +0200
+
+libhildonfm (1:1.9.32) unstable; urgency=low
+
+  * Fixes: NB#59746. MP crashed when tapping on details from Clip menu.
+  * Fixes: NB#61357. File manager crashes on opening the 'Storage details
+    dialog' a second time for the Nokia root folder.
+  * Fixes: NB#59767. Media player crashes and audio is still audible with
+    audio streaming.
+  * Fixes: NB#59229. Application crashes when details dialog is opened for
+    the file in MMC.
+  * Fixes: NB#59611. Media Player crashed when launched from File manager
+    and while viewing details of the clip.
+
+ -- Richard Hult <richard@i\mendio.com>  Thu, 21 Jun 2007 14:44:52 +0300
+
+libhildonfm (1:1.9.31) unstable; urgency=low
+
+  * Fix icons and localised names for drives.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 19 Jun 2007 17:36:22 +0300
+
+libhildonfm (1:1.9.30) unstable; urgency=low
+
+  * Fix some logical strings. Fixes: NB#60759
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 19 Jun 2007 13:45:43 +0300
+
+libhildonfm (1:1.9.29) unstable; urgency=low
+
+  * Provide "Storage Details Dialog".
+  * Fixes: NB#59441.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Thu,  7 Jun 2007 16:35:49 +0300
+
+libhildonfm (1:1.9.28) unstable; urgency=low
+
+  * More API for dealing with filename extensions.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon,  4 Jun 2007 13:18:18 +0300
+
+libhildonfm (1:1.9.27) unstable; urgency=low
+
+  * Added API for extending the "Save As" variant of the
+    HildonFileChooserDialog.
+  * Fixes: NB#33701.
+  
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Thu, 31 May 2007 13:16:31 +0300
+
+libhildonfm (1:1.9.26) unstable; urgency=low
+
+  * Do not use the banner escort service of the Task Navigator.  It is
+    gone.
+  * Implemented localizable folder names.
+  * Fixes: NB#N58259.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Fri, 25 May 2007 17:02:33 +0300
+
+libhildonfm (1:1.9.25) unstable; urgency=low
+
+  * Return device path as the "extra info" for GnomeVFS volumes and
+    drives.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Thu, 24 May 2007 15:49:35 +0300
+
+libhildonfm (1:1.9.24) unstable; urgency=low
+
+  * Handle USB devices. Show "Repair" button for unmounted drives.
+  
+  * Fixes: NB#52803.
+  * Fixes: NB#53804.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon, 21 May 2007 20:29:59 +0300
+
+libhildonfm (1:1.9.23) unstable; urgency=low
+
+  * Fixes: NB#53829.
+  * Fixes: NB#55408.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon, 21 May 2007 20:29:59 +0300
+
+libhildonfm (1:1.9.22) unstable; urgency=low
+
+  * Added support for arbitrary GnomeVFS volumes and drives.  Used for
+    MMCs.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Wed, 16 May 2007 17:30:22 +0300
+
+libhildonfm (1:1.9.21) unstable; urgency=low
+
+  * Bugfixed Makefile.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Fri, 11 May 2007 17:35:17 +0300
+
+libhildonfm (1:1.9.20) unstable; urgency=low
+
+  * Fixed crasher related to mounting of new volumes.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Fri, 11 May 2007 17:19:41 +0300
+
+libhildonfm (1:1.9.19) unstable; urgency=low
+
+  * Added "smb://" support.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Tue,  8 May 2007 13:57:09 +0300
+
+libhildonfm (1:1.9.18) unstable; urgency=low
+
+  * Added hildon-fm1-compat.h header for legacy applications.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon,  7 May 2007 11:31:33 +0300
+
+libhildonfm (1:1.9.17) unstable; urgency=low
+
+  * Fixes: NB#54390.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Wed,  2 May 2007 19:53:15 +0300
+
+libhildonfm (1:1.9.16) unstable; urgency=low
+
+  * Use hildon-thumbnailer instead of osso-thumbnailer.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Tue, 24 Apr 2007 20:47:25 +0300
+
+libhildonfm (1:1.9.15) unstable; urgency=low
+
+  * Improve fix for NB#54107.
+  * Do not use special versions for hildon-fm1 and hildon-fm-dev, there is
+    no point and it's a pain to maintain.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon, 16 Apr 2007 16:33:54 +0300
+
+libhildonfm (1:1.9.14) unstable; urgency=low
+
+  * Fixes: NB#54107.
+    HildonFileSystemInfo uses g_new0() with g_slice_free() causing crashes
+
+  From Tommi Komulainen <tommi.komulainen@nokia.com>:
+  
+  * Improve gtk-doc packaging:
+    * debian/rules:
+      - remove misleading --with-doc-dir
+      - do not compress index.sgml files so that gtkdoc-fixxref can
+        access those and generate better cross reference
+    * debian/libhildonfm2-dev.docs: removed
+    * debian/libhildonfm2-dev.install: install the docs here
+    * debian/libhildonfm2-dev.links: add symbolic link to gtk-doc dir, it
+      makes crossreferences to hildon-fm relative, which is a good thing.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon, 16 Apr 2007 14:52:00 +0300
+
+libhildonfm (1:1.9.13) unstable; urgency=low
+
+  * Conform to unified Hildon versioning scheme (but keep old versions for
+    the transitional packages).
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Fri,  9 Mar 2007 15:07:52 +0200
+
+libhildonfm (2.13-2) unstable; urgency=low
+
+  * Make libhildonfm2-dev conflict with hildon-fm-dev (<= 2.10).
+    Conflicting with (<< 2) wasn't enough since there is a 2.0 version out
+    there that does conflict.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon,  5 Mar 2007 15:44:24 +0200
+
+libhildonfm (2.13-1) unstable; urgency=low
+
+  * More consolidation.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Wed, 21 Feb 2007 18:32:51 +0200
+
+libhildonfm (2.12-1) unstable; urgency=low
+
+  * Fat fingered a "i" into debhelper Build-Dependency... and completed
+    consolidation.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Wed, 21 Feb 2007 14:48:16 +0200
+
+libhildonfm (2.11-1) unstable; urgency=low
+
+  * Consolidated away use of osso-mime, in favor of hildon-mime.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Wed, 21 Feb 2007 14:35:56 +0200
+
+libhildonfm (2.10-2) unstable; urgency=low
+
+  * Make libhildonfm2-dev conflict with hildon-fm-dev (<< 2).
+  
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Tue, 20 Feb 2007 18:10:16 +0200
+
+libhildonfm (2.10-1) unstable; urgency=low
+
+  * Added Build dependency on libdbus-1-dev (>= 1.0).
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Wed,  7 Feb 2007 16:54:33 +0200
+
+libhildonfm (2.9-1) unstable; urgency=low
+
+  * Added hildon-fm-dev as a build-time compatibility kluge as well.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon,  5 Feb 2007 16:43:18 +0200
+
+libhildonfm (2.8-2) unstable; urgency=low
+
+  * Put hildon-fm1.install and hildon-fm1.links into distribution so that
+    they take effect, stupid.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon,  5 Feb 2007 13:07:52 +0200
+
+libhildonfm (2.8-1) unstable; urgency=low
+
+  * Added hildon-fm1 compatibility kluge package.  Disabled gtk-doc again
+    since our version in the buildbot environment is too old. :(
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon,  5 Feb 2007 10:35:22 +0200
+
+libhildonfm (2.7-1) unstable; urgency=low
+
+  * debian/rules: Removed unused version magic.  Dont attempt to copy
+    config.sub and config.guess from /usr/share/misc on clean.  Don't
+    cleanup outo bits, since outo is not used anymore.  Removed
+    --disable-gtk-doc from configure options.
+  * debian/control: Added gtk-doc-tools to Build-Depends and removed outo.
+    Include major version in -dev package.  Removed -test package.
+    Don't let the -dev package conflict with the old hildon-fm-dev.
+  
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Fri,  2 Feb 2007 13:30:26 +0200
+
+libhildonfm (2.6-1) unstable; urgency=low
+
+  * Move header files to new <hildon/...> location.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Fri,  2 Feb 2007 11:33:49 +0200
+
+libhildonfm (2.5-1) unstable; urgency=low
+
+  * Don't have libhildonfm2 conflict/replace hildon-libs0 and hildon-lgpl0.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Thu,  1 Feb 2007 17:29:23 +0200
+
+libhildonfm (2.4-1) unstable; urgency=low
+
+  * Build-depend on libhildon1-dev instead of hildon-libs-dev.
+  
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Thu,  1 Feb 2007 16:25:01 +0200
+
+libhildonfm (2.3-1) unstable; urgency=low
+
+  * Consolidated API according to plan.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Tue, 30 Jan 2007 11:25:45 +0200
+
+libhildonfm (2.2-2) unstable; urgency=low
+
+  * Renamed control files in debian/ as well.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Fri, 26 Jan 2007 16:30:21 +0200
+
+libhildonfm (2.2-1) unstable; urgency=low
+
+  * Renamed packages.  Support Gtk+ 2.10 only.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Thu, 11 Jan 2007 18:10:12 +0200
+
+hildon-fm (2.1-0unreleased1) unstable; urgency=low
+
+  * Merged changes from 1.16-1 to 1.21-1.
+    Fixes: NB#49936, NB#49932.
+    Fixes: NB#49798, NB#49799.
+    Fixes: NB#48902, NB#48903, NB#40395.
+    Fixes: NB#45114, NB#36627, NB#47133, NB#44985, NB#46601.
+  * Fixes: MB#469, MB#874.
+  
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon, 20 Nov 2006 19:40:56 +0200
+
+hildon-fm (2.0-1) unstable; urgency=low
+
+  * Branched for development; maintenance continues in 1.x.
+  * Merged branch changes from 1.14 to 1.16.
+  
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon, 23 Oct 2006 19:12:57 +0300
+
+hildon-fm (1.14-1) unstable; urgency=low
+
+  * Provide symbols in the debug package only.
+  * Fixes: NB#33895, NB#38533, NB#42979, NB#42571, NB#43716, NB#40531,
+           NB#42731.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon, 23 Oct 2006 19:06:56 +0300
+
+hildon-fm (1.13-1) unstable; urgency=low
+
+  * Fixes: NB#29728, NB#42088, NB#42601.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Thu,  5 Oct 2006 19:34:59 +0300
+
+hildon-fm (1.12-1) unstable; urgency=low
+
+  * debian/control: Make hildon-fm1-dbg depend on hildon-fm1, with an
+    exact version, and nothing else.
+  * Fixes: NB#42110.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Wed,  4 Oct 2006 14:55:21 +0300
+
+hildon-fm (1.11-1) unstable; urgency=low
+
+  * debian/control (Build-Depends): Removed osso-bttools-dev.
+  * Fixes: NB#41347, NB#41462, NB#40914, NB#32010, NB#37440.
+  * Fixes: NB#41719, NB#40849, NB#40336, NB#40288.
+  
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Wed, 27 Sep 2006 19:02:56 +0300
+
+hildon-fm (1.10.9-1) unstable; urgency=low
+
+  * Fixes: NB#34417, NB#38147, NB#39687, NB#40732, NB#41283, NB#40983.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Tue, 19 Sep 2006 12:09:55 +0300
+
+hildon-fm (1.10-1) unstable; urgency=low
+
+  * Fixes: NB#21395, NB#39775, NB#40002, NB#39660.
+  * Fixes: NB#38145, NB#35433, NB#39128, NB#30868.
+  * Fixes: NB#40046, NB#39834, NB#33732.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Thu,  7 Sep 2006 18:19:21 +0300
+
+hildon-fm (1.9-1) unstable; urgency=low
+
+  * Create configure in debian/rules when needed.
+  * Fixes: NB#37947
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Thu,  7 Sep 2006 14:32:47 +0300
+
+hildon-fm (1.8-1) unstable; urgency=low
+
+  * Fixes: NB#34414, NB#31278, NB#38652, NB#35160, NB#39738.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Tue,  5 Sep 2006 12:03:17 +0300
+
+hildon-fm (1.7-1) unstable; urgency=low
+
+  * Fixed column width problems. Patch from Tapani Pälli. Fixes: NB#34618
+  * Fixed the ever-lasting updating banner by using a timeout to close it.
+    Fixes: NB#32064
+  * Made an optimisation to file banner showing -- now it does not generate
+    a flood of D-Bus activity when scanning a file list.
+  * Added handling of an unexpected files-added signal. Fixes: NB#38523
+  * Corrected destination path in items-dropped signal. Fixes: NB#38406
+  * Included a change required by fixed OBEX module (thus depends on new
+    osso-gnomevfs-extra).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 31 Aug 2006 19:02:02 +0300
+
+hildon-fm (1.6-1) unstable; urgency=low
+
+  * Reverted a patch in 1.5-1 for the details dialog (caused a crash in
+    some applications, but worked somehow for Sketch).
+  * Fixed crash that happens with Glib compiled with thumb instructions.
+    Fixes: NB#35428
+  * Fixed the icon shown for a special Bluetooth device. Fixes: NB#35354
+  * Fixed creating thumbnails for a long file list to be more efficient.
+    Fixes: NB#21674
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 23 Aug 2006 13:59:25 +0300
+
+hildon-fm (1.5-2) unstable; urgency=low
+
+  * Same as 1.5-1, just removed one fixed bug from the list.
+  * Fixed crash that happens with Glib compiled with thumb instructions.
+    Fixes: NB#35428
+  * Fixed the icon shown for a special Bluetooth device. Fixes: NB#35354
+  * Fixed creating thumbnails for a long file list to be more efficient.
+    Fixes: NB#21674
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 23 Aug 2006 12:35:27 +0300
+
+hildon-fm (1.5-1) unstable; urgency=low
+
+  * Fixed crash that happens with Glib compiled with thumb instructions.
+    Fixes: NB#35428
+  * Fixed the icon shown for a special Bluetooth device. Fixes: NB#35354
+  * Fixed creating thumbnails for a long file list to be more efficient.
+    Fixes: NB#21674
+  * Fixed showing file details for remote files. Fixes: NB#37687
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 23 Aug 2006 12:35:27 +0300
+
+hildon-fm (1.4-1) unstable; urgency=low
+
+  * Replaced the show_all handler in HildonFileChooser with gtk_widget_show.
+    Fixes: NB#36971
+  * Fixed sorting in the default sorting order. Fixes: NB#35003
+  * Added a property to the details dialog for enabling/disabling the
+    read-only checkbox. (Bug 26072 is related to this.)
+  * Fixed displaying the size in details dialog when size is 10MB-1GB.
+    Fixes: NB#36325
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 10 Aug 2006 18:31:02 +0300
+
+hildon-fm (1.3-3) unstable; urgency=low
+
+  * Re-enabled OBEX device nickname caching and corrected bug there which
+    caused crashing.
+  * Corrected content pane dir activate behavior. Fixes: NB#33411
+
+ -- Kuisma Salonen <kuisma.salonen@nokia.com>  Thu, 13 Jul 2006 18:49:21 +0300
+
+hildon-fm (1.3-2) unstable; urgency=low
+
+  * Disabled temporarily OBEX device nickname caching.
+
+ -- Kuisma Salonen <kuisma.salonen@nokia.com>  Mon, 10 Jul 2006 18:16:14 +0300
+
+hildon-fm (1.3-1) unstable; urgency=low
+
+  * Some Lintian fixes. (Kimmo)
+  * Fixed logical strings used in the Details dialog when showing file sizes.
+    (Kimmo)
+  * Corrected localisation domain for ckdg_ti_new_folder. Fixes: NB#33863
+    (Kimmo)
+  * Fixed a bug in unit testing code. Fixes: NB#32579 (Kimmo)
+  * Added system to look up BT device nicknames. Fixes: NB#33840
+  * Removed hack to unescape the uri and made one to allow unescaping locally,
+    the uri is now unescaped within the child class.
+  * Exchanged hildon-file-system-bt.* with hildon-file-system-obex.*.
+  * The problem with listing OBEX devices (the unneccessary probing) is
+    solved. Fixes: NB#34017
+
+ -- Kuisma Salonen <kuisma.salonen@nokia.com>  Fri,  7 Jul 2006 17:30:42 +0300
+
+hildon-fm (1.2-2) unstable; urgency=low
+
+  * (This is fixed changelog entry, otherwise same as 1.2-1.)
+  * Added support for multiple Bluetooth devices.
+  * Added some missing license texts and fixed some white space.
+  * Fixed some localised strings. Fixes: NB#33233
+  * Added missing if statement. Fixes: NB#33126, NB#33391, NB#27008
+  * Fixed too persistent Updating banner when deleting files from Gateway.
+  * Now moving selection to Gateway before trying to connect to it.
+    Fixes: NB#29953
+  * Fixed names of memory cards when the localised name is used.
+    Fixes: NB#31299, NB#32411
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 27 Jun 2006 16:38:32 +0300
+
+hildon-fm (1.1-1) unstable; urgency=low
+
+  * Applied column headers patch (after some hand editing) from Kuisma Salonen
+    (N#25258).
+  * Added libossomime-dev as dependency to hildon-fm-dev.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 15 Jun 2006 12:26:06 +0300
+
+hildon-fm (1.0-2) unstable; urgency=low
+
+  * Not installing *.la files anymore (N#31154).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 30 May 2006 14:50:44 +0300
+
+hildon-fm (1.0-1) unstable; urgency=low
+
+  * Made branch to trunk and maintenance branch.
+  * Major refactoring of code, and initial UPnP/AV support.
+  * Corrected sfil_ni_operation_failed to sfil_ib_create_folder_not_allowed
+    (N#29064).
+  * Some white space & indentation fixes.
+  * Fixed small UI glitch ('(no notes)') (N#22670).
+  * Now showing correct icon while generating thumbnail for images (N#29799).
+    (This introduced libossomime dependency.)
+  * Added hildon_file_chooser_dialog_focus_to_input for special selection
+    needs (N#28539).
+  * Fixed unparenting problem in file selection finalisation (N#28074).
+  * Fixed reporting of file size in the details dialog (N#30373, N#30380).
+  * Fixed linking to libossomime library (N#30315).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 29 May 2006 17:46:43 +0300
+
+hildon-fm (0.22-1) unstable; urgency=low
+
+  * Made rendering optimisation allowed by fixed bug 22807.
+  * Fixed domain for file_ib_name_too_long.
+  * Added support for another memory card.
+  * Some white space fixes here and there.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Sat, 06 May 2006 22:19:12 +0300
+
+hildon-fm (0.21-1) unstable; urgency=low
+
+  * Backported hildon_file_system_info_async_new() and
+    hildon_file_system_info_async_cancel() to enable easier moving to
+    the new asyncronous API.
+  * Added two unit tests for the asyncronous API.
+  * hildon-fm-dev is for all architecture (N#27025).
+  * hildon-fm-test is for all architecture (N#27026).
+  * Lintian fixes.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 26 Apr 2006 15:13:55 +0300
+
+hildon-fm (0.20-1) unstable; urgency=low
+
+  * Packaging fixes to appease Lintian.
+  * Added thumb instruction support (N#26673).
+  * Added movable separator (GtkHPaned) to file selection (N#24207).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Sat, 22 Apr 2006 17:51:31 +0300
+
+hildon-fm (0.19-1) unstable; urgency=low
+
+  * Added dbus_connection_ref() to match the dbus_connection_unref(),
+    fixes a crash (N#25650).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 12 Apr 2006 18:56:48 +0300
+
+hildon-fm (0.18-1) unstable; urgency=low
+
+  * Fixed several UI string issues (N#12997, N#23288, N#24520, N#25076,
+    N#25953, N#25964, N#26024).
+  * Added hildon-file-common-private.h for common definitions.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 11 Apr 2006 14:53:44 +0300
+
+hildon-fm (0.17-1) unstable; urgency=low
+
+  * Now using new Connectivity GConf API (N#25139).
+  * Fixed the updating infobanner.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 03 Apr 2006 15:03:26 +0300
+
+hildon-fm (0.16-1) unstable; urgency=low
+
+  * Replaced some asserts with proper run-time error checking.
+  * Fixed DBus porting bugs (N#22848).
+  * Fixed dependency to l10n packages.
+  * Fixed logical strings to be in lower case.
+  * Added a hack for the UI string bug.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 22 Mar 2006 16:04:47 +0200
+
+hildon-fm (0.15-2) unstable; urgency=low
+
+  * Added build dependency to hildon-libs-dev >= 0.12.0.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 23 Feb 2006 14:26:40 +0200
+
+hildon-fm (0.15-1) unstable; urgency=low
+
+    Luc Pionchon:
+  * Moved hildon-file-details-dialog from hildon-libs to hildon-fm.
+  * debian/control: removed dependency on hildon-lgpl
+  * debian/control: updated dependency on hildon-libs to 0.12.0
+
+    Kimmo:
+  * Applied Gdk thread locking code patch from maintenance branch.
+  * Applied a patch from Murray Cumming (M#182).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 22 Feb 2006 15:52:01 +0200
+
+hildon-fm (0.13-1) unstable; urgency=low
+
+  * Using hildon_gtk_file_chooser_install_properties instead of private
+    _gtk_file_chooser_install_properties and hildon_gtk_file_system_create
+    instead of _gtk_file_system_create (N#22558).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 02 Feb 2006 17:54:12 +0200
+
+hildon-fm (0.12-1) unstable; urgency=low
+
+  * Applied quite big patch for minor drag and drop bug (N#15006).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 30 Jan 2006 16:54:48 +0200
+
+hildon-fm (0.11-1) unstable; urgency=low
+
+  * Changed package maintainer.
+  * New maintainer -> more minimalist version numbering :P
+  * Bug fixes from maintenance branch: N#21746, N#22158.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 25 Jan 2006 16:04:44 +0200
+
+hildon-fm (0.10.0-2+svn) unstable; urgency=low
+
+  * N#19820 Memory leaks in the file selector dialog and underlying components
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Thu, 12 Jan 2006 00:48:13 +0200
+
+hildon-fm (0.10.0-2) unstable; urgency=low
+
+  * Removed version number from the mce-dev build dependency, so that
+    the mce-dummy package works (bug M#86).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 05 Jan 2006 18:01:31 +0200
+
+hildon-fm (0.10.0-1) unstable; urgency=low
+
+  * Port to dbus >= 0.50
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Wed, 21 Dec 2005 15:18:22 +0200
+
+hildon-fm (0.9.47-1) unstable; urgency=low
+
+  * fixes
+    N#20202 Dragging several hundred files renders the device temporarily unusable
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Tue,  8 Nov 2005 15:25:47 +0200
+
+hildon-fm (0.9.46-1) unstable; urgency=low
+
+  * fixes
+    N#20755 Modifications to GtkTreeModels cause File selector to load much more content than intended.	
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Thu,  3 Nov 2005 19:54:59 +0200
+
+hildon-fm (0.9.45-1) unstable; urgency=low
+
+  * fixes
+    N#20341 hildon_file_system_model_autoname_uri doesn't work properly for names having numbers.
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Mon, 31 Oct 2005 16:12:13 +0200
+
+hildon-fm (0.9.44-1) unstable; urgency=low
+
+  * fixes
+    N#19698 File dialog doesn't free everything it has allocated/cached
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Wed,  5 Oct 2005 17:37:26 +0300
+
+hildon-fm (0.9.43-1) unstable; urgency=low
+
+  * fixes,
+    N#19820 Memory leaks in the file selector dialog and underlying components
+    N#19311 Save dialog sets text selection twice
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Wed,  5 Oct 2005 11:31:10 +0300
+
+hildon-fm (0.9.42-1) unstable; urgency=low
+
+  * fixes
+    N#16169 File dialog shows "Updating" for several minutes although
+    directory doesn't have any files matching the mime-type requested
+    by the application (but 100 others).
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Mon, 26 Sep 2005 15:55:32 +0300
+
+hildon-fm (0.9.41-1) unstable; urgency=low
+
+  * fixes
+    N#17314 (related to) - first emit the row_deleted signal, than actually delete the node from the tree.
+    N#17823 Remove trailing spaces from MMC name.
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Thu, 15 Sep 2005 16:47:50 +0300
+
+hildon-fm (0.9.40-1) unstable; urgency=low
+
+  * Bug fixed:
+    N#19145: memory leak
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Wed, 14 Sep 2005 12:22:46 +0300
+
+hildon-fm (0.9.39-1) unstable; urgency=low
+
+  * Bugs fixed:
+    N#14586 (improvements to previous fixes) update gateway content when
+                                             needed.
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Fri,  9 Sep 2005 17:20:05 +0300
+
+hildon-fm (0.9.38-1) unstable; urgency=low
+
+  * fixes
+    N#16092  Filetree doesn't use singleton mime-type icons, but keeps
+             multiple copies of them in memory.
+
+    N#18253  Phone icon is not dimmed (in file tree) when the phone
+             does not support OBEX. 
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Fri,  9 Sep 2005 12:57:41 +0300
+
+hildon-fm (0.9.37-2) unstable; urgency=low
+
+  * updated dependency on GTK
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Wed,  7 Sep 2005 18:06:18 +0300
+
+hildon-fm (0.9.37-1) unstable; urgency=low
+
+  * improvement: Show feedback (infoprint banner) to user during blocking
+    calls
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Wed,  7 Sep 2005 15:43:55 +0300
+
+hildon-fm (0.9.36-1) unstable; urgency=low
+
+  * Bugs fixed:
+    16151: Filetree doesn't limit the memory it can consume in anyway which
+           can prevent usage of several programs
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Tue, 30 Aug 2005 19:08:56 +0300
+
+hildon-fm (0.9.35-1) unstable; urgency=low
+
+  * Bugs fixed:
+    14585: No error notification when connecting phone and BT is turned off
+    14586: Incorrect behaviour in File Tree when BT is turned off
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon, 22 Aug 2005 17:58:41 +0300
+
+hildon-fm (0.9.34-2) unstable; urgency=low
+
+  * debian/control: Remove extra Depends: line that's breaking dependencies.
+  * Bugs fixed:
+    17556: File selection and File manager has logical id's for folder and
+           file names
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu, 18 Aug 2005 11:42:54 +0300
+
+hildon-fm (0.9.34-1) unstable; urgency=low
+
+  * Bugs fixed:
+    15509: MMC name is not displayed in Fileselection widget
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed, 17 Aug 2005 17:05:36 +0300
+
+hildon-fm (0.9.33-1) unstable; urgency=low
+
+  * Bugs fixed:
+    13795: HildonFileChooserDialog: handle_folder_popup may show improper
+           infoprints
+    15806: 'hildon_file_selection_select_path' API does not select the
+           multiple items
+    16986: add hildon_file_system_info_get_icon_at_size or equivalent
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed, 17 Aug 2005 16:27:30 +0300
+
+hildon-fm (0.9.24-3) unstable; urgency=low
+
+  * debian/control:
+  * debian/rules: remove l10n packages, add Depends: Depends:
+    hildon-fm-l10n-3.0-engb | hildon-fm-l10n-3.0-english
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Tue, 16 Aug 2005 17:14:25 +0300
+
+hildon-fm (0.9.24-2) unstable; urgency=low
+
+  * Maemo dev release
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Mon, 27 Jun 2005 17:39:24 +0300
+

@@ -1,0 +1,4460 @@
+2010-08-30  Alberto Garcia  <agarcia@igalia.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c:
+	Fixes: NB#176119: HildonFileChooser shows no confirmation dialog
+
+	* debian/changelog: Update to 1:2.28.21
+
+2010-06-07  Cosimo Alfarano <cosimo.alfarano@collabora.co.uk>
+	Apply a fix by pasztory.
+
+	* debian/compat: added
+	* debian/control: added libhildonfm2-doc package
+	* debian/libhildonfm2-dbg.install: deleted
+	* debian/libhildonfm2-dev.install: removed docs
+	* debian/libhildonfm2-dev.links: deleted
+	* debian/libhildonfm2-doc.install: added
+	* debian/libhildonfm2-doc.links: added
+	* debian/rules: updated
+
+	Documentation package added, gtk-doc moved from -dev package.
+
+	Fixes: NB#122401
+
+2010-06-07  Cosimo Alfarano <cosimo.alfarano@collabora.co.uk>
+	* hildon-fm/hildon-file-details-dialog.c
+	(hildon_file_details_dialog_class_init):
+	Added deprecation notice to tab related properties.
+
+	Fixes: NB#119302
+
+2010-06-07  Cosimo Alfarano <cosimo.alfarano@collabora.co.uk>
+	Apply fix r41635 by pasztory which improves Documentation a tiny bit.
+
+	Fixes: NB#119009
+
+2010-02-19  Thomas Thurman  <thomas.thurman@collabora.co.uk>
+	* hildon-fm/hildon-file-system-model.c:
+	Fixes: NB#104238 Always check for duplicates when new files are added
+
+2009-12-10  Alban Crequy  <alban.crequy@collabora.co.uk>
+	* hildon-fm/hildon-file-chooser-dialog.c:
+	Fix a use-after-free introduced in 2.28.10
+
+2009-12-10  Alban Crequy  <alban.crequy@collabora.co.uk>
+	* hildon-fm/hildon-file-system-model.c:
+	Fixes: NB#140239 Uses album art
+
+2009-08-17  Akos PASZTORY  <akos.pasztory@d\igia.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c
+	(hildon_file_chooser_update_path_button):
+	Function rewritten: saner and leak-free.
+
+	Fixes: NB#131452
+
+2009-11-18  Alban Crequy  <alban.crequy@collabora.co.uk>
+	* hildon-fm/hildon-file-system-settings.c:
+
+	Fixes: NB#145262 FM hangs if WLAn is disconnected while copying
+	files from shared media to device
+
+2009-11-10  Alban Crequy  <alban.crequy@collabora.co.uk>
+	* hildon-fm/hildon-file-system-voldev.c:
+	icon for the internal memory card
+
+	Fixes: NB#140752 icon for the internal memory card
+
+2009-11-10  Alban Crequy  <alban.crequy@collabora.co.uk>
+	* hildon-fm/hildon-file-system-model.c:
+
+	Fixes: NB#145572 bad free of model_node->info when the file changes
+	Fixes partially NB#140752 Name of the memory card
+
+2009-11-06  Alban Crequy  <alban.crequy@collabora.co.uk>
+
+	* hildon-fm/hildon-file-system-model.c:
+
+	Fixes: NB#145572, Crash on double free of model_node->info
+
+2009-08-17 Yang Li <yang.li@d\igia.com>
+        
+        * hildon-fm/hildon-file-system-model.h:
+	* hildon-fm/hildon-file-selection.c:
+	* hildon-fm/hildon-file-system-model.c:
+	* hildon-fm/hildon-file-system-root.c:
+	* hildon-fm/hildon-file-system-voldev.c:
+
+	Fixes: NB#134301, Multiple memory leaks
+
+2009-11-02  Alban Crequy  <alban.crequy@collabora.co.uk>
+
+	* hildon-fm/hildon-file-system-model.c:
+	Cache issues with displayed text of nodes when an external MMC is
+	renamed.
+
+	Fixes: NB#144071
+
+2009-08-13  Akos PASZTORY  <akos.pasztory@d\igia.com>
+
+	* hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_get_value):
+	In case tracker_get_metadata() returned an error a premature
+	`break' statement prevented the output GValue to be set.
+
+2009-09-21  Akos PASZTORY  <akos.pasztory@d\igia.com>
+
+	* hildon-fm/hildon-file-common-private.h:
+	Added enums for the new, private columns.
+	* hildon-fm/hildon-file-selection.c (thumbnail_cell_data_func),
+	(hildon_file_selection_create_thumbnail_view):
+	Set up the treeview renderers to use model columns as attributes.
+	Not possible with to do with the "sensitive" property, so that's
+	in the thumbnail_cell_data_func().
+	* hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_get_n_columns),
+	(hildon_file_system_model_get_column_type), (is_node_loaded),
+	(model_node_is_folder), (model_node_invalidate_display_props),
+	(invalidate_display_props), (get_date_string),
+	(generate_display_text_and_attrs),
+	(hildon_file_system_model_get_value),
+	(hildon_file_system_model_init),
+	(hildon_file_system_model_dispose),
+	(hildon_file_system_model_set_property):
+	Cache displayed text (and attributes) of nodes, accessible via two
+	new, private columns of the model.  Handles change of theme or
+	time-format.
+
+	Fixes: NB#130125
+
+2009-08-14  Akos PASZTORY  <akos.pasztory@d\igia.com>
+
+	* hildon-fm/hildon-file-details-dialog.c
+	(hildon_format_file_size_for_display):
+	Bugfix: give a float because the format string uses "%f".
+
+2009-07-30  Akos Pasztory  <akos.pasztory@d\igia.com>
+
+	Released 2.28
+
+2009-07-28  Richard Sun  <richard.sun@nokia.com>
+
+	* hildon-fm/hildon-file-system-private.c:
+	- use g_get_user_special_dir to retrieve safe folder. 
+	* Fixes: Partial fixes for bug #127506
+
+2009-07-28  Akos PASZTORY  <akos.pasztory@d\igia.com>
+
+	* hildon-fm/hildon-file-system-model.c
+	(rescan_local_device_folders): MyDocs may contain non-special
+	locations, don't try to emit the ::rescan signal on those.
+
+2009-07-27  Akos PASZTORY  <akos.pasztory@d\igia.com>
+
+	* Moved some code from _init to _constructor, it wanted to use
+	  properties which are not yet set in _init.
+	* Added a check for NULL mime_type in thumbnail request part, not
+	  everything has a mime_type.
+	* Commented out creation of obex:// and smb:// nodes.  They are
+	  not required and only give bogus warnings.
+
+	  Fixes: NB#129173
+
+2009-07-27  Mikko Tuhkanen  <mikko.tuhkanen@d\igia.com>
+
+	Released 2.27
+	Fixes: NB#128060 Crash observed while opening the copied folder in grid view from filter
+		by folder sub dialog.
+	Fixes: NB#101232 Upnp shared folders are not updated to FM when changing from Cellular
+		NW to WLAN
+
+2009-07-27  Akos PASZTORY  <akos.pasztory@d\igia.com>
+
+	* Ref the model when passing a node it to libhildon-thumbnail.
+	  Fixes: NB#128060
+
+2009-07-22 Mikko Tuhkanen <mikko.tuhkanen@d\igia.com>
+        
+    * hildon-fm/hildon-file-system-settings.c:
+	Fixes: NB#101232 Upnp shared folders are not updated to FM when changing from Cellular
+	NW to WLAN
+
+2009-07-21  Akos PASZTORY  <akos.pasztory@d\igia.com>
+
+	Released 2.26
+
+2009-07-21  Akos PASZTORY  <akos.pasztory@d\igia.com>
+
+	* Fixed height of 'new folder' dialog's entry field.
+	  Fixes: NB#118391
+	* Removed unnecessary gtk_widget_set_size_request() for folder-up
+  	  button.
+	  Fixes: NB#118110
+
+2009-07-15  Akos PASZTORY <akos.pasztory@d\igia.com>
+
+	Released 2.25
+
+2009-07-15  Akos PASZTORY <akos.pasztory@d\igia.com>
+
+        * Unify logging methods and disallow debug output by default.
+	  Added `--enable-debug' to ./configure.
+			    
+2009-07-14 Yang Li <yang.li@d\igia.com>
+
+	Released 2.24        
+	Fixes: NB#121696 folder contents are not showing when back cover has been removed
+
+2009-07-14 Yang Li <yang.li@d\igia.com>
+        
+        * hildon-fm/hildon-file-system-model.h:
+        * hildon-fm/hildon-file-system-model.c:
+	* hildon-fm/hildon-file-selection.c:
+	Fixes: NB#121696 folder contents are not showing when back cover has been removed
+
+2009-07-14  Valentin Rabinovich <valentin.rabinovich@d\igia.com>
+
+	Released 2.23
+	* hildon-fm/hildon-file-system-model.c: Make all thumbnails for image files of the same size.
+	Remove obsolete cache queue. Display "unknown file" icon for broken images.
+	* hildon-fm/hildon-file-system-model.c: Change icon size to 48
+	Fixes: NB#126642 Icons in File manager look scaled
+
+2009-07-09  Valentin Rabinovich <valentin.rabinovich@d\igia.com>
+
+	Released 2.22
+	* hildon-fm/hildon-file-system-model.c:
+	* hildon-fm/hildon-file-selection.c:
+	* hildon-fm/hildon-file-chooser-dialog.c:
+	* hildon-fm/hildon-file-system-smb.c: Plugged 6 memory leaks.
+	Fixes: NB#118293 Memory leaks in select folder filechooser
+	Patch by Shilov Alexey.
+
+2009-07-03  Mikko Tuhkanen <mikko.tuhkanen@d\igia.com>
+	Released 2.21
+	Updated: Expand tree view in idle handler, before setting the cursor.
+	  Most probably the tree view doesn't contain the new row at the time 
+	  of the row-inserted signal handler call. 
+	Fixes: NB#100456 - After creation new folder isn't shown in the Folder path button
+	Fixes: NB#123976 - After creation nested folders with the same name everything is blocked
+	Updated: Keep the ID of the cursor idle handler and remove it when finalizing.
+	Updated: ref_sink the file systems and unref them instead of destroying them as widgets are
+	  floating if	they are not packed in a container.
+	Updated: No need to copy the volume path since it's already newly allocated.
+	Updated: Remove libxi-dev and libxt-dev dependencies.
+	Fixes: NB#125570 - Not able to format internal memory
+	Updated: initialize upnp value (so that the filter function always returns the expected results,
+	  which was not the case before and leading to crashes),
+	Updated: only attempt scrolling if the model actually contains nodes
+	Updated: Implement get_folder()	method that will convert any URI passed in to a path.
+	  GtkFileSystemUnix expects us to pass in only paths, not URIs.
+	Updated: don't make the test program crash, but properly print the error.
+	Updated: (hildon_file_details_dialog_[gs]et_property): Remove the implementation
+	  of show-type-icon, it actually serves no purpose anymore, but probably cannot be removed in a
+	  compatible way.
+	Updated: Add an	additional special case to fix No files/ folders in scratchbox for good.
+
+2009-07-03  Valentin Rabinovich <valentin.rabinovich@d\igia.com>
+
+	* hildon-fm/hildon-file-selection.c (set_cursor_idle_handler): 
+	Expand tree view in idle handler, before setting the cursor.
+	Most probably the tree view doesn't contain the new row at the time 
+	of the row-inserted signal handler call.
+	Fixes: NB#100456 After creation new folder isn't shown in the Folder path button
+	Fixes: NB#123976 After creation nested folders with the same name everything is blocked
+	
+2009-07-01  Kristian Rietveld  <kris@lanedo.com>
+
+	* tests/check-hildonfm-file-selection.c
+	(fx_setup_default_hildonfm_file_selection),
+	(fx_teardown_default_hildonfm_file_selection): Keep the ID of the cursor
+	idle handler and remove it when finalizing.
+
+2009-07-01  Kristian Rietveld  <kris@lanedo.com>
+
+	* tests/check-hildonfm-file-selection.c
+	(fx_setup_default_hildonfm_file_selection),
+	(fx_teardown_default_hildonfm_file_selection): ref_sink the file systems
+	and unref them instead of destroying them as widgets are floating if
+	they are not packed in a container.
+
+2009-07-01  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/hildon-file-system-local-device.c
+	(hildon_file_system_local_device_get_extra_info): No need to copy the
+	volume path since it's already newly allocated.
+
+2009-07-01  Christian Dywan  <christian@lanedo.com>
+
+	* debian/control: Remove libxi-dev and libxt-dev dependencies.
+
+2009-06-30 Yang Li <yang.li@d\igia.com>
+        
+        * hildon-fm/hildon-file-system-local-device.c:
+	Fixes: NB#125570 Not able to format internal memory
+	* hildon-fm/hildon-file-selection.c:
+	no device string under local device icon
+	refresh the view filter after mounting and umounting
+
+2009-06-29  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_files_added): Don't let the file monitor print
+	a message for each file, it's minimally useful and clutters the console.
+
+2009-06-29  Kristian Rietveld  <kris@lanedo.com>
+
+	* hildon-fm/hildon-file-selection.c (navigation_pane_filter_func):
+	initialize upnp value (so that the filter function always returns
+	the expected results, which was not the case before and leading
+	to crashes),
+	(hildon_file_selection_close_banner): only attempt scrolling
+	if the model actually contains nodes,
+	(hildon_file_selection_set_cursor_stubbornly): only attempt
+	if the model actually contains nodes.
+
+2009-06-29  Kristian Rietveld  <kris@lanedo.com>
+
+	* hildon-fm/hildon-file-system-local-device.c
+	(hildon_file_system_local_device_get_folder): Implement get_folder()
+	method that will convert any URI passed in to a path.
+	GtkFileSystemUnix expects us to pass in only paths, not URIs.
+
+2009-06-29  Kristian Rietveld  <kris@lanedo.com>
+
+	* tests/check-hildonfm-file-selection.c
+	(test_file_selection_select_uri): don't make the test program
+	crash, but properly print the error.
+
+2009-06-29  Kristian Rietveld  <kris@lanedo.com>
+
+	* hildon-fm/hildon-file-details-dialog.c
+	(hildon_file_details_dialog_[gs]et_property): Remove the implementation
+	of show-type-icon, it actually serves no purpose anymore, but probably
+	cannot be removed in a compatible way.
+
+2009-06-29  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/hildon-file-selection.c (hildon_file_selection_init): Add an
+	additional special case to fix No files/ folders in scratchbox for good.
+
+2009-06-26  Mikko Tuhkanen <mikko.tuhkanen@d\igia.com>
+	Released 2.20
+	Split the local device visibility handling again so that we have a callback
+	for mounted and unmounted each, and check the device URI more carefully
+	as it turns out the previous changes were based on wrong assumptions.
+	Fixes NB#123719 HildonFileChooserDialog blocks other windows in multi stack application
+	Fixes: NB#116136 POSIX, Incorrect date format in details dialog.
+	Merge the handling of the visibility of the local device into one function.
+	Fixes: NB#122980 Folder can not be changed in 'Location' field when mmc card was removed
+	Obtain the volume from the path via GnomeVfs instead of iterating over all devices.
+	Revise navigation_pane_filter_func to be more redable.
+
+2009-06-25  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/hildon-file-selection.c
+	(update_local_device_visibility),
+	(hildon_file_selection_volume_mounted_cb),
+	(hildon_file_selection_volume_unmounted_cb),
+	(hildon_file_selection_init), (hildon_file_selection_constructor): Split
+	the local device visibility handling again so that we have a callback
+	for mounted and unmounted each, and check the device URI more carefully
+	as it turns out the previous changes were based on wrong assumptions.
+
+2009-06-25  Valentin Rabinovich <valentin.rabinovich@d\igia.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c: Introduce new property "sync-mode"
+	Sync mode uses gtk_dialog_run to show sub-dialogs, async mode uses gtk_widget_show
+	Patch by Vanhoja Pekka.
+	Fixes NB#123719 HildonFileChooserDialog blocks other windows in multi stack application
+
+2009-06-25  Mikko Tuhkanen <mikko.tuhkanen@d\igia.com>
+
+	* hildon-fm/hildon-file-details-dialog.c:
+	Fixes: NB#116136 POSIX, Incorrect date format in details dialog.
+
+2009-06-23  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/hildon-file-selection.c
+	(update_local_device_visibility), (hildon_file_selection_init),
+	(hildon_file_selection_constructor),
+	(hildon_file_selection_create_sort_model): Merge the handling of the
+	visibility of the local device into one function.
+
+2009-06-23 Yang Li <yang.li@d\igia.com>
+        
+        * hildon-fm/hildon-file-chooser-dialog.c:
+	Fixes: NB#122980 Folder can not be changed in 'Location' field when mmc card was removed
+
+2009-06-19  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/hildon-file-selection.c (find_volume): Obtain the volume
+	from the path via GnomeVfs instead of iterating over all devices.
+
+2009-06-19  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/hildon-file-selection.c (navigation_pane_filter_func):
+	Revise navigation_pane_filter_func to be more redable.
+
+2009-06-18  Mikko Tuhkanen <mikko.tuhkanen@d\igia.com>
+	Released 2.19
+	Fixes: NB#122325 Applications crash while "Rename" or "Format" else
+	  "Mass storage" operation is done on Memory card while an Hildon-fm
+	  dialog open in the application.
+	get the local device uri dynamically
+	Fixes: NB#113020 /dev/mmcblk1p1 is shown below memory card in UI
+	Check if 'uri' is set and use MYDOCSDIR.
+	Store tracker client in the private.
+	Fixes: NB#112668  No files/folders displayed even when images are present
+
+2009-06-17  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/hildon-file-selection.c
+	(hildon_file_selection_set_cursor_stubbornly): Don't re-declare "p",
+	else we may end up working with invalid memory.
+	Patch by Ramprakash Jelari Thinakaran.
+	Fixes: NB#122325 Applications crash while "Rename" or "Format" else
+	"Mass storage" operation is done on Memory card while an Hildon-fm
+	dialog open in the application.
+
+2009-06-17 Yang Li <yang.li@d\igia.com>
+        
+        * hildon-fm/hildon-file-selection.c:
+	get the local device uri dynamically
+
+2009-06-15  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/hildon-file-selection.c (thumbnail_data_func):
+	Check for /dev/mmcblk1 which is the common prefix of external memory.
+	Patch by Ramprakash Jelari Thinakaran.
+	Fixes: NB#113020 /dev/mmcblk1p1 is shown below memory card in UI
+
+2009-06-15  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/hildon-file-selection.c (navigation_pane_filter_func),
+	(filter_func): Check if 'uri' is set and use MYDOCSDIR.
+
+2009-06-12  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_get_value),
+	(hildon_file_system_model_init): Store tracker client in the private.
+	Patch by Ramprakash Jelari Thinakaran.
+
+2009-06-11 Yang Li <yang.li@d\igia.com>
+        
+        * hildon-fm/hildon-file-chooser-dialog.c:
+	Fixes: NB#112668  No files/folders displayed even when images are present
+
+2009-06-10  Mikko Tuhkanen <mikko.tuhkanen@d\igia.com>
+	Released 2.18
+	Turn bluetooth related criticals to warnings.
+	Adjust GtkFileSystem deprecations.
+	Deprecate any API using GtkFileSystem.
+
+2009-06-10  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/hildon-file-system-settings.c (mode_received),
+	(btadapter_properties_received), (btdefault_adapter_received): Turn
+	bluetooth related criticals to warnings.
+
+2009-06-10  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c:
+	* hildon-fm/hildon-file-system-model.h:
+	* hildon-fm/hildon-file-system-special-location.h:
+	* hildon-fm/hildon-fm1-compat.h: Adjust GtkFileSystem deprecations.
+
+2009-06-08  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/hildon-file-system-common.h:
+	* hildon-fm/hildon-file-system-model.h:
+	* hildon-fm/hildon-file-system-special-location.h: Deprecate any API
+	using GtkFileSystem.
+
+2009-06-05  Valentin Rabinovich <valentin.rabinovich@d\igia.com>
+
+	Released 2.17
+	Fixes: NB#121006 HildonFileChooserDialog using deprecated GTK_CHECK* macros
+	Bump required Gtk to 2.14.	
+	Fixes: NB#113020 /dev/mmcblk1p1 is shown below memory card in UI
+	Fixes: NB#115427 Unable to rename external memory card
+	Fixes: NB#111630 File manager- "Name already in use for item in root folder" 
+	sfil_ib_card_name_in_use_for_file is not shown and mmc gets corrupted
+	Fixes: NB#117480 Unable to format the external memory card.
+	Reopen NB#113020 /dev/mmcblk1p1 is shown below memory card in UI, because of the cause of regression
+	Fixes: NB#112030 File size units in File manager are in English
+	for all languages.
+	Add user-dirs.defaults.in	
+        Fixes: NB#119442 NXX root folder is still shown in mass storage mode after reopening file manager
+        Fixes: NB#119418 read only property is visible in details dialog of writable file
+	Fixes: NB#100456 After creation new folder isn't shown in the Folder
+	path button
+
+2009-06-05  Christian Dywan  <christian@lanedo.com>
+
+	* tests/Makefile.am: Add libhildon flags to unit tests.
+
+2009-06-05  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.h:
+	* hildon-fm/hildon-file-selection.h: Fix a typo in the cast check change.
+
+2009-06-05  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.h:
+	* hildon-fm/hildon-file-selection.h: Use GType cast checks instead of
+	the deprecated GtkType cast checks.
+	Fixes: NB#121006 HildonFileChooserDialog using deprecated GTK_CHECK* macros
+
+2009-06-05  Christian Dywan  <christian@lanedo.com>
+
+	* configure.ac:
+	* debian/control:
+	* hildon-fm/Makefile.am: Bump required Gtk to 2.14.
+
+2009-06-05  Claudio Saavedra  <csaavedra@igalia.com>
+
+	* hildon-fm/Makefile.am: Install gtkfilesystem/gtkfilesystem.h
+
+2009-06-04  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/hildon-file-selection.c (thumbnail_data_func): Don't show
+	extra info below the root memory card folder.
+	Patch by Ramprakash Jelari Thinakaran.
+	Fixes: NB#113020 /dev/mmcblk1p1 is shown below memory card in UI
+
+2009-06-03 Yang Li <yang.li@d\igia.com>
+        
+        * hildon-fm/hildon-file-system-voldev.c:
+	Fixes: NB#115427 Unable to rename external memory card
+	       NB#111630 File manager- "Name already in use for item in root folder" 
+	                 �sfil_ib_card_name_in_use_for_file� is not shown and mmc gets corrupted
+	       NB#117480 Unable to format the external memory card.
+        * hildon-fm/hildon-file-selection.c:
+	delete some debugging code
+	Reopen NB#113020 /dev/mmcblk1p1 is shown below memory card in UI, because of the cause of regression
+	
+2009-06-03  Mikko Tuhkanen <mikko.tuhkanen@d\igia.com>
+
+	* hildon-fm/hildon-file-details-dialog.h:
+	* hildon-fm/hildon-file-details-dialog.c:
+	* hildon-fm/hildon-file-system-storage-dialog.c:
+	* hildon-fm/hildon-file-selection.c:
+	Fixes: NB#112030 File size units in File manager are in English
+	for all languages.
+
+2009-06-02  Christian Dywan  <christian@lanedo.com>
+
+	* Makefile.am:
+	* configure.ac:
+	* data/user-dirs.defaults.in: Add user-dirs.defaults.in to the build
+	which contains special directory, aka safe folder defaults.
+
+2009-06-02 Yang Li <yang.li@d\igia.com>
+        
+        * hildon-fm/hildon-file-selection.c:
+        Fixes: NB#119442 NXX root folder is still shown in mass storage mode after reopening file manager
+
+2009-05-28 Yang Li <yang.li@d\igia.com>
+        
+        * hildon-fm/hildon-file-details-dialog.c:
+        Fixes: NB#119418 read only property is visible in details dialog of writable file
+
+2009-05-28  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/hildon-file-system-settings.c
+	(set_bt_name_from_message), (set_flight_mode_from_message),
+	(mode_received), (btadapter_properties_received),
+	(btdefault_adapter_received),
+	(hildon_file_system_settings_setup_dbus), (delayed_init): Use glib
+	functions to output error messages instead of custom MACROS.
+
+2009-05-28  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/hildon-file-system-info.c
+	(hildon_file_system_info_async_new): Remove hardcoded backend name.
+
+2009-05-28  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c:
+	* hildon-fm/hildon-file-selection.c
+	(_hildon_file_selection_set_current_folder_path),
+	(hildon_file_selection_row_inserted),
+	(hildon_file_selection_move_cursor_to_uri),
+	(hildon_file_selection_select_uri_beforehand):
+	* hildon-fm/hildon-file-selection.h:
+	* hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_files_added): Introduce the new function
+	hildon_file_selection_select_uri_beforehand which supersedes
+	hildon_file_selection_move_cursor_to_uri. The new function can directly
+	navigate to a folder even if it doesn't exist in the model when calling.
+	Part of the change is replacing a few debugging macros with g_message
+	and g_critical to make them visible in the console which makes
+	testing easier.
+	Fixes: NB#100456 After creation new folder isn't shown in the Folder
+	path button
+
+2009-05-26  Valentin Rabinovich <valentin.rabinovich@d\igia.com>
+
+	Released 2.16
+	Include an internal copy of GtkFileSystem from Gtk 2.12 which was
+	removed with Gtk2.14, but we still needed it in our code until we
+	migrate to GIO, work done by Michael Natterer.
+	Fixes: NB#112668 No files/folders displayed even when images are present
+	Fixes: NB#104228 Files are seen in Move to dialog
+	Fixes: NB#112198 Browser- Behavior of "My bookmarks" folder
+	Fixes: NB#101205 Internal memory card folders are not removed from UI after selecting mass storage mode
+	Fixes: NB#111929 Internal memory card folders are not refreshed immediately after disconnecting mass storage
+	Fixes: NB#112230 Internal mmc contents are accesable from device in mass storage mode
+	Fixes: NB#111518 User is allowed to create files\folders in Documents folder when mass storage mode is active
+
+2009-05-26  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c: Remove dead code from the file
+	chooser to improve readibility.
+
+2009-05-26  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c: Remove wrong G_OBJECT casts,
+	use gtk_dialog_response and remove line breaks to improve readability.
+
+2009-05-20  Christian Dywan  <christian@lanedo.com>
+
+	* configure.ac:
+	* debian/rules:
+	* hildon-fm/Makefile.am:
+	* hildon-fm/gtkfilesystem/Makefile.am:
+	* hildon-fm/gtkfilesystem/gtkfilechooserprivate.h:
+	* hildon-fm/gtkfilesystem/gtkfilechooserutils.c:
+	* hildon-fm/gtkfilesystem/gtkfilechooserutils.h:
+	* hildon-fm/gtkfilesystem/gtkfilesystem.c:
+	* hildon-fm/gtkfilesystem/gtkfilesystem.h:
+	* hildon-fm/gtkfilesystem/gtkfilesystemmodel.c:
+	* hildon-fm/gtkfilesystem/gtkfilesystemmodel.h:
+	* hildon-fm/gtkfilesystem/gtkfilesystemunix.c:
+	* hildon-fm/gtkfilesystem/gtkfilesystemunix.h:
+	Include an internal copy of GtkFileSystem from Gtk 2.12 which was
+	removed with Gtk2.14, but we still needed it in our code until we
+	migrate to GIO, work done by Michael Natterer.
+	The GtkFileChooserInterface is the one from Gtk 2.14, done by me.
+
+	* hildon-fm/hildon-file-chooser-dialog.c:
+	* hildon-fm/hildon-file-system-common.h:
+	* hildon-fm/hildon-file-system-local-device.c:
+	* hildon-fm/hildon-file-system-root.c:
+	Conditionally use the internal GtkFileSystem with Gtk 2.14, so the code
+	works as it used to with Gtk 2.12 or Gtk 2.14, done by me.
+
+2009-05-20  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_get_value): Disconnect tracker clients.
+
+2009-05-20  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/hildon-file-selection.c (thumbnail_data_func): Don't leak
+	title and author, only fetch these when needed.
+
+2009-05-19 Yang Li <yang.li@d\igia.com>
+	
+	* hildon-fm/hildon-file-chooser-dialog.c:
+	Fix: NB#112668 No files/folders displayed even when images are present
+	Please explicitly set property "show-files" to TRUE, otherwise it is FALSE by default
+
+2009-05-18 Yang Li <yang.li@d\igia.com>
+	
+	* hildon-fm/hildon-file-system-model.c:
+	* hildon-fm/hildon-file-local-device.c:
+	some refinement on the mass storage, reduce the signals sending and eliminate the warnings
+	give the initial value for show-files property
+	
+2009-05-15  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/hildon-file-selection.c
+	(hildon_file_selection_set_property): Make sure to refilter if the
+	"show-files" property is changed.
+	Patch by Ramprakash Jelari Thinakaran.
+	Fixes: NB#104228 Files are seen in Move to dialog
+	Fixes: NB#112198 Browser- Behavior of "My bookmarks" folder
+
+2009-05-15 Yang Li <yang.li@d\igia.com>
+	
+	* hildon-fm//hildon-file-system-model.c:
+	* hildon-fm//hildon-file-local-device.c:
+	 Fix: NB#101205 Internal memory card folders are not removed from UI after selecting mass storage mode
+	      NB#111929 Internal memory card folders are not refreshed immediately after disconnecting mass storage
+	      NB#112230 Internal mmc contents are accesable from device in mass storage mode
+	      NB#111518 User is allowed to create files\folders in Documents folder when mass storage mode is active
+	 Hide the whole local device and keep the whole file consistent
+
+2009-05-15  Valentin Rabinovich <valentin.rabinovich@d\igia.com>
+
+	Released 2.15
+	Fixes: NB#101205 Internal memory card folders are not removed from UI after selecting mass storage mode
+	Fixes: NB#111929 Internal memory card folders are not refreshed immediately after disconnecting mass storage
+	Fixes: NB#112230 Internal mmc contents are accesable from device in mass storage mode
+	Fixes: NB#116703 libhildonfm2-dev .pc file should require gconf-2.0 and gnome-vfs-2.0
+	Fixes: NB#112198 Browser- Behavior of "My bookmarks" folder
+	Fixes: NB#115680 Memory card icon is shown for the root folder.
+	Fixes: NB#112367 NB#114301 hide the upnp from the file chooser dialogs
+	
+
+2009-05-14 Yang Li <yang.li@d\igia.com>
+	
+	* hildon-fm//hildon-file-system-model.c:
+	* hildon-fm//hildon-file-local-device.c:
+	 Fix: NB#101205 NB#111929, NB#112230 work in mass mode, keep the file system consistent
+	instead of hiding the local device
+
+2009-05-14  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm-2.pc.in: Add GConf and GnomeVfs to package-config file.
+	Patch by Ramprakash Jelari Thinakaran.
+	Fixes: NB#116703 libhildonfm2-dev .pc file should require gconf-2.0 and gnome-vfs-2.0
+
+2009-05-13  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c: Always update the path button.
+	Patch by Ramprakash Jelari Thinakaran.
+	Fixes: NB#112198 Browser- Behavior of "My bookmarks" folder
+
+2009-05-13  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c:
+	* hildon-fm/hildon-file-system-root.c
+	(hildon_file_system_root_init): Assign an icon to HildonFileSystemRoot
+	and remove the special casing in the file chooser dialogue. Also use an
+	icon instead of a thumbnail.
+	Fixes: NB#115680 Memory card icon is shown for the root folder.
+
+2009-05-11 Yang Li <yang.li@d\igia.com>
+	
+	* hildon-fm//hildon-file-chooser-dialog.c:
+	 Fix: NB#112367 NB#114301 hide the upnp from the file chooser dialogs
+	
+2009-05-11  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/hildon-file-details-dialog.c
+	(hildon_file_details_dialog_init): Fix logical detail dialogue identifiers.
+
+2009-05-08  Valentin Rabinovich <valentin.rabinovich@d\igia.com>
+
+	Released 2.14
+	Fixes: NB#108306 Setting property "HildonFileChooserDialog::title"
+	doesn't lead to any consequences.
+	Add a function hildon_file_selection_set_empty_text to customize "No files".
+	Allow adding custom labels with the new hildon_file_details_dialog_add_label_with_value.
+	Fixes: NB#96042 custom fields are missing in the details dialog
+	Fixes: NB#100181 Dialog is not shown when a corrupted memory card is inserted.
+	Fixes: NB#105994 Intellisync :Modest "check_for_location_update" crashed once when 
+	Intellisync account is defined and device is left idle
+	Fixes: NB#111377 browser-6-1335.rcore.lzo crashed
+	Fixes: NB#112659 Crash on connecting and disconnecting usb cable
+
+2009-05-08  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c: Fix a remaining occurence of
+	the same typo.
+
+2009-05-08  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c: Fix a typo that can lead to
+	a crash when opening a file chooser.
+
+2009-05-07  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c: Only set a default window
+	title if it wasn't set before.
+	Fixes: NB#108306 Setting property "HildonFileChooserDialog::title"
+	doesn't lead to any consequences.
+
+2009-05-07  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/hildon-file-selection.c (hildon_file_selection_init),
+	(hildon_file_selection_set_empty_text):
+	* hildon-fm/hildon-file-selection.h: Rename new function
+	hildon_file_selection_set_no_files_string to
+	hildon_file_selection_set_empty_text.
+
+2009-05-06  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/hildon-file-selection.c (hildon_file_selection_init),
+	(hildon_file_selection_set_no_files_string):
+	* hildon-fm/hildon-file-selection.h: Add a function
+	hildon_file_selection_set_no_files_string to customize "No files".
+
+2009-05-06  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/hildon-file-details-dialog.c
+	(hildon_file_details_dialog_init),
+	(hildon_file_details_dialog_set_property),
+	(hildon_file_details_dialog_finalize),
+	(hildon_file_details_dialog_set_file_iter): Remove unused code and
+	wrong G_IS_OBJECT checks which hurt readability with no clear gain.
+
+2009-05-06  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/hildon-file-details-dialog.c
+	(hildon_file_details_dialog_init),
+	(hildon_file_details_dialog_finalize), (hildon_caption_set_value),
+	(hildon_file_details_dialog_set_file_iter),
+	(hildon_file_details_dialog_add_label_with_value):
+	* hildon-fm/hildon-file-details-dialog.h: Allow adding custom labels
+	with the new hildon_file_details_dialog_add_label_with_value. And update
+	the code to use it internally as well.
+	Fixes: NB#96042 custom fields are missing in the details dialog
+
+2009-05-05 Yang Li <yang.li@d\igia.com>
+
+	* hildon-fm/hildon-file-selection.c:
+	Fix: NB#100181, Dialog is not shown when a corrupted memory card is inserted.
+
+2009-05-05  Valentin Rabinovich <valentin.rabinovich@d\igia.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c (hildon_file_chooser_dialog_constructor)
+	(hildon_file_chooser_dialog_destroy): Disconnect row-changed signal when destroying 
+	the dialog
+	Fixes: NB#105994 Intellisync :Modest "check_for_location_update" crashed once when 
+	Intellisync account is defined and device is left idle
+	* hildon-fm/hildon-file-selection.c (content_pane_sort_function),
+	(navigation_pane_sort_function),
+	(hildon_file_selection_create_sort_model): Make sort functions independent of file selection.
+	Model can exist longer than selection.
+	Fixes: NB#111377 browser-6-1335.rcore.lzo crashed
+	Fixes: NB#112659 Crash on connecting and disconnecting usb cable
+
+2009-05-04  Valentin Rabinovich <valentin.rabinovich@d\igia.com>
+
+	Released 2.13
+	Fixes: NB#111439 Modest crashes when attaching files to the editor
+	Fixes: NB#113465 Autonaming folder is not working for folder located
+	directly under device root folder.
+	Fixes: NB#111198 Use progress indicator instead of animation banner
+	Fixes: NB#113020 /dev/mmcblk1p1 is shown below memory card in UI
+	Fixes: NB#110364 libhildonfm2 shouln't depned on osso-gnomevfs-extra
+	
+2009-04-30  Kristian Rietveld  <kris@lanedo.com>
+
+	* hildon-fm/hildon-file-selection.c (filter_func),
+	(thumbnail_data_func): plug two memleaks.
+
+2009-04-29  Valentin Rabinovich <valentin.rabinovich@d\igia.com>
+
+	* hildon-fm/hildon-file-selection.c (hildon_file_selection_row_activated):
+	removed gtk_main_iteration() loop
+	Fixes: NB#111439 Modest crashes when attaching files to the editor
+	
+2009-04-29  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_new_item): Don't depend on determining if
+	a path is absolute, any file:// URI is absolute.
+	Patch by Ramprakash Jelari Thinakaran.
+	Fixes: NB#113465 Autonaming folder is not working for folder located
+	directly under device root folder.
+
+2009-04-29  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/hildon-file-selection.c:
+	* hildon-fm/hildon-file-system-model.c (path_is_readonly): Correct
+	variable declarations to address warnings.
+	Patch by Ramprakash Jelari Thinakaran.
+
+2009-04-28 Yang Li <yang.li@d\igia.com>
+
+	* hildon-fm/hildon-file-selection.c:
+	Fix: NB#111198, Patch from Mox Soini <ext-mox.soini@nokia.com>
+
+2009-04-28  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/Makefile.am: Rename DATA to HEADERS and include headers in
+	SOURCES for proper dependency tracking.
+
+2009-04-28  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/hildon-file-selection.c (filter_func),
+	(hildon_file_selection_set_property),
+	(hildon_file_selection_get_property),
+	(hildon_file_selection_class_init):
+	* hildon-fm/hildon-file-system-model.c (path_is_readonly),
+	(hildon_file_system_model_get_value),
+	(hildon_file_system_model_init):
+	* hildon-fm/hildon-file-system-model.h: Implement show-readonly property
+	in the model. When disabled, readonly files will be hidden.
+
+2009-04-28  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/hildon-file-system-voldev.c
+	(hildon_file_system_voldev_get_extra_info): Don't show volume paths.
+	Patch by Ramprakash Jelari Thinakaran.
+	Fixes: NB#113020 /dev/mmcblk1p1 is shown below memory card in UI
+
+2009-04-27  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/hildon-file-selection.c (thumbnail_data_func): Only show
+	the date/ time for video files, no size.
+
+2009-04-27  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/hildon-file-selection.c (thumbnail_data_func): Only show
+	artist/ title for audio files and make sure the second row is empty
+	if there is no information.
+
+2009-04-24  Valentin Rabinovich <valentin.rabinovich@d\igia.com>
+	
+	* debian/control: removed osso-gnomevfs-extra dependency
+	Fixes: NB#110364 libhildonfm2 shouln't depned on osso-gnomevfs-extra
+	
+2009-04-24  Valentin Rabinovich <valentin.rabinovich@d\igia.com>
+
+	Released 2.12
+	Fixes: NB#109855 Displaying thumbnails in list view in file manager
+	taking long time.
+	Fixes: NB#105117 Size information is presented for image files in
+	content pane
+	Fixes: NB#103061 Thumbnail of replaced image is not updated
+	Fixes: NB#104527 Artist name is not displayed in list view in content pane.
+	Fixes: NB#109118 Reverse sorting taking place in case of Date (newest first) & 
+	Date (oldest first
+	Fixes: NB#109475 Sorting is not working correctly in fm for all option except Name(A-Z)
+	
+2009-04-23  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_get_value): Only request thumbnails for
+	images and sketch files.
+
+2009-04-23  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_get_value): Load already cached thumbnails
+	early without a loading icon/ pixbuf callback.
+	Fixes: NB#109855 Displaying thumbnails in list view in file manager
+	taking long time.
+
+2009-04-23  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/hildon-file-selection.c (thumbnail_data_func): Do not
+	include the file size in the second row of images files.
+	Fixes: NB#105117 Size information is presented for image files in
+	content pane
+	Patch by Ramprakash Jelari Thinakaran.
+
+2009-04-22  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/hildon-file-system-model.c
+	(thumbnail_request_pixbuf_cb),
+	(hildon_file_system_model_get_value), (clear_model_node_caches):
+	Update thumbnail loading to use new HildonThumbnailRequest interface.
+	Fixes: NB#103061 Thumbnail of replaced image is not updated
+
+2009-04-22  Christian Dywan  <christian@lanedo.com>
+
+	* configure.ac:
+	* hildon-fm/Makefile.am:
+	* hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_get_value): Use tracker to obtain meta
+	information, that is author and title, from audio files.
+	Based on a patch by Ramprakash Jelari Thinakaran.
+	Fixes: NB#104527 Artist name is not displayed in list view in content pane.
+
+2009-04-20 Yang Li <yang.li@d\igia.com>
+	
+	* hildon-fm/hildon-file-selection.c:
+	Fixes: NB#109118, NB#109475
+	
+2009-04-15  Valentin Rabinovich <valentin.rabinovich@d\igia.com>
+
+	Released 2.11
+	Fixes: NB#104965 "update hildonfm icon names"
+
+2009-04-14 Yang Li <yang.li@d\igia.com>
+	
+	* hildon-fm/hildon-file-system-voldev.c:
+	* hildon-fm/hildon-file-system-model.c:
+	* hildon-fm/hildon-file-system-storage-dialog.c:
+	Fix: NB#104965, icons update
+
+2009-04-09  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/Makefile.am: Fix list of installed include files.
+	Patch by Ramprakash Jelari Thinakaran.
+
+2009-04-06  Valentin Rabinovich <valentin.rabinovich@d\igia.com>
+
+	Released 2.10
+	Fixes: NB#95854, NB#109433
+
+2009-04-03  Mikko Tuhkanen <mikko.tuhkanen@d\igia.com>
+
+	* hildon-fm/hildon-file-system-settings.c:
+	Fix: NB: 95854, Device name is not updated in filemanager.
+
+2009-04-01 Yang Li <yang.li@d\igia.com>
+	
+	* hildon-fm/hildon-file-chooser-dialog.c:
+	Fix: NB109433, caused by regression, fixed earlier than bug report comes, update the change log
+
+2009-03-31  Valentin Rabinovich <valentin.rabinovich@d\igia.com>
+
+	Released 2.9
+	Fixes: NB#106251
+	
+2009-03-31 Yang Li <yang.li@d\igia.com>
+	
+	* hildon-fm/hildon-file-chooser-dialog.c:
+	Fix: NB106251
+
+2009-03-31  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/hildon-file-system-mmc.c:
+	* hildon-fm/hildon-file-system-mmc.h:
+	* hildon-fm/hildon-file-system-old-gateway.c:
+	* hildon-fm/hildon-file-system-old-gateway.h: Remove obsolete MMC
+	and old gateway classes, they were disabled already.
+
+2009-03-31  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/t.c: Remove obsolete test program.
+
+2009-03-31  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/Makefile.am:
+	* hildon-fm/hildon-fm.h: Introduce common header hildon-fm.h.
+
+2009-03-27  Mikko Tuhkanen <mikko.tuhkanen@d\igia.com>
+
+	Released 2.8
+	Fixes: NB#107268
+	Refactoring
+
+2009-03-25  Christian Dywan  <christian@lanedo.com>
+
+	* tests/check-hildonfm-file-selection.c:
+	* tests/check-hildonfm-file-system-model.c:
+	* tests/check-hildonfm-file-system-private.c: Rename variable "system"
+	to gtk_file_system to avoid shadowing a global and to reduce confusion
+	with 'fs'.
+
+2009-03-24  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/hildon-file-details-dialog.c
+	(hildon_file_details_dialog_set_file_iter):
+	* hildon-fm/hildon-file-selection.c (thumbnail_data_func):
+	* hildon-fm/hildon-file-system-storage-dialog.c
+	(file_system_storage_dialog_set_data),
+	(file_system_storage_dialog_update): Use GnomeVfs to format file sizes
+	everywhere and remove all three implementations we have for this.
+
+2009-03-24  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/hildon-file-details-dialog.c
+	(hildon_file_details_dialog_set_file_iter): Use the human readable
+	description of the file type in the dialog.
+
+2009-03-23 Yang Li <yang.li@d\igia.com>
+	
+	* hildon-fm/hildon-file-system-model.c:
+	Fix: NB107268
+
+2009-03-23 Yang Li <yang.li@d\igia.com>
+	
+	* hildon-fm/hildon-file-chooser-dialog.c:
+	remove a duplicated API call, hildon_file_selection_show_content_pane
+
+2009-03-23  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/hildon-file-selection.c
+	(_hildon_file_selection_get_scroll_list),
+	(_hildon_file_selection_get_scroll_thumb):
+	* tests/file-selection-performance.c
+	(performance_file_system_model), (performance_file_selection),
+	(main): Add semi-private functions to obtain the pannable areas used
+	by the file selection and add a scrolling test.
+
+2009-03-23  Christian Dywan  <christian@lanedo.com>
+
+	* tests/file-selection-performance.c (recurse_folder),
+	(performance_file_system_model), (main): Add file selection performance
+	test.
+
+2009-03-19 Yang Li <yang.li@d\igia.com>
+	
+	* hildon-fm/hildon-file-chooser-dialog.c:
+	some improvements on the glist access, avoid of crash when extensions array 
+	and ext_names array have different sizes.
+
+2009-03-19  Valentin Rabinovich <valentin.rabinovich@d\igia.com>
+
+	Released 2.7
+	* hildon-fm/hildon-file-system-settings.c: removed bt-gconf.h
+
+2009-03-18  Valentin Rabinovich <valentin.rabinovich@d\igia.com>
+
+	Released 2.6
+	Fixes: NB#106137, NB#102621, NB#104644, NB#106225, NB#105154, NB#100983, NB#104449
+	
+2009-03-17 Yang Li <yang.li@d\igia.com>
+	
+	* hildon-fm/hildon-file-chooser-dialog.c:
+	Fix: NB106137
+
+2009-03-16  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c: Do not call hildon_init from
+	the widget, this is a function that only applications may use and it
+	actually leads to warnings if used correctly in applications or tests.
+
+2009-03-16  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/t.c: Don't include conbtdialogs-dbus.h
+
+2009-03-16  Valentin Rabinovich <valentin.rabinovich@d\igia.com>
+
+	Fixes NB#102621
+
+2009-03-16 Yang Li <yang.li@d\igia.com>
+	
+	* hildon-fm/hildon-file-system-common.h:
+	* hildon-fm/hildon-file-system-private.c:
+	Fix: NB104644, 
+	     NB106225, dependent on NB104644
+	     NB105154, a duplication 
+
+2009-03-13 Yang Li <yang.li@d\igia.com>
+	
+	* hildon-fm/hildon-file-chooser-dialog.c:
+	Fix: NB100983, NB104449
+
+2009-03-11  Valentin Rabinovich <valentin.rabinovich@d\igia.com>
+
+	Released 2.5
+	Fixes: NB#99116, NB#99380, NB#100974
+
+2009-03-11 Yang Li <yang.li@d\igia.com>
+	
+	* hildon-fm/hildon-file-chooser-dialog.c:
+	Fix: Bug 99116 proper size for Save button
+
+2009-03-10  Valentin Rabinovich <valentin.rabinovich@d\igia.com>
+
+	Released 2.4
+	Fixes: NB#93444, NB#99139, NB#102435, NB#95104, NB#100401, NB#100779, NB#100814.	
+
+2009-03-10  Christian Dywan  <christian@lanedo.com>
+
+	* tests/check-hildonfm-file-chooser-dialog.c: Fix warnings due to
+	unused functions, because some test cases are disabled.
+
+2009-03-09 Yang Li <yang.li@d\igia.com>
+	
+	* hildon-fm/hildon-file-chooser-dialog.c:
+	  hildon-fm/hildon-file-selection.c:
+	Fix: Bug 102435 No access to the media server except FM, 
+	hildon_file_chooser_dialog_set_show_upnp needs to be called 
+	if accessing media server is required, otherwise hidden by default
+
+2009-03-09 Yang Li <yang.li@d\igia.com>
+	
+	* hildon-fm/hildon-file-chooser-dialog.c:
+	Bug 95104 Additional Fix: API hildon_file_chooser_dialog_add_extensions_combo  
+	show the extensions if ext_names is NULL
+
+2009-03-06 Yang Li <yang.li@d\igia.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c:
+	Fix Bug: 95104 HildonFileChooserDialog ignores the extension type names
+
+2009-03-06 Mikko Tuhkanen <mikko.tuhkanen@d\igia.com>
+
+	* hildon-fm/hildon-file-details-dialog.c :
+	Bugzilla 100814: Removed ok button.
+
+2009-02-27 Yang Li <yang.li@d\igia.com>
+
+	* hildon-fm/hildon-file-system-model.c:
+	Fix Bug: 105195 MMCs do not show their contents after renaming.
+
+2009-02-25  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c: Optimize check_for_location_update.
+
+2009-02-25  Christian Dywan  <christian@lanedo.com>
+
+	* tests/check-hildonfm-file-chooser-dialog.c
+	(test_file_chooser_dialog_set_folder), (button_clicked_cb),
+	(button_click_idle_cb), (test_file_chooser_dialog_set_folder_idle),
+	(window_map_event_cb), (window_realize_cb),
+	(window_screen_changed_cb), (window_show_cb),
+	(window_set_focus_cb), (test_file_chooser_dialog_set_folder_show),
+	(window_create_idle_cb),
+	(test_file_chooser_dialog_set_folder_deferred), (main): Add tests which
+	open a file chooser and click a button but fail already before. They are
+	disabled and print a FIXME for now.
+
+2009-02-25  Christian Dywan  <christian@lanedo.com>
+
+	* hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_get_value): Add a node assertion since it is
+	apparently possible to hit this, although the file manager normally does not.
+
+2009-02-25 Mikko Tuhkanen <mikko.tuhkanen@d\igia.com>
+
+	* hildon-fm/hildon-file-details-dialog.c:
+	Bugzilla 100401: Logical string for read only file fixed.
+
+2009-02-24  Valentin Rabinovich <valentin.rabinovich@d\igia.com>
+
+	Released 2.3
+	
+	* hildon-fm/hildon-file-system-model.c: removed thumbnail_handle assertion
+	Fixes: NB#99891, NB#101871, NB#99861
+
+2009-02-20  Valentin Rabinovich <valentin.rabinovich@d\igia.com>
+
+	Released 2.2
+
+2009-02-20 Mikko Tuhkanen <mikko.tuhkanen@d\igia.com>
+
+	* hildon-fm/hildon-file-system-mmc.c:
+	Bugzilla 102391: Logical string for corrupted memory card fixed.
+
+2009-02-19 Yang Li <yang.li@d\igia.com>
+
+	* hildon-fm/hildon-file-system-voldev.c:
+	Fix: NB101842
+
+2009-02-18  Valentin Rabinovich <valentin.rabinovich@d\igia.com>
+	
+	* hildon-fm/hildon-file-selection.c: don't filter out root-of-roots
+	Fixes NB#100948
+	* hildon-fm/hildon-file-system-model.c (dfa_run): check node before emitting
+	Fixes NB#99730
+	* hildon-fm/hilfon-file-chooser-dialog.c: enable the New button when multi-root 
+	is set (for bookmarks)
+	Fixes NB#101878 
+
+2009-02-18 Mikko Tuhkanen <mikko.tuhkanen@d\igia.com>
+
+	* hildon-fm/hildon-file-selection:
+	Bugzilla 95564: Logical string for file last modified date and file size.
+
+2009-02-10  Valentin Rabinovich <valentin.rabinovich@d\igia.com>
+
+	Released 2.1.8
+
+2009OD-02-10  Valentin Rabinovich <valentin.rabinovich@d\igia.com>
+
+	* hildon-fm/hildon-file-selection.c: don't set cursor in edit mode
+
+2009-02-10  Christian Dywan  <christian@imendio.com>
+
+	* tests/Makefile.am: Run tests in a loop, without gtester.
+
+2009-02-06  Christian Dywan  <christian@imendio.com>
+
+	* tests/check-hildonfm-file-system-private.c
+	(test_file_system_create_display_name_file), (main): Fixup the test, the
+	whole suite is running green now.
+
+2009-02-06  Christian Dywan  <christian@imendio.com>
+
+	* tests/check-hildonfm-file-system-model.c
+	(test_file_system_model_autoname_uri_nonexistent_folder): Disable the one
+	failing test, the rest is passing.
+
+2009-02-06  Christian Dywan  <christian@imendio.com>
+
+	* tests/check-hildonfm-file-chooser-dialog.c
+	(fx_setup_hildonfm_file_chooser_dialog_open),
+	(fx_teardown_hildonfm_file_chooser_dialog),
+	(test_file_chooser_dialog_safe_folder): Use a custom model with a custom root
+	directory and disable the safe_folder test for now.
+
+2009-02-06  Christian Dywan  <christian@imendio.com>
+
+	* hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_new_item): Return NULL if the path is not absolute
+
+2009-02-06  Christian Dywan  <christian@imendio.com>
+
+	* tests/check-hildonfm-file-system-special-location.c
+	(fx_setup_hildonfm_file_system_special_location_mydocs),
+	(START_TEST), (test_file_system_special_location_get_extra_info),
+	(main): Remove uncommented lines and disable _create_child test.
+
+2009-02-06  Christian Dywan  <christian@imendio.com>
+
+	* tests/check-hildonfm-file-selection.c
+	(fx_setup_default_hildonfm_file_selection),
+	(fx_teardown_default_hildonfm_file_selection),
+	(test_file_selection_select_all_something_selected_edit),
+	(test_file_selection_select_all_something_selected_edit),
+	(test_file_selection_clear_multi_selection_multiple_edit),
+	(test_file_selection_get_selected_files_edit), (main): Revise parts of the
+	file selection test, add edit-mode cases and disable failures.
+
+2009-02-06  Christian Dywan  <christian@imendio.com>
+
+	* hildon-fm/hildon-file-selection.c
+	(hildon_file_selection_select_uri):
+	* hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_load_uri): Add missing g_return_val_if_fail and
+	a comment about changed hildon_file_selection_set_select_multiple API.
+
+2009-02-04  Christian Dywan  <christian@imendio.com>
+
+	* tests/check-hildonfm-file-chooser-dialog.c (main): Update private structure
+	and initialize GnomeVfs.
+
+2009-02-04  Christian Dywan  <christian@imendio.com>
+
+	* tests/check-hildonfm-file-details-dialog.c
+	(fx_setup_default_hildonfm_file_details_dialog), (main): Use a custom root
+	directory and initialize GnomeVfs.
+
+2009-02-04  Christian Dywan  <christian@imendio.com>
+
+	* tests/check-hildonfm-file-selection.c
+	(fx_setup_default_hildonfm_file_selection),
+	(test_file_selection_select_uri_nonexistent), (main): Use a custom root
+  directory, initialize GnomeVfs and improve error messages.
+
+2009-02-04  Christian Dywan  <christian@imendio.com>
+
+	* tests/check-hildonfm-file-system-private.c
+	(fx_setup_default_hildonfm_file_system_private): Use a custom root directory
+
+2009-02-04  Christian Dywan  <christian@imendio.com>
+
+	* tests/check-hildonfm-file-system-special-location.c
+	(fx_setup_hildonfm_file_system_special_location),
+	(fx_setup_hildonfm_file_system_special_location_mydocs): Use custom root dirs
+
+2009-02-04  Christian Dywan  <christian@imendio.com>
+
+	* tests/check-hildonfm-file-system-model.c
+	(fx_setup_default_hildonfm_file_system_model),
+	(test_file_system_model_autoname_uri),
+	(main): Initialize GnomeVfs, use a custom root directory and print verbose
+	errors when testing renaming.
+
+2009-02-04  Christian Dywan  <christian@imendio.com>
+
+	* hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_get_value): Test if we have an actual URI
+
+2009-02-04  Christian Dywan  <christian@imendio.com>
+
+	* hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_add_node): Test if there's a parent.
+
+2008-02-04 Yang Li <yang.li@d\igia.com>
+
+	* hildon-fm/hildon-file-system-model.c:
+	* hildon-fm/hildon-file-chooser-dialog.c:
+	Fix: NB98741
+
+2009-02-04 Mikko Tuhkanen <mikko.tuhkanen@d\igia.com>
+
+	* hildon-fm/po/en_GB.po:
+	Bugzilla 93817 en_GB.po file removed.
+
+2008-02-03 Yang Li <yang.li@d\igia.com>
+
+	* hildon-fm/hildon-file-system-common.h:
+	* hildon-fm/hildon-file-system-private.c:
+	safe folder .camera added
+
+2009-02-03  Christian Dywan  <christian@imendio.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c:
+	* hildon-fm/hildon-file-chooser-dialog.h:
+	* hildon-fm/hildon-file-details-dialog.c:
+	* hildon-fm/hildon-file-details-dialog.h:
+	* hildon-fm/hildon-file-selection.c:
+	* hildon-fm/hildon-file-selection.h:
+	* hildon-fm/hildon-file-system-info.h:
+	* hildon-fm/hildon-file-system-model.c:
+	* hildon-fm/hildon-file-system-model.h:
+	* hildon-fm/hildon-file-system-private.c:
+	* hildon-fm/hildon-file-system-private.h:
+	* hildon-fm/hildon-file-system-special-location.h:
+	* hildon-fm/hildon-file-system-storage-dialog.c:
+	* hildon-fm/hildon-file-system-storage-dialog.h:
+	* hildon-fm/t.c: Remove redundant includes and prefer <gtk/gtk.h> for Gtk+.
+
+2009-02-03  Christian Dywan  <christian@imendio.com>
+
+	* hildon-fm/hildon-file-selection.c
+	(hildon_file_selection_class_init),
+	(content_pane_selection_changed_idle),
+	(hildon_file_selection_row_insensitive),
+	(hildon_file_selection_selection_changed),
+	(hildon_file_selection_row_activated),
+	(hildon_file_selection_navigation_pane_context),
+	(hildon_file_selection_content_pane_context),
+	(hildon_file_selection_on_content_pane_key),
+	(hildon_file_selection_on_navigation_pane_key),
+	(content_pane_tap_and_hold_query),
+	(navigation_pane_tap_and_hold_query), (on_drag_data_received),
+	(hildon_file_selection_set_cursor_stubbornly):
+	* hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_class_init):
+	* hildon-fm/hildon-file-system-special-location.c
+	(hildon_file_system_special_location_class_init): Unify signal creation.
+
+2009-02-02  Christian Dywan  <christian@imendio.com>
+
+	* tests/check-hildonfm-file-system-storage-dialog.c (main): Correct the names
+	of the tests
+
+2009-02-02  Christian Dywan  <christian@imendio.com>
+
+	* tests/check-hildonfm-file-system-private.c
+	(test_file_system_get_special_location): Use the correct function for the
+	purpose, casting doesn't turn a GtkFilePath* into an URI string.
+
+2009-02-02  Christian Dywan  <christian@imendio.com>
+
+	* hildon-fm/hildon-file-details-dialog.c
+	(hildon_file_details_dialog_init): Don't pack the vbox twice either.
+
+2009-02-02  Christian Dywan  <christian@imendio.com>
+
+	* hildon-fm/hildon-file-system-storage-dialog.c
+	(hildon_file_system_storage_dialog_init): Don't pack the table in the twice.
+
+2009-02-02  Christian Dywan  <christian@imendio.com>
+
+	* tests/check-hildonfm-file-system-private.c
+	(fx_teardown_default_hildonfm_file_system_private),
+	(test_file_system_get_special_location): Actually destroy and rereference in
+	the teardown handler.
+
+2009-02-02  Christian Dywan  <christian@imendio.com>
+
+	* hildon-fm/hildon-file-selection.c
+	(hildon_file_selection_get_current_folder_uri),
+	(_hildon_file_selection_get_current_folder_path): Don't assert, just return
+	NULL here as assumed elsewhere.
+
+2009-02-02  Christian Dywan  <christian@imendio.com>
+
+	* tests/check-hildonfm-file-selection.c (test_file_selection_mode): Do not
+	test selection mode, it's not supported.
+
+2009-02-02  Christian Dywan  <christian@imendio.com>
+
+	* tests/check-hildonfm-file-selection.c
+	(fx_setup_default_hildonfm_file_selection),
+	(fx_teardown_default_hildonfm_file_selection): Don't free the model but
+	dereference it, otherwise it segfaults.
+
+2009-02-02  Christian Dywan  <christian@imendio.com>
+
+	* hildon-fm/hildon-file-system-model.c (handle_finished_node),
+	(send_device_disconnected), (notify_volumes_changed),
+	(hildon_file_system_model_init),
+	(hildon_file_system_model_class_init): Create all model signals during class
+	initialization instead of object initialization.
+
+2009-01-30  Christian Dywan  <christian@imendio.com>
+
+	Adapt hildon-fm tests to use the Glib testing framework. Tests are separate
+	and can be run with 'make check' with no dependencies. The failure rate is
+	extremely high, unfortunately.
+
+	* configure.ac:
+	* tests/Makefile.am:
+	* tests/check-hildonfm-file-chooser-dialog.c
+	(fx_setup_hildonfm_file_chooser_dialog_open), (fm_test_setup), (main):
+	* tests/check-hildonfm-file-details-dialog.c
+	(fx_setup_default_hildonfm_file_details_dialog), (fm_test_setup), (main):
+	* tests/check-hildonfm-file-selection.c
+	(fx_setup_default_hildonfm_file_selection), (fm_test_setup), (main):
+	* tests/check-hildonfm-file-system-model.c
+	(hildon_uri_to_gtk_tree_iter),
+	(fx_setup_default_hildonfm_file_system_model), (fm_test_setup),	(main):
+	* tests/check-hildonfm-file-system-private.c
+	(fx_setup_default_hildonfm_file_system_private), (fm_test_setup),	(main):
+	* tests/check-hildonfm-file-system-settings.c
+	(fx_setup_hildonfm_file_system_settings), (fm_test_setup), (main):
+	* tests/check-hildonfm-file-system-special-location.c
+	(fx_setup_hildonfm_file_system_special_location),
+	(fx_setup_hildonfm_file_system_special_location_mydocs),
+	(fm_test_setup), (fm_test_setup2), (main):
+	* tests/check-hildonfm-file-system-storage-dialog.c
+	(fx_setup_hildonfm_file_system_storage_dialog), (fm_test_setup),	(main):
+	* tests/check-hildonfm-file-system-voldev.c (main):
+	* tests/check_test.c (main):
+	* tests/check_utils.c:
+	* tests/check_utils.h:
+	* tests/test_suites.h:
+
+2009-01-30  Valentin Rabinovich <valentin.rabinovich@d\igia.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c: no files in select folder dialog
+	
+2008-01-29 Yang Li <yang.li@d\igia.com>
+
+	* hildon-fm/hildon-file-chooser.c:
+	not allow to save fils under root, fix #99009
+
+2009-01-27  Valentin Rabinovich <valentin.rabinovich@d\igia.com>
+
+	Released 2.1.6
+
+2009-01-27  Valentin Rabinovich <valentin.rabinovich@d\igia.com>
+
+	* hildon-fm/hildon-file-selection.c: show-folders property added
+
+2009-01-27  Christian Dywan  <christian@imendio.com>
+
+	Remove unused Diablo code and callbacks.
+
+	* hildon-fm/hildon-file-selection.c (rebind_models),
+	(hildon_file_selection_sync_selections),
+	(hildon_file_selection_create_list_view),
+	(hildon_file_selection_create_dir_view),
+	(hildon_file_selection_set_select_multiple),
+	(hildon_file_selection_get_current_folder_iter):
+
+2008-01-27 Yang Li <yang.li@d\igia.com>
+
+	* hildon-fm/hildon-file-selection.c:
+	recognize the customized filters, Bug #89751
+
+2009-01-23  Valentin Rabinovich <valentin.rabinovich@d\igia.com>
+
+	Released 2.1.5
+
+2008-01-23 Yang Li <yang.li@d\igia.com>
+
+	* hildon-fm/hildon-file-chooser.c:
+	use PickerDialog for type selection
+
+2009-01-22 Mikko Tuhkanen <mikko.tuhkanen@d\igia.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c:
+	save button is not dimmed in the beginning anymore
+
+2009-01-21  Valentin Rabinovich <valentin.rabinovich@d\igia.com>
+
+	* hildon-fm/hildon-file-selection.c:
+	hildon_file_selection_set_select_multiple() not needed anymore
+	* Fixes: NB#97851
+
+2009-01-15  Valentin Rabinovich <valentin.rabinovich@d\igia.com>
+
+	Released 2.1.4
+
+2009-01-14  Valentin Rabinovich <valentin.rabinovich@d\igia.com>
+
+	* hildon-fm/hildon-fm1-compat.c: remove HFS_get_selected_files() 
+	API call because HFS_get_selected_paths() works now in both normal 
+	and edit mode
+	* hildon-fm/hildon-file-selection.c: 
+	update hildon_file_selection_get_current_content_iter() to work 
+	without tree selection;
+	update HFS_get_selected_uris() to work both with and without tree selection;
+	save row reference on button-click-event (for CSM now)
+	
+2009-01-14  Christian Dywan  <christian@imendio.com>
+
+	* hildon-fm/hildon-file-system-private.c
+	(hildon_file_system_create_backend): Don't install the
+	gtk-file-chooser-backend property, it's always there
+
+2008-12-22 Yang Li <yang.li@d\igia.com>
+
+	* hildon-fm/hildon-file-chooser.c:
+	no showing the file type dialog when no extension inputs
+	
+2008-12-19 Mikko Tuhkanen <mikko.tuhkanen@d\igia.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c:
+	Icon size corrected.
+
+2008-12-18  Valentin Rabinovich <valentin.rabinovich@d\igia.com>
+
+	* hildon-fm/hildon-file-selection.c: unset current row when the sort
+	model is destroyed
+
+2008-12-16  Valentin Rabinovich <valentin.rabinovich@d\igia.com>
+	
+	* hildon-fm/hildon-file-selection.c, hildon-file-system-model.c:
+	correct signals for the root
+
+2008-12-05 Mikko Tuhkanen <mikko.tuhkanen@d\igia.com>
+
+	* hildon-fm/hildon-file-system-upnp.c:
+	* hildon-fm/hildon-file-system-mmc.c
+	* hildon-fm/hildon-file-system-storage-dialog.c
+	* hildon-fm/hildon-file-system-private.c 
+	* hildon-fm/hildon-file-system-obex.c
+	* hildon-fm/hildon-file-system-local-device.c
+	New icons taken into use.
+
+	* hildon-fm/hildon-file-chooser-dialog.c
+	New icons taken into use.
+	Long path names are truncated from the left.
+
+2008-12-15 Yang Li <yang.li@d\igia.com>
+
+	* hildon-fm/hildon-file-selection.c:
+	no creating the sort model, filter model for root
+	no old UI showing while starting up
+
+2008-12-11  Valentin Rabinovich <valentin.rabinovich@d\igia.com>
+
+	* hildon-file-selection.c:
+	removed number of items reported for folders in thumb-view
+	
+2008-12-05 Yang Li <yang.li@d\igia.com>
+
+	* hildon-fm/hildon-file-system-model.c:
+	no scanning for the sub-folders in building the invisible root
+
+
+2008-12-04 Richard Sun  <richard.sun@nokia.com>
+
+	* bump version for a major update: 2.1.0
+	* Fixes: NB#89727, NB#89940, NB#90637, NB#92706, NB#90693, NB#92414,
+	NB#89121, which are fixed by recent updates
+	
+2008-12-02 Yang Li <yang.li@d\igia.com>
+
+	* hildon-fm/hildon-file-system-storage-dialog.c:
+	ported the storage detail dialog
+	* hildon-fm/hildon-file-detail-dialog.c:
+	add some indentations in the code 
+	
+2008-12-01 Yang Li <yang.li@d\igia.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c:
+	file chooser dialogs recognize the virtual node
+
+2008-11-27 Yang Li <yang.li@d\igia.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c:
+	redefine the macro
+	* hildon-fm/hildon-file-details-dialog.c:
+	port the file details dialog to Fremantle style, UI regarding this part
+	has not yet been ready, to be continue.
+
+2008-11-24 Yang Li <yang.li@d\igia.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c:
+	implementation of the file type selection dialog, Hildon PickerDialog 
+	is not in use.
+	* hildon-fm/hildon-file-selection.c:
+	no network folder showing by default
+
+2008-11-17 Yang Li <yang.li@d\igia.com>
+
+	* hildon-fm/hildon-file-system-private.c:
+	a virtual node is introduced and all drives and volumes are visible from the 
+	contents pane.
+
+2008-11-17 Richard Sun  <richard.sun@nokia.com>
+
+	* debian/changelog, hildon-fm/t.c,
+	hildon-fm/hildon-file-chooser-dialog.c: fix compile warning to pass
+	integration robot
+
+2008-11-05 Yang Li <yang.li@d\igia.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c:
+	use null as the device name if failed to get the actual device name
+
+2008-11-06 Valentin Rabinovich <valentin.rabinovich@d\igia.com>
+
+	* hildon-file-selection.c: new property "edit-mode" introduced
+	* hildon-file-selection.c: list view is replaced by a dummy GtkTreeView
+	* hildon-file-selection.c (hildon_file_selection_real_row_insensitive):
+	No more row insensitive message in Hildon 2.2 UI style
+
+2008-10-15 Valentin Rabinovich <valentin.rabinovich@d\igia.com>
+
+	* Releasing 1:2.0.8 - before porting FM UI to Hildon 2.2 style
+	
+2008-10-02 Valentin Rabinovich <valentin.rabinovich@d\igia.com>
+
+	* hildon-fm/hildon-file-system-model.c: speed up populating of a file system
+	model by skipping search when adding new nodes. Few other enhancements too.
+
+2008-08-26 Yang Li <yang.li@d\igia.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c:
+	Ported "Change Folder", "Move to folder", "Open file" dialogs to
+	Fremantle UI.
+	* hildon-fm/hildon-file-selection.c:
+	Replaced scrolled window with pannable area.
+	
+2008-08-26 Valentin Rabinovich <valentin.rabinovich@d\igia.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c:
+	Ported "Select file type" dialog to Fremantle UI using
+	HildonTouchSelector.
+	
+2008-08-14 Valentin Rabinovich <valentin.rabinovich@d\igia.com>
+
+	* hildon-fm/hildon-file-details-dialog.c 
+	(hildon_file_details_dialog_set_file_iter): check if the function is 
+	called again for the same file and return. (N85998)
+
+	* hildon-fm/hildon-file-details-dialog.c (change_state): when permission 
+	change fails show an infonote instead of an infobanner. (N84860)
+
+	* hildon-fm/hildon-file-selection.c(hildon_file_selection_selection_changed):
+	Unset cursor_goal_uri when selection is changed. (N84851)
+
+2008-08-14  Valentin Rabinovich <valentin.rabinovich@d\igia.com>
+	
+	Started a new branch for Fremantle development
+
+2008-05-23  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 2.0.6
+
+	* hildon-fm/hildon-file-system-remote-device.c (flightmode_changed):
+	Do not make the bluetooth root node inaccessible. (N81561)
+
+2008-04-29  Kimmo Hämäläinen  <kimmo.hamalainen@nokia.com>
+
+	* hildon-fm/hildon-file-system-model.c: Add new member
+	signal_voldev_mounted to struct _HildonFileSystemModelPrivate.
+	(notify_volumes_changed): Emit "voldev_mounted" if MMC or USB volume
+	was mounted. Differentiating unmount from mount is based on the
+	hildon_file_system_voldev_is_visible function.
+	(hildon_file_system_model_init): Add new "voldev_mounted" signal.
+	Original patch from Yang. Related to NB#76324
+
+	* hildon-fm/hildon-file-system-voldev.h: Expose
+	hildon_file_system_voldev_is_visible as a library-internal function.
+
+2008-04-28  Kimmo Hämäläinen  <kimmo.hamalainen@nokia.com>
+
+	Released 2.0.5
+
+2008-04-24  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Show information banner when tapping a insensitive read-only
+	checkbox.
+
+	* hildon-fm/hildon-file-details-dialog.c (can_change_permissions)
+	(guess_change_permissions_result): Renamed former to latter.
+	Return result code instead of boolean success flag.
+	(permissions_insensitive_press): New.
+	(hildon_file_details_dialog_init): Connect it.
+	(hildon_file_details_dialog_set_file_iter): Remember result code
+	of permission changes for permissions_insensitive_press.
+
+2008-04-24  Kimmo Hämäläinen  <kimmo.hamalainen@nokia.com>
+
+	* hildon-fm/hildon-file-system-smb.c
+	(my_file_folder_child_files_added): Add MY_IS_FILE_FOLDER() check.
+	(my_file_folder_child_folder_added): Add MY_IS_FILE_FOLDER() check.
+	Patch from Valentin. Fixes: NB#79106
+
+2008-04-23  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 2.0.4
+
+	* hildon-fm/hildon-file-details-dialog.c (change_state): Don't use
+	the dialog as the parent for showing the information banner, it is
+	already gone.
+	(can_change_permissions): New.
+	(hildon_file_details_dialog_set_file_iter): Use it to set the
+	sensitivity of the read-only checkbox.
+
+2008-04-17  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 2.0.3
+
+	Permissions are only changed when closing the dialog, not
+	immediately when toggling the checkbox (N77409).
+
+	* hildon-fm/hildon-file-details-dialog.c
+	(hildon_file_details_dialog_read_only_toggled): Removed.
+	(hildon_file_details_dialog_init): Don't connect it.
+	(hildon_file_details_dialog_response): Call change_state here.
+
+	* hildon-fm/hildon-file-selection.c
+	(_hildon_file_selection_get_current_folder_path): Return the goal
+	uri if we have one (N83593).
+	(drag_data_get): Don't pass NULL to
+	gtk_selection_data_set_uris (N83955).
+
+2008-04-17  Kimmo Hämäläinen  <kimmo.hamalainen@nokia.com>
+
+	* hildon-fm/hildon-file-selection.c: Add new property PROP_DRAGGING
+	and currently_dragging member for it to _HildonFileSelectionPrivate
+	struct.
+	(hildon_file_selection_get_property): Add PROP_DRAGGING.
+	(hildon_file_selection_set_property): Add PROP_DRAGGING.
+	(hildon_file_selection_class_init): Add "currently-dragging" property.
+	(drag_begin): Set currently_dragging to TRUE.
+	(drag_end): New function. Set currently_dragging to FALSE.
+	(hildon_file_selection_setup_dnd_view): Connect drag_end() to
+	"drag-end" signal. Related to NB#83827
+
+2008-04-03  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-selection.c
+	(hildon_file_selection_selection_changed): Use a path for the
+	dir_sort model when getting the row reference from it.
+	(hildon_file_selection_matches_current_view): Return FALSE when
+	the current_folder row reference is invalid.  This happens when
+	the current folder has been deleted (N79697, again).
+	(sort_function): Items with negative sort weight (such as folders)
+	are always sorted by name (N77225).
+
+2008-18-03  Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
+
+	* hildon-fm/hildon-file-selection.c
+	(hildon_file_selection_matches_current_view): Revert patch to fix
+	N79697. It made Bookmarks to jam and then crash.
+
+2008-03-06  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 2.0.1
+
+	* hildon-fm/hildon-file-system-smb.c (strchr_reverse): Be more
+	constant.
+
+	* hildon-fm/hildon-file-system-model.c (get_folder_callback):
+	Reverse order of calls to handle_finished_node and
+	handle_load_error (N79056).
+
+2008-02-29  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-system-mmc.c,
+	hildon-fm/hildon-file-system-old-gateway.c: Avoid using old
+	logical_ids (N81354).
+
+2008-02-20  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c
+	(hildon_file_chooser_entry_changed): save the filename entry
+	content as the internal file name as soon as it changes, so there
+	isn't any mismatch between the internally stored name and the
+	displayed one. (N75049)
+	(hildon_file_chooser_dialog_create_sub_dialog): Copy "local-only",
+	"show-hidden", and "show-upnp" properties into
+	sub-dialog (N80021).
+
+	* hildon-fm/hildon-file-chooser-dialog.c
+	(handle_folder_popup): Do not change current name unless there has
+	been actually a change in the subdialog. (N74397)
+
+	* hildon-fm/hildon-file-system-private.c
+	(_hildon_file_system_compare_ignore_last_separator): actually
+	ignore all appended slashes in both paths instead of just removing
+	one to each. This way paths like upnpav:/// and upnpav:// are
+	equivalent. (N76327)
+
+	* hildon-fm/hildon-file-selection.c
+	(hildon_file_selection_matches_current_view): Also recognize a
+	path that has just been deleted (N79697).
+	
+	* hildon-fm/hildon-file-system-model.c (handle_finished_node): Do
+	not kick nodes that are in the process of being linked (N76271).
+
+	* hildon-fm/hildon-file-chooser-dialog.c (sync_extensions_combo):
+	Do not change the extensions combobox selection if there's already
+	a valid extension selected. (N76380)
+
+	* hildon-fm/hildon-file-system-smb.c
+	(my_file_folder_collaps_path): Avoid calling strcpy with
+	two pointers into the same string (N79427).
+
+	* hildon-fm/hildon-file-chooser-dialog.c (create_folder_callback):
+	Ignore unexpected handles instead of aborting (N76517).
+
+2008-01-09  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 1.9.49 again as 2.0.0 for the Hildon 2.0 release.
+
+2007-11-16  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 1.9.49
+
+	* hildon-fm/hildon-file-chooser-dialog.c (show_info_note,
+	show_gnome_vfs_result_for_folder_creation, create_folder,
+	handle_folder_popup): Reverted changed from 2007-11-09.  We have
+	to use gtk_file_system_create_folder since folder creation must
+	work with any backend, not just the GnomeVFS one (N75960).
+
+2007-11-09  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 1.9.48
+	
+	* hildon-fm/hildon-file-system-model.c (get_folder_callback): Call
+	handle_finished_node in addition to handle_load_error when the
+	node got an error.
+
+	* hildon-fm/hildon-file-chooser-dialog.c
+	(update_folder_button_visibility): Update can-focus property of
+	location eventbox as well.
+	(on_location_hw_enter_pressed,
+	hildon_file_chooser_dialog_location_pressed): Do nothing when
+	folder button is not shown. (N74281)
+	(show_info_note, show_gnome_vfs_result_for_folder_creation,
+	create_folder): New, use gnome_vfs_make_directory instead of
+	gtk_file_system_create_folder in order to get better error
+	reporting.
+	(handle_folder_popup): Use it (N71845).
+	
+2007-11-01  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 1.9.47
+	
+	* hildon-fm/Makefile.am (libhildonfm_la_SOURCES): Removed
+	hildon-file-system-old-gateway.[ch] and hildon-file-system-mmc.[ch].
+	* hildon-fm/hildon-file-system-private.c: Don't include
+	hildon-file-system-old-gateway.h.
+	(_hildon_file_system_get_locations): Never set up the old gateway
+	special location.
+	* hildon-fm/hildon-file-system-root.c: Don't include
+	hildon-file-system-mmc.h, it is not needed.
+
+	* hildon-fm/hildon-file-selection.c
+	(hildon_file_selection_row_deleted): Also move cursor to the next
+	row if it was previously in a descendant of the deleted
+	row. (N71153)
+	
+	* hildon-fm/hildon-file-system-smb.c: keep a list of pending
+	handles in MyFileFolder object, cancel them on finalize. (N73898)
+	
+	* hildon-fm/hildon-file-chooser-dialog.c (handle_folder_popup):
+	relax a bit the requirement of create_folder_handle being NULL,
+	just cancelling the previous operation. (N72950)
+	
+	* hildon-fm/hildon-file-selection.c (sort_function): Fall back to
+	sorting by name when time or size are identical (N69201).
+
+	* hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_get): do not show the loading preview
+	for remote locations, the thumbnail is not going to be
+	loaded. (N37279)
+
+2007-10-12  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 1.9.45
+	
+	* hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_constructor): Set
+	first_root_scan_completed to TRUE when we don't use our own
+	special locations.
+
+2007-10-09  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 1.9.44
+	
+	* hildon-fm/hildon-file-selection.c
+	(hildon_file_selection_create_list_view)
+	(hildon_file_selection_create_thumbnail_view): Ellipsize at the
+	end again.  Ellipsizing in the middle would be too drastic a
+	change to be confident about at this point (N72033).
+
+2007-10-08  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 1.9.43, "Balls of steel".
+	
+	* hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_load_uri,
+	hildon_file_system_model_load_path): Block for
+	first_root_scan_completed to be true in
+	hildon_file_system_model_load_path, not in
+	hildon_file_system_model_load_uri.  Not everybody uses
+	hildon_file_system_model_load_uri (N61856, N66095).
+	
+	* hildon-fm/hildon-file-details-dialog.c (do_line_wrapping): Made
+	static.
+
+	* hildon-fm/hildon-file-details-dialog.c (do_line_wrapping): New.
+	(hildon_file_details_dialog_init): Call it when the dialog is
+	shown (N53155).
+	
+2007-10-02  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 1.9.42.1.  Patch up stupid mistakes in 1.9.42 release.
+	
+	* hildon-fm/hildon-file-system-model.c (is_drive): Use a proper
+	return statement.
+	* hildon-fm/hildon-file-selection.c (hildon_file_selection_init):
+	Correctly use label instead of button_label in one place.
+
+	Released 1.9.42
+	
+	* hildon-fm/hildon-file-selection.c
+	(hildon_file_selection_init): Prettier layout for the Repair
+	view.
+
+	* hildon-fm/hildon-file-system-model.c
+	(is_drive): New.
+	(hildon_file_system_model_get_value): Use it.
+	(is_node_loaded): Drives are always loaded.
+
+2007-10-02  Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
+
+	* hildon-fm/hildon-file-system-voldev.c (gconf_value_changed): Add 
+	listening to the Gconf keys for memory card covers. Fixes an issue
+	with showing corrupted cards even when the cover is open.
+
+2007-10-01  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-system-voldev.c (GCONF_PATH_MMC): New.
+	(CORRUPTED_MMC_KEY, CORRUPTED_INTERNAL_MMC_KEY): Use it to pick up
+	the right GConf key (N71426).
+
+2007-09-28  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 1.9.41, "The rope of torture".
+
+	* hildon-fm/hildon-file-selection.c
+	(hildon_file_selection_set_cursor_stubbornly): also emit
+	stubbornly ::current-folder-changed (N66336).
+	(struct idle_cursor_data) (set_cursor_idle_handler)
+	(set_cursor_when_idle)
+	(hildon_file_selection_row_deleted)
+	(hildon_file_selection_row_inserted): pass the HildonFileSelection
+	around.
+
+	* hildon-fm/hildon-file-chooser-dialog.c (build_ui): Put the
+	location into a HildonCaption, make it focusable and popup the
+	change folder dialog when GDK_Enter is pressed (N68746).
+	(check_for_location_update): Free current_path (N70479).
+	
+	* hildon-fm/hildon-file-system-local-device.c
+	(hildon_file_system_local_device_get_display_name): Get device
+	name from $OSSO_PRODUCT_NAME if it can't get it from bluez, or set
+	it to the empty string if $OSSO_PRODUCT_NAME is not set (N70816).
+	
+	* hildon-fm/hildon-file-system-model.c (get_folder_callback): Call
+	free:handle_data at the very end so that the HildonFileSystemModel
+	remains reffed (N69754).
+
+2007-09-27  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-system-model.c (dfa_run,
+	delay_files_added,
+	hildon_file_system_model_folder_finished_loading): Gracefully
+	handle the case when the node for the GtkFileFolder has been
+	removed from the model in the mean time by doing nothing (N71163,
+	N71170, N71144, N71168, N71265).
+
+2007-09-26  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_files_added): Call handle_finished_node
+	when the node is now loaded.
+	(is_node_loaded): Removed priv parameter, it was unused.  Changed
+	all callers.
+
+2007-09-24  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 1.9.40
+
+	* hildon-fm/hildon-file-chooser-dialog.c (set_entry): Return a
+	boolean indicating whether the entry has actually changed.
+	(hildon_file_chooser_dialog_do_autonaming): Only select the entry
+	text when it has changed.  Grab keyboard focus in that case as
+	well (N68695).
+
+2007-09-24  Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
+
+	* hildon-fm/hildon-file-system-model.c (dfa_run): Add a missing
+	GDK_THREADS_ENTER/LEAVE pair, fixes a crash that happens when closing
+	memory card cover after starting File Manager.
+
+2007-09-21  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c (response_handler): Use
+	information banner with file_ib_name_too_long instead of showing
+	information note (N66361).
+
+	* hildon-fm/hildon-file-selection.c
+	(hildon_file_selection_row_inserted): Call
+	gtk_tree_view_expand_to_path (N63425).
+
+2007-09-21  Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
+
+	* hildon-fm/hildon-file-system-voldev.c
+	(hildon_file_system_voldev_is_visible): Added support for GConf keys
+	mmc-cover-open and internal-mmc-cover-open. Fixes: NB#59490
+
+2007-09-21  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c (handle_folder_popup):
+	Use hildon_file_selection_move_cursor_to_uri when
+	set_current_folder fails (N63425).
+	(handle_folder_popup): Do not cast first argument to get_entry,
+	get_entry takes a GtkWidget.
+
+	* hildon-fm/hildon-file-selection.c
+	(hildon_file_selection_create_thumbnail_view,
+	hildon_file_selection_create_list_view): Ellipsize display name in
+	the middle (N63171).
+
+2007-09-20  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c (handle_folder_popup):
+	Use get_entry to get entry content so that the extension is
+	handled correctly.
+
+	* hildon-fm/hildon-file-system-model.c (delay_files_added,
+	dfa_run): Maintain new 'pending_adds' field of the model nodes.
+	(is_node_loaded): Only return true when there are no pending
+	additions.
+	(_hildon_file_system_model_load_children): Time out after 5
+	seconds.
+
+2007-09-19  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c
+	(hildon_file_chooser_dialog_do_autonaming): Call set_entry always
+	even when no autonaming has been done.
+	(hildon_file_chooser_dialog_set_current_name): Do not call
+	set_entry explicitly, it would overwrite the autonaming done
+	previously.
+
+2007-09-18  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_load_path): Do not rewrite "upnpav:///"
+	into "upnpav://".  (The model node uses "upnpav:///", but the
+	special location uses "upnpav://" but since the upnp node is
+	permanent we can always find it via the model node.)  (N63339).
+
+2007-09-17  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 1.9.39
+
+	* hildon-fm/hildon-file-system-obex.c
+	(hildon_file_system_obex_init): Use correct icon (N69058).
+
+	* hildon-fm/hildon-file-selection.c
+	(hildon_file_selection_create_list_view,
+	hildon_file_selection_create_thumbnail_view): Enable the 'rules
+	hint' for the GtkTreeView (N69593).
+	(hildon_file_selection_row_inserted): check for empty selection
+	instead of NULL cursor, as this condition will not happen
+	ever. This way we ensure that the goal URI is selected as soon as
+	the row is added if the user hasn't selected anything
+	meanwhile. (N68619)
+
+        * hildon-fm/hildon-file-system-voldev.c
+	(hildon_file_system_voldev_is_visible): check whether the MMC card
+	corresponding to the drive is corrupted to manage drives
+	visibility (N66733).
+
+	* hildon-fm/hildon-file-details-dialog.c
+	(hildon_file_details_dialog_init): Make filename wrap, allow line
+	break after each character (N53155).
+
+	* hildon-fm/hildon-file-system-special-location.h,
+	hildon-fm/hildon-file-system-special-location.c
+	(struct _HildonFileSystemSpecialLocationClass): Added rewrite_path
+	virtual function.
+	(hildon_file_system_special_location_rewrite_path): New.
+
+	* hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_add_node): Call
+	hildon_file_system_special_location_rewrite_path to allow special
+	locations to rewrite the paths of its children.
+
+	* hildon-fm/hildon-file-system-private.h,
+	hildon-fm/hildon-file-system-private.c
+	(unescape_string, hildon_file_system_unescape_string): Renamed
+	former to latter and made public.  Changed all callers.
+
+	* hildon-fm/hildon-file-system-obex.c
+	(hildon_file_system_obex_rewrite_path): New, to fake the manual
+	symlink following needed by the current incomplete GnomeVFS obex
+	module.
+	(hildon_file_system_obex_create_child_location): Do not unescape
+	the URI since the host part is not stored in escaped form.
+
+2007-09-13  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Make sure that empty folders are not stuck with a zero load_time
+	forever.
+
+	* hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_files_added): Do not set load_time here.
+	(link_file_folder): Do it here (N68881).
+
+	* hildon-fm/hildon-file-chooser-dialog.c
+	(hildon_file_chooser_dialog_create_sub_dialog): Make dialog
+	destroy with parent so that the parent can be programmatically
+	closed (N67758).
+
+2007-09-11  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-selection.c (sort_function): If nodes are
+	identical in the current sort key, compare their names (N60626).
+
+	* hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_iter_available): Also set the
+	'available' flag for for the children, recursivly (N59284).
+
+	* hildon-fm/hildon-file-selection.c
+	(hildon_file_selection_selection_changed): Do not call
+	hildon_file_selection_close_load_banner (N66158).
+
+	* hildon-fm/hildon-file-chooser-dialog.c (create_folder_callback):
+	Use "hildon-common-strings" textdomain for
+	ckdg_ib_folder_already_exists (N63125).
+	(get_path_length_from_uri): Count bytes, not UTF-8 codepoints,
+	since that is what should be limited (N68166).
+
+2007-09-04  Richard Hult  <richard@i\mendio.com>
+
+	* hildon-fm/hildon-file-system-model.c: (handle_finished_node),
+	(location_rescan):
+	* hildon-fm/hildon-file-system-obex.c:
+	* hildon-fm/hildon-file-system-smb.c:
+	(my_file_folder_list_children):
+	* hildon-fm/hildon-file-system-upnp.c: Apply patch from Carlos to
+	fix build that broke by the previous commit.
+
+2007-09-04  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Another attempt at getting the visibility of special locations
+	right.  Fixes among other things N67184.  In general, rescanning
+	of special locations should now work correctly and visiblity
+	should be determined more reliably.
+	
+	* hildon-fm/hildon-file-system-private.c
+	(_hildon_file_system_get_special_location): Call
+	hildon_file_system_special_location_volumes_changed always, not
+	just when a new location was created, since old ones might need to
+	be reinitialized.
+
+	* hildon-fm/hildon-file-system-special-location.h (struct
+	_HildonFileSystemSpecialLocation): Added 'permanent' flag.
+	* hildon-fm/hildon-file-system-special-location.c
+	(hildon_file_system_special_location_init): Initialize it to TRUE.
+
+	* hildon-fm/hildon-file-system-model.c (handle_finished_node): Do
+	not kick permanent special locations, but kick everything else.
+	(link_file_folder): Reset the present flags so that
+	handle_finished_node can do its kicking.
+
+	* hildon-fm/hildon-file-system-root.c
+	(hildon_file_system_root_create_child_location): Make children
+	non-permanent.
+	* hildon-fm/hildon-file-system-upnp.c
+	(hildon_file_system_upnp_create_child_location): Likewise.
+	* hildon-fm/hildon-file-system-smb.c
+	(hildon_file_system_smb_create_child_location): Likewise.
+
+	* hildon-fm/hildon-file-system-root.c
+	(root_file_folder_list_children): Do not leak reference counts for
+	volumes and drives.
+	
+	* hildon-fm/hildon-file-system-model.c (location_rescan): Don't
+	remove children before rescanning, that is too drastic.  Always
+	rescan, independent of visibility or other heuristics that try to
+	determine whether it is needed or not.
+	(real_volumes_changed): Reverted change of 2007-08-31: Don't try
+	to pick out only those locations that are affected; just call
+	notify_volumes_changed on all special locations and expect them to
+	deal with it.
+
+	* hildon-fm/hildon-file-system-special-location.c,
+	hildon-fm/hildon-file-system-special-location.h
+	(hildon_file_system_special_location_is_visible): Added
+	has_children parameter.  Changed all users to use it instead of
+	trying to keep track of whether they have children or not
+	themselves.
+
+        * hildon-fm/hildon-file-system-private.c (create_child_location):
+	Reverted change of 2007-08-31.  Special locations should not be
+	destroyed, ever.
+
+2007-08-31  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c
+	(hildon_file_chooser_dialog_set_current_name): Call set_entry
+	explicitly, hildon_file_chooser_dialog_do_autonaming might not do
+	it always.
+
+	* hildon-fm/hildon-file-system-storage-dialog.c: do not statfs()
+	remote paths. Fixes #61944.
+	(file_system_storage_dialog_stats_get_apps): Reject any URI type
+	except URI_TYPE_FILE_SYSTEM.  Applications are never anywhere
+	else.
+
+        * hildon-fm/hildon-file-system-model.c
+        (hildon_file_system_model_row_draggable): ask whether the row
+	content is available before allowing DnD on it. Fixes NB65966.
+	
+        Make nodes reload on rescan. Fix NB64425.
+
+        * hildon-fm/hildon-file-system-private.c (create_child_location)
+        Add a weak ref to destroy the node in the private locations tree to
+        guarantee that it will be reloaded again. Remove an unneeded extra ref.
+
+        * hildon-fm/hildon-file-system-model.c (real_volumes_changed): only
+        rescan a volume when it has potentially changed.
+        (location_rescan): force children nodes destruction before reloading
+        the node contents. Do not trust still in
+        hildon_file_system_special_location_is_visible(), as
+        locations reset their ->has_children, and thus become always invisible.
+
+        * hildon-fm/hildon-file-system-voldev.c 
+        (hildon_file_system_voldev_volumes_change): g_strdup() the data
+        contained in ->fixed_icon, it will be freed when the location is
+        destroyed.
+
+        * hildon-fm/hildon-file-system-upnp.c (iap_connected_changed): force a
+        rescan.	
+
+        * hildon-fm/hildon-file-system-settings.c: change
+	::bonding-changed property to ::bondings, containing the number of
+	addresses.
+        (request_bonding_list) (bonding_list_received): Added
+        (hildon_file_system_settings_handle_dbus_signal): request bondings
+	list when bondings change. Fixes NB64420.
+
+        * hildon-fm/hildon-file-system-obex.c (bonding_changed): moved to
+        (bondings_changed): get number of addresses to know whether the
+	obex location is visible or not
+
+	Fark, had to put half of our own asynchronicity magic back.  I
+	feel stupid now for removing it in the first place...
+	
+	* hildon-fm/hildon-file-system-model.c (MAX_BATCH): New.
+	(hildon_file_system_model_add_nodes): Removed.  Include
+	functionality directly in hildon_file_system_model_files_added.
+	(delay_files_added): New.
+	(hildon_file_system_model_files_added): Use it for more than
+	MAX_BATCH children (N66863).
+	
+2007-08-30  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-system-storage-dialog.c
+	(file_system_storage_dialog_stats_get_disk): Use f_bavail instead
+	of f_bfree, which is the right thing to do (N67080).
+
+2007-08-17  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-selection.c
+	(hildon_file_selection_finalize): Do not assert that the reference
+	counts of our models are exactly one.  It's better to leak than to
+	crash (N65543).
+
+2007-08-16  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Get sort order of special locations straightened out (N65611).
+	
+	* hildon-fm/hildon-file-common-private.h: Define sort weights for
+	all top-level special locations.
+	* hildon-fm/hildon-file-system-voldev.c
+	(hildon_file_system_voldev_volumes_changed): Set sort weight to
+	one of SORT_WEIGHT_USB, SORT_WEIGHT_INTERNAL_MMC or
+	SORT_WEIGHT_EXTERNAL_MMC, as appropsiate.
+	* hildon-fm/hildon-file-system-upnp.c
+	(hildon_file_system_upnp_init): Use SORT_WEIGHT_UPNP.
+	* hildon-fm/hildon-file-system-smb.c
+	(hildon_file_system_smb_init): Use SORT_WEIGHT_SMB.
+	* hildon-fm/hildon-file-system-local-device.c
+	(hildon_file_system_local_device_init): Use SORT_WEIGHT_DEVICE
+	unchanged instead of subtracting one from it...
+
+	* hildon-fm/hildon-file-system-obex.c
+	(hildon_file_system_obex_create_child_location): Use the escaped
+	version of the URI as the base_path so that we can correctly find
+	this node later.
+
+2007-08-15  Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
+
+	* hildon-fm/hildon-file-system-voldev.h: Make the type member to
+	have three different values.
+
+	* hildon-fm/hildon-file-system-voldev.c (gconf_value_changed): Use
+	new vol_type member.
+	(hildon_file_system_voldev_is_visible): Fix logic to take USB mass
+	storages into account.
+	(init_card_type): Renamed as init_vol_type and fixed logic to take
+	USB mass storages into account.
+	(hildon_file_system_voldev_volumes_change): Use new vol_type member
+	correctly. Fixes: NB#62319
+
+2007-08-14  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Be smarter about handling empty names in the file chooser
+	(N52803).
+	
+	* hildon-fm/hildon-file-chooser-dialog.c
+	(hildon_file_chooser_dialog_do_autonaming): Do not autoname an
+	empty name.
+	(hildon_file_chooser_dialog_set_current_folder): Do not resplit an
+	empty name.
+	(set_stub_and_ext): Reset ext_name always.
+
+2007-08-13  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 1.9.38
+
+	* hildon-fm/hildon-file-system-model.c (is_node_loaded): Also
+	recognize nodes with a GtkFileFolder or get_folder_handle as
+	folders.  Otherwise the root node (which hasn't a GtkFileInfo) is
+	reported as loaded while it in fact isn't.
+
+2007-08-02  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 1.9.37
+	
+	* hildon-fm/hildon-file-chooser-dialog.c
+	(hildon_file_chooser_dialog_set_property): Update CSM menu items
+	when selection mode changes (N58786).
+	(check_for_location_update): New.
+	(hildon_file_chooser_dialog_constructor): Connect it (N59520).
+
+	* hildon-fm/hildon-file-common-private.h
+	(SORT_WEIGHT_REMOTE_DEVICE): New.
+        * hildon-fm/hildon-file-system-remote-device.c: Use it to show
+	remote devices together and below MMC cards (N61730).
+
+	* hildon-fm/hildon-file-details-dialog.c
+	(hildon_file_details_dialog_init): Set width of dialog to 400
+	pixels, enable horizontal scrolling and disable ellipsization
+	(N53155).
+	
+	* hildon-fm/hildon-file-selection.c
+	(hildon_file_selection_close_load_banner): Set cursor to first row
+	also when user hasn't touched the list yet (N52827).
+
+	* hildon-fm/hildon-file-system-model.c: Removed machinery for
+	delaying node adding and reloads.  The GtkFilesystem API is now
+	sufficiently asynchronous to make our own trick unnecessary.
+	(hildon_file_system_model_load_uri): Wait for scan of root folder
+	to be complete (N62546, N62972).
+	(hildon_file_system_model_load_path): Wait for the parent to be
+	fully loaded and then expect to find the path instead of just
+	adding a 'ghost' node.
+
+	* hildon-fm/hildon-file-system-smb.c (struct _MyFileFolder): Added
+	n_children_waiting.
+	(my_file_folder_child_files_added,
+	my_file_folder_root_files_added): Maintain it.
+	(my_file_folder_is_finished_loading): Return FALSE as long as
+	there are still child folders outstanding.
+	
+2007-07-31  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-details-dialog.c
+	(hildon_file_details_dialog_set_file_iter): Set date and time to
+	"-" when file time is exactly zero.
+	* hildon-fm/hildon-file-selection.c (get_date_string): Return "-"
+	when time is exactly zero. (N52599)
+
+	* hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_add_node): Set file_info of model_node
+	even if the model_node was already present since the file_info
+	might have been NULL (N62101).
+	
+2007-07-30  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Release 1.9.36
+	
+	* hildon-fm/hildon-file-chooser-dialog.c
+	(get_global_pane_position, set_global_pane_position): New.
+	(hildon_file_chooser_dialog_constructor,
+	hildon_file_chooser_dialog_destroy): Use them to set and store the
+	pane position permanently.
+
+	* hildon-fm/hildon-file-system-settings.c
+	(hildon_file_system_write_user_settings,
+	hildon_file_system_open_user_settings): New.
+
+	* hildon-fm/Makefile.am (INCLUDES): Removed -DHILDON_FM_PANED.
+
+2007-07-30  Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
+
+	Released 1.9.35
+
+2007-07-27  Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
+
+	* hildon-file-chooser-dialog.c (response_handler): Show
+	information note sfil_ni_target_foldername_long instead of
+	information banner file_ib_name_too_long. Fixes: NB#36630
+	(hildon_file_chooser_dialog_location_pressed): Patch from Markku
+	to handle also GTK_FILE_CHOOSER_ACTION_CREATE_FOLDER. Fixes: NB#59274
+
+	* hildon-file-common-private.h: Add 'FM' macro for strings from
+	File manager's localisation domain.
+
+	* hildon-file-selection.c (hildon_file_selection_row_activated):
+	Apply Markku's patch to consume Gtk events before trying to change
+	the selected row, fixes focus behaviour. Fixes: NB#49941
+
+2007-07-26  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-selection.c: Removed all !HILDON_FM_HPANED
+	code.
+	(PROP_PANE_POSITION): New.
+	(hildon_file_selection_init): view_selector is a GtkHBox now.
+	Using a GtkNotebook would use the space required by the invisible
+	tabs to calculate the minimum size of the content pane.  Changed
+	all users.
+
+	* hildon-fm/hildon-file-selection.c
+	(hildon_file_selection_selection_changed): Save and restore sort
+	parameters across recreation of priv->sort_model (N63995).
+
+2007-07-26  Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
+
+	* hildon-file-system-root.c (deliver_get_folder_callback): Add
+	GDK_THREADS_ENTER/GDK_THREADS_LEAVE calls, because it's an idle
+	callback and it calls Gtk functions. This could be related to the
+	crasher bug NB#63224.
+
+	* hildon-file-selection.c (set_cursor_idle_handler): Add missing
+	GDK_THREADS_ENTER/GDK_THREADS_LEAVE calls.
+
+2007-07-25  Richard Hult  <richard@i\mendio.com>
+
+	* hildon-fm/hildon-file-system-storage-dialog.c
+	(hildon_file_system_storage_dialog_init): Use the new logical IDs
+	for "Common" and "Data." from the upcoming spec.
+
+2007-07-25  Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
+
+	* hildon-file-system-private.c
+	(_hildon_file_system_create_display_name): Add check for NULL
+	mime_type. Fixes: NB#63350
+
+	* hildon-file-system-voldev.h: Add new members to struct
+	_HildonFileSystemVoldev: used_over_usb, internal_card,
+	card_type_valid. Add a member to the class struct to store the GConf
+	client.
+
+	* hildon-file-system-voldev.c: Add init_card_type and
+	gconf_value_changed functions.
+	(hildon_file_system_voldev_class_init): Get default GConf client
+	and call gconf_client_add_dir for the relevant directory.
+	(hildon_file_system_voldev_init): Install GConf notification callback.
+	(hildon_file_system_voldev_is_visible): Check the GConf keys to
+	determine whether the memory cards are used over USB.
+	(hildon_file_system_voldev_volumes_changed): Use the new struct
+	member internal_card instead of the earlier hacky way.
+	Fixes: NB#62440, NB#60259, NB#51728, NB#59097, NB#61292
+
+2007-07-18  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c (create_folder_callback):
+	Take sfil_ni_operation_failed from the hildon-common-strings
+	domain, stupid.
+
+	Released 1.9.34
+
+2007-07-11  Richard Hult  <richard@i\mendio.com>
+
+	* hildon-fm/hildon-file-system-storage-dialog.c:
+	(file_system_storage_dialog_update): Fix NB#63101, wrong
+	translation of unnamed MMC cards.
+
+2007-07-05  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-system-storage-dialog.c
+	(hildon_file_system_storage_dialog_class_init): Call
+	gnome_vfs_init since we use it.
+
+2007-07-04  Richard Hult  <richard@i\mendio.com>
+
+	* configure.ac: Bump version.
+
+	* hildon-fm/hildon-file-system-storage-dialog.c: Clarify API doc
+	comment for the storage root. Also compare URIs without trailing
+	slashes, and fix a leak.
+
+2007-07-02  Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
+
+	Released 1.9.33
+
+2007-06-27  Carlos Garnacho  <carlos@i\mendio.com>
+
+	* hildon-fm/hildon-file-system-model.c (struct HandleData)
+	(free_handle_data): Added.
+	(link_file_folder): Pass HandleData to the asynchronous get_folder
+	function. keep a reference to the model for each operation.
+	(get_folder_callback): Release the reference when the operation has
+	been processed. This avoids early model destruction when there are
+	noncancellable operations still alive. (NB#59429)
+
+2007-06-26  Richard Hult  <richard@i\mendio.com>
+
+	* configure.ac: Bump version.
+
+2007-06-25  Carlos Garnacho  <carlos@i\mendio.com>
+
+	Fix NB#59187, where contents in a memory card didn't update if it
+	was unmounted/changed/mounted.
+
+	* hildon-fm/hildon-file-system-voldev.c
+	(hildon_file_system_voldev_volumes_change): emit ::rescan if any
+	volume has changed, it may be one of these.
+
+	* hildon-fm/hildon-file-system-model.c
+	(notify_volumes_changed) (real_volumes_changed): also notify other
+	nodes than the ones returned by _hildon_file_system_get_locations().
+	(location_rescan): invalidate location node and its children if it
+	becomes invisible, and load the node if it becomes visible. This
+	way we don't leave invalid nodes if the location contents change
+	after being set invisible (think changing a memory card,
+	connecting the usb cable and modifying from the computer, etc...).
+
+2007-06-21  Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
+
+	Released 1.9.32
+
+2007-06-21  Carlos Garnacho  <carlos@i\mendio.com>
+
+	* hildon-fm/hildon-file-system-private.c
+	(get_special_location_callback): Factor out node creation code to
+	(create_child_location): Added
+	(_hildon_file_system_get_special_location): Use
+	create_child_location() on the root node if no node was found,
+	this way it handles properly all drive:/// URIs (improvement to
+	the fix below for NB#59746).
+
+2007-06-21  Richard Hult  <richard@i\mendio.com>
+
+	* hildon-fm/hildon-file-system-storage-dialog.c: Remove the
+	get_apps source and make sure to cancel any pending dbus call when
+	done. Don't use a static string, put it in the object instead.
+	Fixes NB#61357.
+	(file_system_storage_dialog_stats_clear): Clear all categories.
+
+2007-06-20  Richard Hult  <richard@i\mendio.com>
+
+	* configure.ac: Bump version.
+
+2007-06-20  Carlos Garnacho  <carlos@i\mendio.com>
+
+	* hildon-fm/hildon-file-system-private.c
+	(_hildon_file_system_get_locations): Make the root filesystem node
+	to have the uri file:///, this way
+	hildon_file_system_model_load_path() will create the correct node
+	hierarchy on top of it when no node is found (NB#59746).
+
+2007-06-19  Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
+
+	Released 1.9.31
+
+	* hildon-fm/hildon-file-system-voldev.c
+	(hildon_file_system_voldev_volumes_change): Set voldev->volume
+	and voldev->drive to NULL if they are garbage (following code relies
+	on this). Added strcmp() for handling icons and localised names
+	for drives correctly.
+
+	Released 1.9.30
+
+	Patch from Carlos Garnacho:
+	* configure.ac: Add definition of GETTEXT_PACKAGE.
+
+	* hildon-fm/hildon-file-selection.c (thumbnail_data_func): Use
+	GETTEXT_PACKAGE as the localisation domain. Fixes: NB#60759
+
+2007-06-15  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/Makefile.am (hildonincludeinst_DATA): Add
+	hildon-file-system-storage-dialog.h here as well, stupid.
+
+2007-06-14  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-system-voldev.c
+	(hildon_file_system_voldev_volumes_changed): Do not try to fixup
+	the icon when it is NULL.  Thanks to Carlos Garnacho!
+
+2007-06-13  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 1.9.29
+
+	* hildon-fm/hildon-file-system-storage-dialog.c: Get size of
+	installed applications.  Document exported API.  Do not include
+	glib/gi18n.h, but do include hildon-file-common-private.h to pick
+	up the right definition of '_'.
+	(file_system_storage_dialog_stats_get_apps_cb): Installed-Size as
+	reported by maemo-list-user-packages is in units of 1024 bytes,
+	not bytes.
+	(file_system_storage_dialog_stats_get_disk): Avoid overflow when
+	multiplying with blocksize.
+
+2007-06-12  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-system-storage-dialog.h,
+	hildon-fm/hildon-file-system-storage-dialog.c: New.
+	* hildon-fm/Makefile.am (libhildonfm_la_SOURCES): Added them.
+
+2007-06-08  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-system-root.c
+	(hildon_file_system_root_get_folder): Explicitly set file_system
+	of the handle to NULL.
+	* hildon-fm/hildon-file-system-model.c (unlink_file_folder): Do
+	not call gtk_file_system_cancel_operation when the file_system of
+	the handle is NULL, set the cancelled flag directly (N59441).
+
+2007-06-07  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-system-root.c
+	(hildon_file_system_root_get_folder): Set file_system of handle so
+	that cancelling works (N59441).
+
+2007-06-04  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 1.9.28
+	
+	* hildon-fm/hildon-file-chooser-dialog.h,
+	hildon-fm/hildon-file-chooser-dialog.c
+	(hildon_file_chooser_dialog_get_extension,
+	hildon_file_chooser_dialog_set_extension): New.
+
+	Released 1.9.27
+	
+	* hildon-fm/hildon-file-chooser-dialog.c,
+	hildon-fm/hildon-file-chooser-dialog.h (sync_extensions_combo,
+	extension_changed,
+	hildon_file_chooser_dialog_add_extensions_combo): New.
+
+2007-06-01  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.h,
+	hildon-fm/hildon-file-chooser-dialog.c
+	(hildon_file_chooser_dialog_add_extra): New.
+
+2007-05-31  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-selection.c (trigger_repair): Pass address
+	of pointers to dbus_message_append_args as required, not pointers
+	themselves.  How unobvious.
+
+	* hildon-fm/hildon-file-system-voldev.c
+	(capitalize_and_remove_trailing_spaces, beautify_mmc_name): New.
+	(hildon_file_system_voldev_volumes_changed): Use them to hack the
+	display name of memory cards (N33701).
+
+2007-05-28  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 1.9.26
+	
+	* hildon-fm/hildon-file-system-settings.h,
+	hildon-fm/hildon-file-system-settings.c,
+	hildon-fm/hildon-file-system-model.c:
+	(_hildon_file_system_prepare_banner,
+	_hildon_file_system_cancel_banner): Removed.  Removed all calls.
+
+2007-05-25  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-system-private.c (translate_special_name): New.
+	(_hildon_file_system_create_file_name): Use it.
+
+	* hildon-fm/hildon-file-selection.c (trigger_repair): New.
+	(repair_button_clicked): Call it.
+
+2007-05-24  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-system-upnp.c
+	(hildon_file_system_upnp_create_child_location): Set basepath of
+	child (N58259).  Thanks to Martyn Russel!
+
+        Released 1.9.25
+	
+	* hildon-fm/hildon-file-system-voldev.c
+	(hildon_file_system_voldev_get_extra_info): New, return the device
+	path.
+	(hildon_file_system_voldev_class_init): Install it.
+
+2007-05-23  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 1.9.24
+	
+	* hildon-fm/hildon-file-selection.c (HildonFileSelectionPrivate):
+	Added fourth view for the "Repair" button.
+	(get_view_to_be_displayed): Select the "Repair" view for drives.
+	(repair_button_clicked): New (does nothing interesting for now).
+	(hildon_file_selection_init): Construct "Repair" view.
+	
+	* hildon-fm/hildon-file-system-model.h,
+	hildon-fm/hildon-file-system-model.c
+	(HILDON_FILE_SYSTEM_MODEL_COLUMN_IS_DRIVE): New.
+	
+
+	* hildon-fm/hildon-file-system-voldev.c
+	(hildon_file_system_voldev_volumes_changed): Translate Gnome icon
+	names to Hildon icons, as a 'temporary' measure.
+
+	* hildon-fm/hildon-file-system-root.c
+	(hildon_file_system_root_create_child_location): Also accept
+	direct children of "file:///media/usb/".
+
+2007-05-23  Onne Gorter  <onne.gorter@nokia.com>
+
+	* hildon-fm/hildon-file-details-dialog.c:
+	(hildon_file_details_dialog_set_file_iter):
+	Test is mime is "", if so, warn about error and continue, instead of
+	translating "" string, which returns translation information ...
+	Fixes NB#53804
+
+2007-05-23  Onne Gorter  <onne.gorter@nokia.com>
+
+	* hildon-fm/hildon-file-details-dialog.c:
+	(hildon_file_details_dialog_set_file_iter):
+	add extra g_return_if_fail incase the path found is invalid. Happens if
+	called with invalid iterator, prevents certain crashes
+
+	Restored -Werror in debian/rules, but it is gone from configure.ac
+
+2007-05-23  Onne Gorter  <onne.gorter@nokia.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c:
+	When calculating new name, don't turn it into a known extension.
+	Fixes NB#52803 (hopefully)
+
+2007-05-23  Onne Gorter  <onne.gorter@nokia.com>
+
+	Tabs to 8 spaces, remove trailing spaces
+
+2007-05-22  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 1.9.23
+
+2007-05-22  Onne Gorter  <onne.gorter@nokia.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c:
+	Fix minor issue with named filters, fixes NB#55408
+	Proper fix needed though, because named filters and the filter list are
+	not kept in sync properly.
+
+2007-05-21  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c (handle_folder_popup):
+	Store the handle in the private structure of the sub-dialog, not
+	in the main dialog, stupid (N53829).
+
+	* hildon-fm/hildon-file-system-private.c
+	(get_special_location_callback): Add reference count to the
+	location object when adding it into the global tree of special
+	locations.
+
+	* hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_get_value): Handle NULL mime_type
+	gracefully.
+
+2007-05-16  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 1.9.22
+	
+	* hildon-fm/hildon-file-system-private.c
+	(_hildon_file_system_get_locations): Create a real root location.
+	Don't set up MMCs.
+	(setup_mmc): Removed.
+	(get_special_location_callback): Always accept zero length
+	basepaths as candidates.  Add the new location object to the tree
+	of special locations.
+	(_hildon_file_system_get_special_location): Traverse locations in
+	post order so that more specific locations are considered first.
+	Call hildon_file_system_special_location_volumes_changed when a
+	new location object has been created.
+
+	* configure.ac: Check for gnome-vfs-2.0 as well.
+
+	* hildon-fm/hildon-file-system-root.c,
+	hildon-fm/hildon-file-system-root.h,
+	hildon-fm/hildon-file-system-voldev.h,
+	hildon-fm/hildon-file-system-voldev.c: New.
+	* hildon-fm/Makefile.am (libhildonfm_la_SOURCES): Added them.
+
+	* hildon-fm/t.c: New, for testing.
+	* hildon-fm/Makefile.am: Added "t" target.
+
+2007-05-11  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 1.9.21
+
+	* hildon-fm/Makefile.am: Removed "t" target, which was only used
+	for testing.
+	
+	Released 1.9.20
+	
+	* hildon-fm/hildon-file-system-private.c
+	(_hildon_file_system_compare_ignore_last_separator): Return FALSE
+	when one of the strings is NULL, for extra robustness.
+
+	Released 1.9.19
+	
+	Support for smb:// locations.  Aka, the "Weirdos from another
+	planet" release.
+
+	* hildon-fm/hildon-file-system-special-location.h
+	(hildon_file_system_special_location_get_folder,
+	hildon-fm/hildon-file-system-special-location.c): New, to let the
+	smb:// special location provide their own weird way of listing the
+	top-level.
+	* hildon-fm/hildon-file-system-model.c (link_file_folder): Use it
+	for special locations.
+
+	* hildon-fm/hildon-file-system-smb.c,
+	hildon-fm/hildon-file-system-smb.h: New, for the weird smb://
+	namespace.
+	* hildon-fm/Makefile.am (libhildonfm_la_SOURCES): Added them.
+
+	* hildon-fm/hildon-file-system-private.c
+	(_hildon_file_system_get_locations): Setup SMB.
+
+2007-05-07  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 1.9.18
+	
+	* hildon-fm/hildon-fm1-compat.h: New.
+	* hildon-fm/hildon-fm1-compat.c: Move prototypes to
+	hildon-fm1-compat.h, include it.
+	* hildon-fm/Makefile.am (libhildonfm_la_SOURCES,
+	hildonincludeinst_DATA): Add it.
+
+2007-05-02  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 1.9.17
+	
+	Support for setting the file selection view mode on a file chooser
+	dialog widget. (N54390)
+	
+	* hildon-fm/hildon-file-chooser-dialog.c
+	(HILDON_FILE_CHOOSER_DIALOG_TYPE_SELECTION_MODE,
+	hildon_file_chooser_dialog_selection_mode_get_type,
+	PROP_SELECTION_MODE): New.
+	(hildon_file_chooser_dialog_set_property): Handle
+	PROP_SELECTION_MODE by passing it to our HildonFileSelection
+	widget.
+	(hildon_file_chooser_dialog_get_property): Likewise.
+	(hildon_file_chooser_dialog_class_init): Register new
+	"selection-mode" property.
+
+2007-04-24  Marius Vollmer  <marius.vollmer@nokia.com>
+
+        Released 1.9.16.
+	
+	* configure.ac, hildon-fm/Makefile.am,
+	hildon-fm/hildon-file-system-model.c: Use the hildon thumbnailer
+	instead of the osso thumbnailer.  This is just a change in names.
+
+2007-04-18  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-system-info.c (sync_callback): Only copy
+	error when it is non-NULL.  Thanks to J�rgen Scheibengruber!
+
+2007-04-16  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 1.9.15.
+	
+	* hildon-fm/hildon-file-system-info.c
+	(hildon_file_system_info_async_new): Use g_slice_new0 and
+	g_slice_free after all.  The slice allocator is the recommended
+	general purpose allocator now.  Thanks to Martyn again for
+	explaining this!
+
+	Released 1.9.14.
+	
+	* hildon-fm/hildon-file-system-info.c
+	(hildon_file_system_info_free): Use g_free instead of g_slice_free
+	to free the HildonFileSystemInfo structure since we have allocated
+	it with g_new0 (N54107).  Thanks to Martyn Russell!
+
+2007-03-23  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* configure.ac: Remove the manual check for gtk-doc and use
+	GTK_DOC_CHECK instead
+	* doc/hildon-fm.types: Add hildon_file_details_dialog_get_type
+	* doc/hildon-fm-docs.xml: Add 'Object Hierarchy', indices and missing
+	public API docs for file details dialog and file system info. The rest
+	of xml files are for private APIs.
+	* doc/gtk-doc.make: Copy from gtk-doc 1.7 and fix '*.sgml'
+	prerequisite with $(wildcard) to work in absence of any files. 
+	* doc/Makefile.am: Remove inlined gtk-doc.make bits and update to
+	gtk-doc 1.7. Define deprecation guards. Update MAINTAINERCLEANFILES.
+
+2007-03-23  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* Makefile.am (MAINTAINERCLEANFILES): Added to clean up cruft
+	
+2007-03-09  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 1.9.13, to conform with the unified Hildon verisioning
+	scheme.  Sorry for the mess.
+ 
+2007-02-27  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 2.13
+	
+	Use hildon_helper_set_insensitive_message instead of the
+	"insensitive-press" signal.
+	
+	* hildon-fm/hildon-file-chooser-dialog.c
+	(_HildonFileChooserDialogPrivate): Removed infobanner_message
+	field.
+	(insensitive_button): Removed.
+	(build_ui): Use hildon_helper_set_insensitive_message instead of
+	setting infobanner_message.
+	(hildon_file_chooser_dialog_init): Don't connect to
+	"insensitive-press" signal.
+
+2007-02-21  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 2.12
+	
+	* hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_get_value): Use HildonMimeCategory
+	instead of OssoMimeCategory, and HILDON_MIME_CATEGORY_IMAGES
+	instead of OSSO_MIME_CATEGORY_IMAGES.  Bad Erik!
+
+	Released 2.11
+
+2007-02-21  Erik Karlsson  <erik.b.karlsson@nokia.com>
+
+        * hildon-fm/hildon-file-system-model.c: Changed from osso-mime.h to
+	hildon-mime.h. Changed osso_mime_* functions to hildon_mime_*
+	functions.
+
+2007-02-09  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c,
+	hildon-fm/hildon-file-details-dialog.c,
+	hildon-fm/hildon-file-selection.c: Replaced gtk_object_sink with
+	g_object_ref_sink.
+
+	* hildon-fm/hildon-file-selection.c: Don't set "force-list-kludge"
+	on GtkTreeViews.
+	
+2007-02-08  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* autogen.sh: Put back invocation of configure since that is
+	apparently expected to happen by some automated build systems.
+	Thanks to Richard Hult for pointing this out!
+
+2007-02-07  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 2.10
+	
+	* hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_get_value): Consider nodes that have a
+	active get_folder_handle to be folders.
+	(handle_possibly_finished_node): Only announce a row change when
+	the path is valid.  The path is invalid for the fake root.
+	(hildon_file_system_model_get_value): When calculating the weight,
+	don't look into info when it is NULL.
+	(get_folder_callback): When the folder is finished loading, list
+	and add its children immediately.  This is needed for the
+	filesystemmemory backend which doesn't emit any change
+	notification signals.
+
+	* hildon-fm/hildon-file-system-private.c
+	(_hildon_file_system_create_image): Don't call
+	gtk_file_info_render_icon with info == NULL.
+
+2007-02-05  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 2.9
+	
+	* hildon-fm.pc.in: New.
+	* configure.ac: Create hildon-fm.pc from it.
+	* Makefile.am (pkgconfig_DATA): Added hildon-fm.pc.
+	(EXTRA_DIST): Added hildon-fm compatibility kluge files.
+	
+	Released 2.8
+	
+	* hildon-fm/Makefile.am (hildon-fm1-compat.c): New.
+	(libhildonfm_la_SOURCES): Added hildon-fm1-compat.c
+
+2007-02-02  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 2.7
+	
+	* Makefile.am (pkgconfig_DATA): Install hildon-fm-2.pc.
+	(EXTRA_DIST): Distribute the right files after the renaming.
+	(deb): Remove old sources before extracting new ones.
+	
+	* autogen.sh: Don't call configure.  Always use generic versions
+	of the tools instead of specific ones.
+
+	* configure.ac: Don't check for outo.  Use AC_CONFIG_FILES.
+
+	* hildon-fm/Makefile.am (hildonincludeinstdir): Install into
+	headers into $(includedir)/hildon-fm-2 so that their locations
+	contains the major version.
+
+	* hildon-fm.pc.in, hildon-fm-2.pc.in: Renamed former to latter.
+
+	Released 2.6
+	
+	* hildon-fm/Makefile.am (hildonincludeinstdir): Install headers
+	into <hildon/...> instead of <hildion-widgets/...>.
+
+2007-02-01  Marius Vollmer  <marius.vollmer@nokia.com>
+
+        Released 2.5
+	
+	Partly adapted to new Hildon API.
+	
+	* hildon-fm/hildon-file-chooser-dialog.c,
+	hildon-fm/hildon-file-details-dialog.c,
+	hildon-fm/hildon-file-selection.c: Include <hildon/foo.h> instead
+	of <hildon-widgets/foo.h>.  Use hildon_banner_show_information
+	instead of gtk_infoprint.  Use gtk_style_lookup_color instead of
+	gtk_style_lookup_logical_color.
+	* hildon-fm/hildon-file-chooser-dialog.c (response_handler): Don't
+	pass argument to file_ib_name_too_long string.  It doesn't have
+	formatting codes in it.
+	
+	Released 2.4
+	
+	* configure.ac: Check for hildon-1 instead of hildon-libs.
+	Explicitly check for gtk+-2.0.
+
+2007-01-30  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 2.3
+	
+	* hildon-fm/hildon-file-system-settings.c,
+	hildon-fm/hildon-file-system-obex.c: Do not define
+	DBUS_API_SUBJECT_TO_CHANGE, we expect the real one now.
+
+	* hildon-fm/hildon-file-system-settings.c: Do not include
+	<osso-ic-dbus.h>, it is deprecated and no longer in our
+	Build-Deps.  Instead, hardcode the icd D-Bus names.
+
+2007-01-29  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Hildon Consolidation.  References to GtkFilePath in the public
+	HildonFileSelection API are removed.
+	
+	* hildon-fm/hildon-file-selection.h,
+	hildon-fm/hildon-file-selection.c,
+	hildon-fm/hildon-file-common-private.h
+	(_HildonFileSelectionClass): Removed "items-dropped" signal, added
+	"uris-dropped" signal.
+	(hildon_file_selection_set_current_folder,
+	hildon_file_selection_get_current_folder): Removed.
+	(hildon_file_selection_set_current_folder_uri,
+	hildon_file_selection_get_current_folder_uri): Added as
+	replacement.
+	(hildon_file_selection_select_path,
+	hildon_file_selection_unselect_path,
+	hildon_file_selection_get_selected_paths): Removed.
+	(hildon_file_selection_select_uri,
+	hildon_file_selection_unselect_uri,
+	hildon_file_selection_get_selected_uris): Added as replacement.
+	(_hildon_file_selection_set_current_folder_path,
+	_hildon_file_selection_select_path,
+	_hildon_file_selection_unselect_path): Added as internal
+	replacement.  Changed all callers.
+	(_hildon_file_selection_get_selected_files,
+	_hildon_file_selection_realize_help): Moved prototypes to
+	"hildon-file-common-private.h".
+		
+	* hildon-fm/hildon-file-system-model.h
+	(HildonFileSystemModelColumns): Renamed
+	HILDON_FILE_SYSTEM_MODEL_COLUMN_GTK_PATH column to
+	HILDON_FILE_SYSTEM_MODEL_COLUMN_GTK_PATH_INTERNAL.  Changed all
+	references.
+
+	* Makefile.am (SUBDIRS): Removed "ut".
+
+2007-01-26  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 2.2 to experimental.
+
+2007-01-22  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-system-private.c
+	(_hildon_file_system_compare_ignore_last_separator): Skip
+	"file://" prefixes before comparing.
+	(hildon_file_system_create_backend): Use gtk_file_system_create
+	always.
+
+	* hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_delayed_add_children): Handle a NULL
+	model_node->folder gracefully.
+	(get_folder_callback): Rearranged code gratuitously.
+
+	* hildon-fm/hildon-file-common-private.h (_): Use "hildon-fm"
+	explicitly as the text domain since the package name has changed.
+
+	* hildon-fm/hildon-file-chooser-dialog.c,
+	hildon-fm/hildon-file-selection.c,
+	hildon-fm/hildon-file-system-model.c: Removed WITH_GTK_2_10
+	conditionals, keep the 2.10 stuff and the 2.6 stuff that now also
+	works with maemo-gtk 2.10.
+
+	Removed support for Gtk+ 2.6.
+	
+        * configure.ac: Require Gtk+ 2.10.0.  Do not check for osso-ic, it
+	is unused.  Removed --with-gtk-2-10 configure option.  Removed all
+	traces of l10n stuff.  Renamed package to "libhildonfm".
+
+	* hildon-fm/Makefile.am (INCLUDES): Do not use OSSOIC_CFLAGS.
+	(libhildonfm_la_LDFLAGS): Bumped major version to 2.
+	
+2006-12-21  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Make hildon-fm compile with Gtk+ 2.10.  (Gtk+ 2.6 is broken now.
+	Stay tuned.)
+	
+	* hildon-fm/hildon-file-system-info.c: Rewritten to be
+	asynchronous.
+
+	* hildon-fm/hildon-file-chooser-dialog.c: Removed literal copy of
+	GtkFileChooserIFace et al for Gtk+ 2.10.  Include
+	<gtk/gtkfilechooserutils.h> instead.
+	(chooser_entry_invalid_input_cb, hildon_file_chooser_dialog_init):
+	Do not use "invalid-input" signal for Gtk+ 2.10.
+	(set_stub_and_ext): Do not ask the filesystem for the is_folder
+	attribute for now.
+	(create_folder_callback, handle_folder_popup): Use the
+	asynchronous version of gtk_file_system_create_folder.
+	
+	* hildon-fm/hildon-file-selection.c: Do not use the tap&hold
+	machinery since it is not in Gtk+ 2.10 yet.
+	(hildon_file_selection_selection_changed): Expect
+	_hildon_file_system_mount_device_iter to return immediately
+	without useful error information.
+	(thumbnail_data_func): Do not call gtk_style_lookup_logical_color
+	for Gtk 2.10 since it doesn't exist there.
+
+	* hildon-fm/hildon-file-system-model.h,
+	hildon-fm/hildon-file-system-model.c
+	(get_folder_callback): New, factored out of link_folder.
+	(link_folder): Made asynchronous by using new asynchronous
+	gtk_file_system_get_folder call. Removed 'error' argument, updated
+	all callers.
+	(_hildon_file_system_mount_device_iter): Removed 'error' argument,
+	updated all callers.
+
+	* hildon-fm/hildon-file-system-private.c
+	(hildon_file_system_create_backend): Use gtk_file_system_create
+	instead of hildon_gtk_file_system_create for Gtk 2.10.
+
+	* hildon-fm/hildon-file-system-private.h
+	(_hildon_file_system_create_image): Replace 'path' argument with
+	'info' and use gtk_file_info_render_icon instead of
+	gtk_file_system_render_icon.  Updated all callers.
+
+2006-12-19  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* configure.ac: Added --with-gtk-2-10 argument for the Gtk+
+	migration.
+
+	Merged changes from 1.19 to 1.21.
+	
+>    2006-12-18  Marius Vollmer  <marius.vollmer@nokia.com>
+>
+>	    Released 1.21.
+>
+>	    * hildon-fm/hildon-file-chooser-dialog.c (set_stub_and_ext): Be
+>	    'smarter' about recognizing Rename dialogs in order to get the
+>	    is_folder attribute more right (N49932).
+>
+>    2006-12-15  Marius Vollmer  <marius.vollmer@nokia.com>
+>
+>	    * hildon-fm/hildon-file-chooser-dialog.c (set_stub_and_ext): Call
+>	    hildon_file_chooser_dialog_do_autonaming instead of set_entry so
+>	    that the new stub name gets the required autonaming treatment.
+>	    That took a while... (N49936).
+>
+>    2006-12-13  Marius Vollmer  <marius.vollmer@nokia.com>
+>
+>	    Released 1.20.
+>
+>	    * hildon-fm/hildon-file-chooser-dialog.c (set_stub_and_ext): Use
+>	    gtk_file_system_make_path instead of rolling our own to get URI
+>	    escaping right. (N49798) Call set_entry so that the name entry is
+>	    updated when the knowledge about whether it is a folder or not
+>	    changes but retain the value of 'edited' so that autonaming still
+>	    works. (N49799)
+
+2006-12-11  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/Makefile.am (libhildonfm_la_SOURCES): Added
+	hildon-file-common-private.h so that it gets distributed. (N49099)
+	
+2006-12-12  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Merged changes from 1.16 to 1.19.
+
+>    2006-12-08  Marius Vollmer  <marius.vollmer@nokia.com>
+>
+>	    Released 1.19.
+>
+>	    * hildon-fm/hildon-file-system-private.c (hex_digit_to_int,
+>	    unescape_string): New.
+>	    (_hildon_file_system_create_file_name): Use them to unescape the
+>	    fallback display name that is directly extracted from the URI.
+>	    (N48904)
+>
+>    2006-11-30  Marius Vollmer  <marius.vollmer@nokia.com>
+>
+>	    Released 1.18.
+>
+>	    Make it possible for special locations to request a rescan, and
+>	    use it to keep the obex root folder uptodate.  (N40395)
+>
+>	    * hildon-fm/hildon-file-system-model.c (location_rescan): New.
+>	    (setup_node_for_location): Connect it.
+>	    (hildon_file_system_model_destroy_model_node): Expect three
+>	    signals to be disconnected.
+>	    (hildon_file_system_model_queue_node_reload): Refactored out of
+>	    _hildon_file_system_model_queue_reload in order to be able to
+>	    reload nodes directly without having to construct a iter first.
+>
+>	    * hildon-fm/hildon-file-system-obex.h (struct
+>	    _HildonFileSystemObex): Added binding_id member.
+>	    * hildon-fm/hildon-file-system-obex.c (bonding_changed): New, for
+>	    triggering a rescan.
+>	    (hildon_file_system_obex_init): Connect it to the file system
+>	    settings.
+>	    (hildon_file_system_obex_finalize): Disconnect it.
+>
+>	    * hildon-fm/hildon-file-system-settings.c
+>	    (hildon_file_system_settings_get_property,
+>	    hildon_file_system_settings_class_init): Added "bonding-changed"
+>	    property.
+>	    (hildon_file_system_settings_setup_dbus): Catch bonding signals
+>	    from Bluez.
+>	    (hildon_file_system_settings_handle_dbus_signal): Handle them.
+>
+>	    * hildon-fm/hildon-file-system-special-location.h (struct
+>	    _HildonFileSystemSpecialLocationClass): Added 'rescan' signal.
+>	    * hildon-fm/hildon-file-system-special-location.c (enum
+>	    HildonFileSystemSpecialLocationSignals,
+>	    hildon_file_system_special_location_class_init): Register it.
+>
+>    2006-11-29  Marius Vollmer  <marius.vollmer@nokia.com>
+>
+>	    * hildon-fm/hildon-file-system-upnp.c
+>	    (hildon_file_system_upnp_init): Use 'device' directly instead of
+>	    casting it; it is already the right type.
+>
+>	    * hildon-fm/hildon-file-chooser-dialog.c (set_stub_and_ext): Do
+>	    not set entry widget, that was confusing the internal state
+>	    related to autonaming somehow. (N48902)
+>	    (hildon_file_chooser_dialog_set_current_folder): Terminate
+>	    g_strconcat argument list with NULL, stupid. (N48903)
+>
+>    2006-11-21  Marius Vollmer  <marius.vollmer@nokia.com>
+>
+>	    Released 1.17
+>
+>	    * hildon-fm/hildon-file-system-obex.c
+>	    (_obex_addr_to_display_name): Do not call
+>	    dbus_connection_disconnect.
+>
+>	    * hildon-fm/hildon-file-system-upnp.c
+>	    (hildon_file_system_upnp_create_child_location): Use
+>	    qgn_list_filesys_mediaserver icon instead of
+>	    qgn_list_filesys_divc_cls. (N45114)
+
+2006-12-08  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/Makefile.am (libhildonfm_la_SOURCES): Added
+	hildon-file-common-private.h so that it gets distributed. (N49099)
+
+2006-11-30  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	From Daniel Elstner <danielk@o\penismus.com> for the benefit of
+	language bindings.
+
+	* hildon-fm/hildon-file-system-model.h
+	(HildonFileSystemModelClass): Hide this struct by prefixing an
+	underscore.  (M182).
+	
+2006-11-22  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-details-dialog.c
+	(hildon_file_details_dialog_init): Set default title here.
+	(hildon_file_details_dialog_new)
+	(hildon_file_details_dialog_new_with_model): Don't set it here.
+	(M874)
+	
+	* hildon-fm/hildon-file-chooser-dialog.c (set_entry): Removed
+	debugging output.
+	(hildon_file_chooser_dialog_select_path): Update name entry widget
+	as required by GtkFileChooser behavior. (M469)
+
+	* hildon-fm/hildon-file-selection.c
+	(hildon_file_selection_select_unselect_main_iter): Get path from
+	sort model, not from filter model since the view shows the sort
+	model.
+
+        From Jos� Dapena Paz <jdapena@i\galia.com>.  Thanks! (M842)
+	
+ 	* hildon-fm/hildon-file-chooser.c: Add available filters to pane
+	context menu. The filters are added with method add_filter (and
+	removed with remove_filter). Only filters with name are shown, and
+	that name is the one used in the context menu.
+
+2006-11-21  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-system-upnp.c
+	(hildon_file_system_upnp_create_child_location): Use
+	qgn_list_filesys_mediaserver icon instead of
+	qgn_list_filesys_divc_cls. (N45114)
+
+        From Murray Cumming  <murrayc@murrayc.com>.  Thanks!
+   
+ 	* configure.ac: Add a check for perl and and a --disable-rebuilds
+	option, to control whether the hildon-fm-enums-types.[h|c] will be
+	built.  This matches the same build files stuff in hildon-libs.
+
+ 	* hildon-fm/Makefile.am: Generate hildon-fm-enums-types.[h|c],
+	containing GType declarations for hildon-fm enums, so we can use
+	them, for instance, in GValues, and so that enum properties can be
+	declared properly, instead of using ints.
+
+2006-11-17  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 2.0
+	
+	* hildon-fm/hildon-file-system-obex.c
+	(_obex_addr_to_display_name): Do not call
+	dbus_connection_disconnect.
+
+    Merged changes from 1.14 to 1.16:
+
+>     2006-11-14  Marius Vollmer  <marius.vollmer@nokia.com>
+> 
+> 	    Released 1.16
+> 
+> 	    * hildon-fm/hildon-file-chooser-dialog.c
+> 	    (hildon_file_chooser_dialog_set_current_folder): Be careful not to
+> 	    pass stub_name directly to set_stub_and_ext since it will be freed
+> 	    immediately.  (N44784)
+> 
+> 	    Released 1.15
+> 
+> 	    * hildon-fm/hildon-file-system-model.c
+> 	    (hildon_file_system_model_get_value): Removed hack from 2006-10-10
+> 	    and return the normal icon always for COLUMN_ICON.  Otherwise the
+> 	    (+) emblem might appear in the wrong place like in the details
+> 	    dialog.
+> 	    (hildon_file_system_model_load_path): Canonicalize "upnpav:///" to
+> 	    "upnpav://" so that we can find the UPnP root when going up the
+> 	    hierachy.  If gtk_file_system_get_parent doesn't work, do our own
+> 	    filename acrobatics.  Do no insist on having a monitor active for
+> 	    the parent node. (N37687)
+> 
+> 	    * hildon-fm/hildon-file-chooser-dialog.c (set_entry): Be robust
+> 	    against NULL names.
+> 
+>     2006-11-13  Marius Vollmer  <marius.vollmer@nokia.com>
+> 
+> 	    * hildon-fm/hildon-file-system-upnp.c
+> 	    (hildon_file_system_upnp_is_visible,
+> 	    hildon_file_system_upnp_is_available): New methods.
+> 	    (hildon_file_system_upnp_class_init): Install them.
+> 	    (hildon_file_system_upnp_init): Listen to changes to the
+> 	    "iap-connected" property and cause ourselves to be rescanned when
+> 	    it changes.  (N42105)
+> 
+> 	    Make it possible to include <osso-ic-dbus.h>
+> 	    * configure.ac (OSSOIC_CFLAGS, OSSOIC_LIBS): Added, for "osso-ic".
+> 	    * hildon-fm/Makefile.am (INCLUDES): Added OSSOIC_CFLAGS.
+> 
+> 	    * hildon-fm/hildon-file-system-settings.c: Added "iap-connected"
+> 	    property that listens to the "status_changed" signal from
+> 	    "com.nokia.icd".
+> 
+>     2006-11-10  Marius Vollmer  <marius.vollmer@nokia.com>
+> 
+> 	    * hildon-fm/hildon-file-chooser-dialog.c
+> 	    (hildon_file_chooser_dialog_set_current_folder): Be careful not to
+> 	    call g_strconcat with a NULL string.
+> 
+> 	    * hildon-fm/hildon-file-system-obex.c,
+> 	    hildon-fm/hildon-file-system-obex.h (struct
+> 	    _HildonFileSystemObex): Added has_children member.
+> 	    (hildon_file_system_obex_create_child_location): Set has_children
+> 	    to true after adding one.
+> 	    (hildon_file_system_obex_is_visible): New, to make the bluetooth
+> 	    root folder disappear when it is empty.
+> 	    (hildon_file_system_obex_init): Set it. (N40395)
+> 
+> 	    * hildon-fm/hildon-file-system-private.c
+> 	    (_hildon_file_system_search_extension): Handle NULL names.
+> 	    (_hildon_file_system_create_display_name): Consider all special
+> 	    locations to be folders regardless of what 'info' says.
+> 
+>     2006-11-08  Marius Vollmer  <marius.vollmer@nokia.com>
+> 
+> 	    * hildon-fm/hildon-file-selection.c
+> 	    (hildon_file_selection_finalize): Remove banner_timeout_id and
+> 	    banner_close_timeout_id sources. (N46676)
+> 
+> 	    * hildon-fm/hildon-file-system-private.c
+> 	    (_hildon_file_system_create_display_name): Added a gross hack to
+> 	    hide extensions of bookmarks in the GtkFileSystemMemory backend.
+> 
+> 	    * hildon-fm/hildon-file-selection.c: Refactored the sorting
+> 	    function so that the sorting of the navigation pane can be
+> 	    controlled more precisely. (N45910)
+> 	    (sort_function): Added explicit key and order parameters.  Do not
+> 	    retrieve them with hildon_file_selection_get_sort_key since that
+> 	    function always looks at the content pane sorting parameters.
+> 	    (navigation_pane_sort_function): New, use sort_function to sort
+> 	    always by name and ascending.
+> 	    (content_pane_sort_function): New, use sort_function to sort
+> 	    according to hildon_file_selection_get_sort_key.
+> 	    (hildon_file_selection_create_sort_model): Added sort_function
+> 	    parameter.  Updated all callers accordingly to pass either
+> 	    navigation_pane_sort_function or content_pane_sort_function, as
+> 	    appropriate.
+> 
+> 	    * hildon-fm/hildon-file-selection.c
+> 	    (hildon_file_selection_constructor): Set the visible_func of the
+> 	    content pane filter model.  Thanks to Jos� Dapena Paz and Tommi
+> 	    Komulainen! (M841, N45877)
+> 
+> 	    Be smarter about dots in file and folder names (N44784).
+> 
+> 	    * hildon-fm/hildon-file-system-private.h,
+> 	    hildon-fm/hildon-file-system-private.c
+> 	    (_hildon_file_system_search_extension): Added is_folder parameter
+> 	    and behave accordingly.  Updated all callers.  Always search for
+> 	    the longest known extension, even when only_known is FALSE.
+> 	    (_hildon_file_system_create_display_name): Treat folders specially
+> 	    again by setting the is_folder parameter of
+> 	    _hildon_file_system_search_extension correctly.
+> 
+> 	    * hildon-fm/hildon-file-system-model.c
+> 	    (hildon_file_system_model_autoname_uri): Get is_folder property
+> 	    from model and pass to _hildon_file_system_search_extension.
+> 
+> 	    * hildon-fm/hildon-file-chooser-dialog.c (set_stub_and_ext): New.
+> 	    (hildon_file_chooser_dialog_set_current_folder): Call it so that
+> 	    the idea of the file chooser whether we are handling a file or
+> 	    folder is uptodate.
+> 	    (hildon_file_chooser_dialog_set_current_name): Call
+> 	    set_stub_and_ext instead of using explicit code.
+> 
+>     2006-11-06  Marius Vollmer  <marius.vollmer@nokia.com>
+> 
+> 	    * hildon-fm/hildon-file-chooser-dialog.c (set_entry, get_entry):
+> 	    New, to concentrate the extension handling magic in one place.
+> 	    (hildon_file_chooser_dialog_do_autonaming): Use set_entry.
+> 	    (hildon_file_chooser_dialog_get_paths): Use get_entry.
+> 	    (hildon_file_chooser_dialog_set_current_name): Free ext_name and
+> 	    reset it to NULL before setting it anew (maybe).
+> 
+> 	    * hildon-fm/hildon-file-system-private.h,
+> 	    hildon-fm/hildon-file-system-private.c
+> 	    (_hildon_file_system_create_display_name): Also strip known
+> 	    extensions from folders to be consistent with the rename dialog.
+> 	    (get_known_mime_types): Factored out of
+> 	    _hildon_file_system_search_extension.
+> 	    (_hildon_file_system_search_extension): Use it.  Removed mime_type
+> 	    parameter, added only_known parameter.  When only_known is true,
+> 	    only consider registered extensions.  Updated all callers.
+> 	    (_hildon_file_system_is_known_extension): New.
+> 
+> 	    * hildon-fm/hildon-file-system-model.c
+> 	    (hildon_file_system_model_autoname_uri): Updated for change in
+> 	    _hildon_file_system_search_extension.
+ 
+2006-10-23  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 1.14 and started 2.x development series.
+
+	* hildon-fm/hildon-file-system-mmc.c
+	(hildon_file_system_mmc_get_extra_info): Removed.
+	(hildon_file_system_mmc_class_init): Do not use it.
+	(N42731)
+	
+2006-10-19  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Code cleanups from Kuisma.
+	
+	* hildon-fm/hildon-file-chooser-dialog.c
+	(chooser_entry_invalid_input_cb): New.
+	(hildon_file_chooser_dialog_check_limit): Removed.
+	(hildon_file_chooser_dialog_init): Connect
+	chooser_entry_invalid_input_cb to "invalid-input" signal instead
+	of hildon_file_chooser_dialog_check_limit to "insert-text".
+	(insensitive_button): Use hildon_banner_show_information instead
+	of gtk_infoprint. (N43716)
+
+2006-10-16  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_real_device_disconnected): Do reset
+	load_time and accessed for MMC locations (N42571).  See also the
+	change from 2006-09-29.
+	
+	* hildon-fm/hildon-file-system-obex.c
+	(hildon_file_system_obex_class_init): Set requires_access method
+	to NULL to get the default behavior.
+
+2006-10-11  Marius Vollmer  <marius.vollmer@nokia.com>
+
+        Added "show-type-icon" property.  (N42979)
+
+	* hildon-fm/hildon-file-details-dialog.c (PROP_SHOW_TYPE_ICON):
+	New.
+	(hildon_file_details_dialog_class_init): Install it and default to
+	FALSE.
+	(hildon_file_details_dialog_set_property): Show/hide file_image
+	widget as appropriate for it.
+	(hildon_file_details_dialog_get_property): Return its current
+	value.
+	(hildon_file_details_dialog_init): Use a hbox for the type field
+	and put the newly created file_image widget into it in addition to
+	the label.
+	(hildon_file_details_dialog_set_file_iter): Get the icon of the
+	iter and put it into the file_image widget.
+
+2006-10-10  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_get_value): Return the collapsed icon
+	instead of the normal icon for special locations that require
+	access but have not yet been accessed. (N33895)
+	(handle_possibly_finished_node): Call gtk_tree_model_row_changed
+	when the node is now completely loaded. (N38533)
+
+2006-10-09  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 1.13.
+	
+	* hildon-fm/hildon-file-system-private.c
+	(_hildon_file_system_search_extension): Don't return immediately
+	when mime is NULL.  We need to consider all registered extensions
+	in that case. (N42601)
+
+	* debian/rules (CFLAGS), hildon-fm/Makefile.am (INCLUDES): Moved
+	-DHILDON_FM_HPANED to Makefile.am so that it is always defined.
+
+	* hildon-fm/hildon-file-chooser-dialog.c
+	(check_illegal_characters): Do not check for "." and "..", this is
+	now done elsewhere.
+	(response_handler): Reject names that start with a dot. (N42088)
+
+	* hildon-fm/hildon-file-selection.c: Move definition of
+	prev_handle_pos into the HILDON_FM_HPANED conditional.
+
+2006-10-06 Tapani Palli <tapani.palli@nokia.com>
+
+	* hildon-fm/hildon-file-selection.c : listen to notify::position,
+	if the position of the hpaned handle is moved, move it back to
+	previous position. (N29728)
+
+2006-10-04  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 1.12.
+	
+	* hildon-fm/hildon-file-selection.c
+	(hildon_file_selection_close_load_banner): Make sure that the row
+	with the cursor is in the selection. (N42110)
+	(hildon_file_selection_selection_changed): Free current_folder
+	before setting a new one.
+
+2006-10-02  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 1.11.
+	
+	* hildon-fm/hildon-file-system-mmc.c (capitalize_ascii_string):
+	Advance pointer after uppercasing the first char, stupid.
+
+2006-09-29  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-system-mmc.c (capitalize_ascii_string):
+	New.
+	(hildon_file_system_mmc_get_display_name): Use it to nicify the
+	names. (N40288)
+
+	* configure.ac (BTTOOLS_CFLAGS): Removed.
+	* hildon-fm/Makefile.am (INCLUDES): Don't use BTTOOLS_CFLAGS.
+
+	* hildon-fm/hildon-file-system-private.c
+	(_hildon_file_system_search_extension): If mime is NULL, just
+	return the part after the last dot. (N40336)
+
+	* hildon-fm/hildon-file-selection.c
+	(hildon_file_selection_check_location): Do not retreat to safe
+	folder.
+	(hildon_file_selection_selection_changed): Disable cursor magic
+	when unreffing the sort_model.  Don't retreat do the old folder
+	when mounting fails.
+
+	* hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_real_device_disconnected): Do not reset
+	'load_time' and 'accessed' fields of device node.  This better
+	reflects reality and makes it easier to control when the node is
+	reloaded.
+	(location_connection_state_changed): Likewise.
+	(node_needs_reload): Reload unwatched nodes when forced.
+	(_hildon_file_system_model_mount_device_iter): Set 'accessed' to
+	TRUE even for failures.
+	
+2006-09-29 Tapani Palli <tapani.palli@nokia.com>
+
+	* hildon-fm/hildon-file-system-settings.c:
+	read MMC_USED_KEY value from gconf in delayed_init
+
+2006-09-28  Xan Lopez  <xan.lopez@nokia.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c (build_ui): 
+	Use a variable to hold the infobanner message the for insensitive
+	button press callback instead of hardcoding it. (N41719).
+
+2006-09-28  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-system-private.c
+	(_hildon_file_system_get_locations): Move ".games" folder to root.
+	(N37440)
+	
+	* hildon-fm/hildon-file-chooser-dialog.c
+	(check_illegal_characters): Removed '.' again from the list of
+	illegal characters.
+	(hildon_file_chooser_dialog_set_limit): Don't try to be smart
+	about the full pathname length, only use max_filename_length to
+	limit the entry field. (N32010)
+
+	* hildon-fm/hildon-file-system-settings.c: Don't include
+	<bttools-dbus.h>, it is deprecated.
+	(BTNAME_SERVICE, BTNAME_REQUEST_IF, BTNAME_SIGNAL_IF,
+	BTNAME_REQUEST_PATH, BTNAME_SIGNAL_PATH, BTNAME_REQ_GET,
+	BTNAME_SIG_CHANGED): New, using the "bluez.org" D-Bus API.
+	(N41462)
+	
+2006-09-27 Tapani Palli <tapani.palli@nokia.com>
+
+	* hildon-fm/hildon-file-system-remote-device.c : initialize
+	device->accessible using the !flight_mode value
+
+2006-09-27  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_search_path_internal): Also consider the
+	parent node itself as a potential search hit. (N41347)
+
+	Released 1.10.9.
+	
+	Provide the hildon_file_selection_move_cursor_to_uri (N40983).
+	
+	* hildon-fm/hildon-file-selection.h
+	(hildon_file_selection_move_cursor_to_uri): New prototype.
+	* hildon-fm/hildon-file-selection.c
+	(hildon_file_selection_enable_cursor_magic_for_model,
+	hildon_file_selection_enable_cursor_magic): Renamed former to
+	latter, changed all callers.  Also connects row_inserted signal.
+	(hildon_file_selection_disable_cursor_magic): New.
+	(HildonFileSelectionPrivate): Added cursor_goal_uri field.
+        (hildon_file_selection_finalize): Call disable_magic.  Free
+	cursor_goal_uri.
+	(set_cursor_idle_handle, set_cursor_when_idle,
+	get_view_for_model): New.
+	(hildon_file_selection_row_deleted): Don't set cursor when we have
+	a cursor_goal_uri.
+	(hildon_file_selection_row_inserted): New, for tracking the
+	cursor_goal_uri.
+	(hildon_file_selection_move_cursor_to_uri): New.
+	(hildon_file_selection_selection_changed): Don't call
+	hildon_file_selection_delayed_select_reference when nothing is
+	selected, we take care of the cursor now with
+	hildon_file_selection_enable_cursor_magic et al.
+
+2006-09-27  Xan Lopez  <xan.lopez@nokia.com>
+
+	* hildon-fm/hildon-file-system-upnp.c: 
+	(root_failed_message): Removed, since it is not specified.
+	(hildon_file_system_upnp_init): Set failed_access_message to NULL instead.
+	(NB#41283).
+
+2006-09-21  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c
+	(check_illegal_characters): Added '.' to list of illegal
+	characters. (N40732)
+
+2006-09-19  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-system-obex.c
+	(root_failed_message): Removed, since it is not specified.
+	(hildon_file_system_obex_init): Set failed_access_message to NULL
+	instead.  Thanks to Jouni Tulkki for the patch!  (N39687)
+
+2006-09-19  Xan Lopez  <xan.lopez@nokia.com>
+
+	* hildon-fm/hildon-file-selection.c
+	(hildon_file_selection_constructor): Fix memory leak, NB#34417.
+
+2006-09-18  Fernando Herrera  <fernando.herrera-de-las-heras@nokia.com>
+
+	* hildon-fm/hildon-file-details-dialog.c:
+	(hildon_file_details_dialog_init): Ellipsize location on details
+        dialog. (N38147)
+
+2006-09-18  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 1.10.
+
+2006-09-18  Fernando Herrera  <fernando.herrera-de-las-heras@nokia.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c
+	(hildon_file_chooser_entry_changed): Make OK button insensitive
+	when text entry is empty in the Create Folder/Rename/Move dialogs
+	(N33732)
+
+2006-09-18  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_delayed_add_node_list_timeout): Call
+	hildon_file_system_model_delayed_add_children with FORCE set to
+	true.
+
+	* hildon-fm/hildon-file-selection.c
+	(hildon_file_selection_content_pane_selection_changed): First
+	argument to callback is a GtkTreeSelection, not a GtkWidget (but
+	it was unused).
+	(hildon_file_selection_close_load_banner): Replaced logic when and
+	how to select the first row with something simpler that is
+	hopefully just as good.  Specifically, the curser is simply set to
+	the first row when it wasn't set previously.
+	(hildon_file_selection_set_cursor_stubbornly): New.
+	(hildon_file_selection_row_deleted): New.
+	(hildon_file_selection_enable_cursor_magic_for_model): New.
+	(hildon_file_selection_selection_changed,
+	hildon_file_selection_setup_dnd_view): Call it for the sort_model.
+	(hildon_file_selection_create_dir_view): Call it for the
+	dir_filter. (N30868)
+
+2006-09-15  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-system-settings.c
+	(hildon_file_system_settings_setup_dbus): Wait for the bluetooth
+	name request to finish before returning so that people always get
+	a good name even if they are not tracking changes.  Thanks Jouni
+	Tulkki for the patch. (N39128)
+
+2006-09-15  Fernando Herrera  <fernando.herrera-de-las-heras@nokia.com>
+
+	* hildon-fm/hildon-file-details-dialog.c
+	(hildon_file_details_dialog_init): Ellipsize name on details
+	dialog. (N40046)
+
+2006-09-14  Fernando Herrera  <fernando.herrera-de-las-heras@nokia.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c
+	(hildon_file_chooser_dialog_do_autonaming): Fix the pos/selection
+	when autonaming a file (N39834). (Also cleaned ChangeLog)
+
+2006-09-13  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-selection.c
+	(hildon_file_selection_select_unselect_main_iter): The sort_model
+	is the parent of the filter_view, not the other way around.
+	Corrected conversion and usage of iters accordingly.  (N39660)
+
+2006-09-13  Kimmo Hämäläinen  <kimmo.hamalainen@nokia.com>
+
+	* hildon-fm/hildon-file-system-mmc.c: Added a proper private struct
+        and a property for specifying which memory card is which.
+
+        Order of memory cards is now fixed (NB#38145).
+        Fixed the localised name of an unnamed (or non-FAT) memory card
+	(NB#35433).
+
+2006-09-08  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-common-private.h (KE): New.
+
+	* hildon-fm/hildon-file-selection.c (navigation_pane_filter_func):
+	Only test prefix when UPNP_ROOT is set.
+	(navigation_pane_tap_and_hold_query): Use
+	signal_navigation_pane_context_menu instead of
+	signal_content_pane_context_menu, stupid.
+
+2006-09-08 Tapani Palli <tapani.palli@nokia.com>
+
+	* hildon-fm/hildon-file-system-settings.c : added more properties for
+	mmc status
+	* hildon-fm/hildon-file-system-mmc.c : checks for opened cover and
+	corrupted mmc (N39775, N40002)
+
+2006-09-07  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-selection.c (tap_and_hold_query,
+	content_pane_tap_and_hold_query,
+	navigation_pane_tap_and_hold_query): New, to stop tap-and-hold
+	animation when no handlers are connected.
+	(hildon_file_selection_create_thumbnail_view,
+	hildon_file_selection_create_list_view,
+	hildon_file_selection_create_dir_view): Connect them to
+	"tap-and-hold-query", as appropriate. (N21395)
+
+2006-09-07  Marius Vollmer  <marius.vollmer@nokia.com>
+
+        Released 1.9.
+
+2006-09-07 Tapani Palli <tapani.palli@nokia.com>
+
+	* hildon-fm/hildon-file-system-settings.c : Added new properties for
+	tracking mmc status
+	* hildon-fm/hildon-file-system-mmc.c : check for mmc status to give a
+	proper reason in hildon_file_system_mmc_get_unavailable_reason()
+	(N37947)
+
+2006-09-06  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 1.8.
+	
+	* hildon-fm/hildon-file-system-settings.c (BANNER_TIMEOUT):
+	Reduced to 500 ms so that it is smaller than the initial delay of
+	showing the banner.  There needs to be more theory for determining
+	the 'right' timeout.
+	(banner_pid): New, to store a permanent pid in the face of Linux'
+	per-thread-pids.
+	(_hildon_file_system_prepare_banner): Initialize it when needed
+	and use it instead of getpid() in the D-Bus message.
+	(_hildon_file_system_cancel_banner): Likewise. (N39738)
+
+2006-09-06  Fernando Herrera  <fernando.herrera-de-las-heras@nokia.com>
+
+	* hildon-fm/hildon-file-selection.c: (navigation_pane_filter_func),
+	(hildon_file_selection_set_property),
+	(hildon_file_selection_get_property),
+	(hildon_file_selection_class_init): added a new property: "show_upnp"
+	* hildon-fm/hildon-file-chooser-dialog.c:
+	* hildon-fm/hildon-file-chooser-dialog.h: Added two new APIs
+	functions: hildon_file_chooser_dialog_set_show_upnp / 
+	hildon_file_chooser_dialog_get_show_upnp to show or not UPNP
+	locations. (Part of N35160)
+
+2006-09-05  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-system-model.c (node_needs_reload): New,
+	factored out of hildon_file_system_model_delayed_add_children.
+	(hildon_file_system_model_delayed_add_children): Use it.  Call
+	handle_possibly_finished_node when the reload request is ignored
+	so that the "finished-loading" signal is emitted for every node
+	that enters the reload queue. (N31278, N38652)
+	(_hildon_file_system_model_queue_reload): Use it to reject
+	unneeded reloads.
+
+2006-09-04  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_finalize): Removed semicolon after 'if'
+	condition. (N34414)
+	(hildon_file_system_model_autoname_uri): Initialize "folder" to
+	NULL. (N34414)
+
+2006-08-31  Kimmo Hämäläinen  <kimmo.hamalainen@nokia.com>
+
+	* hildon-file-system-model.c (link_file_folder): Added signal
+        block/unblock to protect against unwanted "files-added" signal.
+	(my_copy_deep): Changed the order in which the folders are linked. 
+
+	* hildon-file-selection.c (on_drag_data_received): Changed to use    
+        gtk_tree_view_get_dest_row_at_pos instead of old 
+        gtk_tree_view_get_path_at_pos.
+
+        Other changes as well -- check the diff.
+
+2006-02-14  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	Moved hildon-file-details-dialog from hildon-libs to hildon-fm.
+        Merged hildon-lgpl into hildon-libs.
+
+	* hildon-fm/hildon-file-details-dialog.[ch]: added from hildon-libs
+
+	* hildon-fm/Makefile.am : added reference to
+	hildon-file-details-dialog.[ch]
+
+	* configure.ac (PKG_CHECK_MODULES): removes dependency on
+	hildon-lgpl. Depends on hildon-libs 0.12.0
+
+
+2006-02-13  Murray Cumming  <murrayc@murrayc.com>
+
+	* hildon-fm/hildon-file-system-model.h: 
+	Use a prototype declaration for HildonFileSystemModel, 
+	as with other structs, so that the C++ bindings can hide the 
+	full implementation from their headers.
+
+2006-01-12  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	N#19820 Memory leaks in the file selector dialog and underlying components
+	* hildon-fm/hildon-file-system-model.c
+	(_HildonFileSystemModelPrivate): added signal_handler_id table
+	(hildon_file_system_model_finalize): use _disconnect instead of
+	_disconnect_by_func, which does not release memory early enough.
+	(hildon_file_system_model_constructor): Save signal IDs. We need
+	those when we release signal handlers at finalize.
+
+2006-01-12  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	Branched for maintenance (0.9.x) based on 0.9.47-1
+	Developement on trunk (0.10.x)
+
+2005-12-21  Johan Bilien <johan.bilien@nokia.com>
+
+	* configure.ac: 0.10.0
+
+	* Port to dbus >= 0.50
+
+2005-11-08  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* configure.ac: 0.9.47
+
+2005-11-08  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* hildon-fm/hildon-file-selection.c (MAX_CURSOR_PARTS)
+	(drag_begin): Added upper limit to number of items in the drag
+	cursor. N#20202.
+
+2005-11-03  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* configure.ac: 0.9.46
+
+	N#20755 Modifications to GtkTreeModels cause File selector to load
+                much more content than intended.
+
+	* hildon-fm/hildon-file-system-model.c
+	(*): Removed in_timeout member. The need for that was dissapeared.
+	
+	(hildon_file_system_model_ref_node),
+	(hildon_file_system_model_unref_node),
+	(node_is_under_removable): functions removed
+	
+	(set_mmc_state): Changed to avoid possible extra reload in save
+	dialogs.
+	
+	(hildon_file_system_model_iter_n_children): Removed node loading.
+
+	(hildon_file_system_model_get_value): Changed to load children
+	when a field that is needed to display folder graphically is
+	requested.
+
+	(hildon_file_system_model_delayed_add_children): Changed to skip
+	extra reloads on MMC at some cases.
+
+	
+2005-10-31  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* configure.ac: 0.9.45
+
+2005-10-31  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	N#20341 hildon_file_system_model_autoname_uri doesn't work
+	        properly for names having numbers.
+
+	* hildon-file-system-private.[ch]:
+	(_hildon_file_system_parse_autonumber): Moved parse_autonumber
+	here from hildon-file-system-model.c, with following changes:
+	Changed all error cases immediately return -1 (not accepted) and
+	remove separate ACCEPT state (input is now accepted, when state
+	machine is in CLOSE state at the end of input). Small logic
+	changes (not increase input pointer after number conversion, since
+	it already points to next character).
+	
+	(_hildon_file_system_remove_autonumber): Refactored from
+	autoname_uri. Also needed in save dialog.
+	
+	* hildon-file-system-model.c: move out parse_autonumber(). Use new
+	_hildon_file_system_parse_autonumber instead.
+
+	* hildon-file-chooser-dialog.c
+	(hildon_file_chooser_dialog_set_current_name): Changed to remove
+	existing autonumber from name, if autonumbering is enabled.
+	
+2005-10-05  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* configure.ac: 0.9.44
+
+2005-10-05  Luc Pionchon  <luc.pionchon@nokia.com>
+
+        N#19698 File dialog doesn't free everything it has allocated/cached
+	
+	* hildon-fm/hildon-file-system-private.c: Changed the cache to use
+	weak references instead of normal hard references. Chnaged the
+	whole cache object to be destroyed as well, when it temporarily
+	becomes empty.
+	
+	(load_icon_cached): Reference changes due to above logic change.
+	(insert_icon): Added weak reference.
+	(get_cache): Changed to use new finalizer function.
+	(icon_finalized): New function, called when a cached icon is freed.
+	(cache_finalize): New function, called when the whole cache
+	becomes empty or icon theme dies.
+
+	* hildon-fm/hildon-file-system-model: Changed to keep hard
+	reference to emblems, because cache modifications would otherwise
+	cause emblems to be reloaded for each composite icon made.
+
+	(finalize): Unref emblems
+	(create_composite_image): Changed to take emblem icon as
+	parameter, not just name.
+	(get_collapsed_emblem): New function, ensures that emblem is
+	cached
+	(get_expanded_emblem): New function, ensures that emblem is cached
+
+2005-10-05  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* configure.ac: 0.9.43
+
+2005-10-05  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_finalize): Now removing signal handlers
+	that are bound to a longliving object. N#19820
+
+2005-10-04  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c: 
+        - removed automatical name entry selection after model has
+          finished loading.
+        - autonaming now selects the generated file name only if the user
+          hasn't moved the cursor yet; otherwise the new cursor location
+          is preserved.
+          N#19311
+
+2005-09-26  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* configure.ac: 0.9.42
+
+	N#16169 File dialog shows "Updating" for several minutes although
+	directory doesn't have any files matching the mime-type requested
+	by the application (but 100 others):
+	
+	* hildon-fm/hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_ensure_idle):
+	hildon_file_selection_model_delayed_add_node_list_timeout idle
+	handler priority lowered
+	(hildon_file_system_model_delayed_add_node_list): model is now
+	constructed breadth-first, not depth-first
+	(_hildon_file_system_model_prioritize_folder): function added for
+	moving a folder to the head of delayed_lists queue
+	
+	* hildon-fm/hildon-fm/hildon-file-system-model.h: added prototype
+	for _hildon_file_system_model_prioritize_folder
+
+	* hildon-fm/hildon-fm/hildon-file-selection.c
+	(hildon_file_selection_selection_changed): now calls
+	_hildon_file_system_model_prioritize_folder when the folder is
+	changed.
+
+2005-09-15  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* configure.ac: 0.9.41
+
+2005-09-15  Kristian Rietveld  <kris@i\mendio.com>
+
+	* hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_kick_node): first emit the row_deleted
+	signal, than actually delete the node from the tree. (the
+	row_deleted signal can trigger unrefs for this node, which still
+	need to be handled). N#17314
+
+2005-09-14  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* hildon-fm/hildon-file-system-private.c
+	(_hildon_file_system_create_file_name): Remove trailing spaces
+	from MMC name. N#17823
+	
+2005-09-14  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* configure.ac: 0.9.40
+
+2005-09-13  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_constructor): fixed memory leak. Removed
+	local_device_path from private data struct, use local
+	variable. N#19145
+
+2005-09-09  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* configure.ac: 0.9.39
+
+2005-09-09  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	N#14586 Gateway content needs update if
+	   1) user clicks on a folder AND more than 30s is passed from
+	   last reload.
+	   2) User activates a filewithin current folder and than 30s is
+	   passed from last reload.
+	
+	* hildon-fm/hildon-file-selection.c
+	(hildon_file_selection_selection_changed): reload gateway content.
+
+	* hildon-fm/hildon-file-system-model.c
+	(_hildon_file_system_model_queue_reload): likewise.
+
+
+2005-09-08  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* configure.ac: Release 0.9.38
+	
+2005-09-09  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	N#16092 Filetree doesn't use singleton mime-type icons, but keeps
+	multiple copies of them in memory.
+	
+	* hildon-fm/hildon-file-system-private.[ch]
+	(_hildon_file_system_load_icon_cached): New function that
+	implements caching.
+	(_hildon_file_system_create_image): now uses cache when loading
+	icons.
+
+	* hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_create_composite_image): now uses cache
+	when loading icons.
+
+	
+
+        N#18253 Phone icon is not dimmed (in file tree) when the phone
+	does not support OBEX.
+	
+	* hildon-fm/hildon-file-system-settings.c (gateway-ftp): added new
+	property "gateway-ftp".
+	(_hildon_file_system_settings_get_flight_mode): Added ftp capability check.
+
+	* hildon-fm/hildon-file-selection.c
+	(hildon_file_selection_real_row_insensitive): Added a check if
+	gateway is dimmed because of missing ftp capability.
+
+
+2005-09-08  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* configure.ac: Release 0.9.37
+
+2005-09-07  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	Some GTK filesystem backend cause blocking for unknown amount of
+	time. We "solve" this (give feedback to the user) by adding a dbus
+	service to TN to display an "updating" info banner after one
+	second.
+	
+	* hildon-file-system-settings.h: Introduced new internal API to
+	communicate with task navigator in order to display banner during
+	blocking backend operations.
+
+	* hildon-file-system-settings.c: Implemented new communication API.
+
+	* hildon-file-system-model.c:
+	- Added calls to task navigator to show banner during blocking
+	calls.
+	
+	- Changed nodes that need to be reloaded to be queued instead of
+	the old approach where error nodes were queued. In this way we can
+	remove problem nodes from model immediately after error condition
+	is detected.
+	
+2005-09-07  Luc Pionchon  <luc.pionchon@nokia.com>
+	
+	* hildon-file-system-model.c: Added handler for new
+	GtkFileSystemError code. This causes less calls over bluetooth.	
+
+2005-08-30  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* configure.ac: Release 0.9.36
+
+2005-08-30  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* hildon-fm/hildon-file-system-model.c: Added a priority queue to
+	track most frequently used nodes and remove oldest items if needed, to
+	limit memory consumption.
+	N#16151
+
+2005-08-22  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* configure.ac: Release 0.9.35
+
+2005-08-22  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* hildon-fm/hildon-file-system-model.c: (get_value) In some cases
+	gateway folder became dimmed because of read error. 
+	* (handle_delayed_error) It was possible that the whole gateway root
+	folder got deleted.
+	* (delayed_add_children) gtk_file_system_folder_list_children
+	succeeds, even in a case bt is switched off. Made a workaround for
+	this.
+	* Some code cleanup (handle_delayed_error, set_mmc_state,
+	flightmode_changed).
+	* Added implementation for the new signal and protection mechanism to
+	avoid several reloads from gateway when there is no connection.
+
+	* hildon-fm/hildon-file-system-model.h: Added new
+	"device-disconnected" signal.
+
+	* hildon-fm/hildon-file-selection.c: Added handler for the new signal.
+	* (selection_changed) We now return current folder back to it's
+	previous place if we fail to connect to gateway device.
+	* changed "to_be_selected" row reference into "current_folder", which
+	keeps eye on current folder all the time. This change was needed to
+	know previous folder. This causes many small changes here and there.
+
+	N#14585, N#14586
+
+2005-08-17  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* configure.ac: Release 0.9.34
+	
+2005-08-17  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* hildon-fm/hildon-file-system-private.c
+	(_hildon_file_system_create_file_name): 
+	Take special 'mmc-undefined-name' name for unnamed MMCs into account
+	when resolving device names.  N#15509
+
+2005-08-17  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* configure.ac: Release 0.9.33
+	
+2005-08-16  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* hildon-fm/hildon-file-system-private.c (locations):
+	* po/en_GB.po: s/sfil_li_mmc_local_device/sfil_li_mmc_localdevice/
+	
+2005-08-16  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* hildon-fm/hildon-file-selection.h
+	* hildon-fm/hildon-file-selection.c
+	(hildon_file_selection_clear_multi_selection): New function that only
+	clears other selections, but keeps the item with (active/passive)
+	focus selected.
+	* hildon-fm/hildon-file-selection.c
+	(hildon_file_selection_unselect_all): Now really unselects all paths,
+	also active/passive focus. 
+	N#15806
+
+2005-08-16  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_add_node): Block file system backend from
+	sending a signal just when the same node is being added to internal
+	data model, which causes that the internal data model believes that it
+	has already loaded the folder.
+	N#14040
+
+2005-08-16  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	Update to new l10n packaging style.  po-files (inside this package)
+	are not used for now, the message catalogs come from separate packages
+	and including them here would conflict.
+
+	* Makefile.am (SUBDIRS): stop including po-files
+	* Makefile.am (EXTRA_DIST):
+	* debian/hildon-fm-l10n-engb.install:
+	* debian/hildon-fm-l10n-src.install:
+	* po/debian/*: Removed
+
+2005-08-10  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c (handle_folder_popup):
+	use logical string for message for generic error. N#13795
+	* po/en_GB.po: added sfil_ni_operation_failed translation
+	
+	* hildon-fm/hildon-file-system-info.[ch]:
+	(hildon_file_system_info_get_icon_at_size) Added new interface to
+	get an icon in arbitrary size. N#16986
+
+2005-08-09  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* hildon-fm/hildon-file-system-model.c: Now MMC state is
+	investigated immediately when the widget is created. It makes the
+	creation to take a bit more time, but ensures that MMC locations
+	are usable as well right from the start.
+
+	* hildon-fm/hildon-file-chooser-dialog.c: Allow setting limit to
+	the filename. Added two new properties:
+
+	- "max-full-path-length": Works as current limitation system, but
+	you can now change the value as well (if needed, defaults to 255)
+
+	- "max-name-length": Limits the length of individual file/folder
+	name as entered by user (note that possible hidden
+	extension/folder path make the name longer).
+
+2005-08-03  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c
+	(hildon_file_chooser_dialog_get_paths): remove leading dots from
+	user provided file names (otherwise files are be hidden by the
+	filemanager, and the user has no way to access them.)
+
+2005-08-01  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* hildon-file-selection.c: GtkTreeModelSort didn't keep
+	the order very well for equal nodes, therefore a sort 
+	function was fixed to handle device nodes correctly.
+	
+	* hildon-file-system-model.c: Now allowing load_uri to access
+	gateway before gateway is accessed by UI.
+
+	* hildon-file-system-settings.[ch]: Added
+	_hildon_file_system_settings_ready() for checking if all settings
+	have been loaded.
+
+2005-07-26  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* hildon-fm/hildon-file-system-settings.c (hildon_file_system_settings_setup_dbus): changed pending dbus calls to use default timeout value (which is longer than our old value).
+
+	* hildon-fm/hildon-file-system-model.c : 
+	  - Fixed a race condition from volumes-changed handler
+	    (not queued to idle anymore).
+	  - Restored call to delayed_add_children that was removed earlier.
+            Added one new call to this function to set_mmc_state as well
+	    (to make mmc immediately show '+' sign if needed).
+	
+2005-07-25  Luc Pionchon <luc.pionchon@nokia.com>
+
+	* hildon-file-system-settings.c: Added auto activation flags into dbus
+	requests
+
+	* hildon-file-selection.c: 
+	Added infoprint
+	Fixed navigation pane filtering
+	Fixed automatic location change
+
+	* en_GB.po: Fixed a typo from translations
+
+	* hildon-file-system-model.c:
+	Added checking for readability
+	Implemented node referencing support
+	Fixed removing of folder objects
+	Fixed a problem with uri vs. display text encodings
+
+	* hildon-file-selection.h:
+	* hildon-file-chooser-dialog.c:
+	Fixed automatic location change
+
+	Fixed File Selection widget folder names
+
+	Fixed dimming for unreadable files in FileSelectionWidget
+
+	Fixed inconsistent drag and drop behaviour in multiple selection for
+	FileSelectionWidget
+
+	Fixed inconsistent behaviour of hildon_file_system_model_autoname_uri
+
+	Fixed notes files not opened after duplicating
+
+	Fixed 'autoname_uri' that didn't work properly for files with double
+	extensions
+
+	Fixed Control Panel that crashed on exporting certificate to MMC & the
+	MMC cover is open
+
+	Fixed HildonFileChooserDialog that didn't implement
+	gtk_filechooser_set_local_only
+
+	Drag data is now stored when drag begins to prevent GtkTreeVIew from
+	clearing selection due to button-release event before drag-data-get
+	signal is received
