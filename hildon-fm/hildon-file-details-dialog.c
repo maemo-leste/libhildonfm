@@ -386,6 +386,8 @@ hildon_file_details_dialog_init(HildonFileDetailsDialog *self)
 
        hildon_pannable_area_add_with_viewport (HILDON_PANNABLE_AREA (priv->scroll), 
 					       GTK_WIDGET (GTK_BOX(vbox)));
+       g_object_set (G_OBJECT (priv->scroll), "mov-mode", HILDON_MOVEMENT_MODE_BOTH, NULL);
+
        gtk_box_pack_start(GTK_BOX(GTK_DIALOG(self)->vbox),
 			  GTK_WIDGET(priv->scroll), TRUE, TRUE, 0);
 
