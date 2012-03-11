@@ -372,7 +372,12 @@ static void init_vol_type (const char *path,
           if (g_str_has_prefix (path, buf))
             voldev->vol_type = EXT_CARD;
           else
-            voldev->vol_type = INT_CARD;
+          {
+            if(g_str_has_prefix (path, "drive:///media/mmc"))
+              voldev->vol_type = EXT_CARD;
+            else
+              voldev->vol_type = INT_CARD;
+          }
         }
       else
         {
@@ -380,7 +385,12 @@ static void init_vol_type (const char *path,
           if (strncmp (buf, path, 100) == 0)
             voldev->vol_type = EXT_CARD;
           else
-            voldev->vol_type = INT_CARD;
+          {
+            if( g_str_has_prefix (path, "file:///media/mmc"))
+              voldev->vol_type = EXT_CARD;
+            else
+              voldev->vol_type = INT_CARD;
+          }
         }
 
       voldev->vol_type_valid = TRUE;
