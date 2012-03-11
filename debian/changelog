@@ -1,3 +1,9 @@
+libhildonfm (1:2.28.22+0cssu2) unstable; urgency=low
+
+  * Correctly decide on mmc card type (external or internal)
+
+ -- Ivaylo Dimitrov <freemangordon@abv.bg>  Sun, 11 Mar 2012 11:33:31 +0200
+
 libhildonfm (1:2.28.22+0cssu1) unstable; urgency=low
 
   * Enable horizontal scrolling in file details dialog.
