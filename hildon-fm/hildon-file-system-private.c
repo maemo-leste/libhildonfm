@@ -226,7 +226,6 @@ GNode *_hildon_file_system_get_locations(GtkFileSystem *fs)
             g_node_append_data(/*locations*/virtual_node, location);
         }
 
-#if 0 /* Let's not bother with these */
 	/* Setup multiple Bluetooth device support */
 	env = g_getenv("HILDON_FM_OBEX_ROOT");
 	if (env && env[0]) {
@@ -235,6 +234,7 @@ GNode *_hildon_file_system_get_locations(GtkFileSystem *fs)
 	  g_node_append_data(/*locations*/virtual_node, location);
 	}
 
+#if 0 /* Let's not bother with these */
         /* Setup SMB
          */
         {
