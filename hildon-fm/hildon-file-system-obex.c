@@ -58,7 +58,7 @@ hildon_file_system_obex_create_child_location (HildonFileSystemSpecialLocation *
 
 static gboolean
 hildon_file_system_obex_is_visible (HildonFileSystemSpecialLocation *location,
-				    gboolean has_children);
+                                    gboolean has_children);
 
 G_DEFINE_TYPE (HildonFileSystemObex,
                hildon_file_system_obex,
@@ -114,7 +114,7 @@ hildon_file_system_obex_init (HildonFileSystemObex *device)
     location = HILDON_FILE_SYSTEM_SPECIAL_LOCATION (device);
     location->compatibility_type = HILDON_FILE_SYSTEM_MODEL_GATEWAY;
     location->fixed_icon = g_strdup ("general_bluetooth");
-    location->fixed_title = g_strdup (_("sfil_li_bluetooth"));
+    location->fixed_title = g_strdup (dgettext("osso-connectivity-ui", "conn_ti_bluetooth_cpa"));
     location->failed_access_message = NULL;
 
     device->bonding_handler_id =
@@ -203,7 +203,7 @@ hildon_file_system_obex_create_child_location (HildonFileSystemSpecialLocation *
 
         child->basepath = g_strdup (uri);
         child->failed_access_message = _("sfil_ib_cannot_connect_device");
-	child->permanent = FALSE;
+        child->permanent = FALSE;
     }
 
     return child;
@@ -211,7 +211,7 @@ hildon_file_system_obex_create_child_location (HildonFileSystemSpecialLocation *
 
 static gboolean
 hildon_file_system_obex_is_visible (HildonFileSystemSpecialLocation *location,
-				    gboolean has_children)
+                                    gboolean has_children)
 {
   return has_children;
 }
@@ -330,7 +330,7 @@ static gchar *_get_icon_from_uri (gchar *uri)
 
     /* copy BDA from URI to the GCONF key */
     memcpy (key + BT_GCONF_DEVICE_ADDR_INDEX, uri + BT_URI_BDA_INDEX,
-		    BT_BDA_LENGTH);
+            BT_BDA_LENGTH);
 
     ret = gconf_client_get_string (gconf_client, key, NULL);
 
