@@ -272,8 +272,8 @@ static gchar *_uri_to_display_name (gchar *uri)
     gchar *ret = NULL;
 
 
-    local->addr = g_malloc0(18);
-    memcpy (local->addr, uri + 8, 17);
+    local->addr = g_malloc0(BT_BDA_LENGTH + 1);
+    memcpy (local->addr, uri + BT_URI_BDA_INDEX, BT_BDA_LENGTH);
     local->name = NULL;
 
 
