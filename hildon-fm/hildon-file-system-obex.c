@@ -36,9 +36,12 @@
 #include "hildon-file-system-private.h"
 #include "hildon-file-common-private.h"
 
+#undef BT_GCONF_ENABLED
 
 #define BT_GCONF_DEVICE  "/system/bluetooth/device/xx:xx:xx:xx:xx:xx/"
 #define BT_GCONF_DEVICE_ADDR_INDEX  25
+
+#define BT_DBUS_ICON_PREFIX "control_bluetooth_"
 
 #define BT_BDA_LENGTH               17
 #define BT_URI_BDA_INDEX            8
@@ -315,13 +318,167 @@ static void _uri_filler_function (gpointer data, gpointer user_data)
 }
 
 
+static gchar *_dbus_bluez_get_property(const gchar *obex_addr,
+                                       const gchar *property)
+{
+    DBusConnection *conn;
+    DBusMessage *msg, *ret_adapt, *ret_dev;
+    DBusMessageIter iter_adapt, adapts, iter_dev;
+    DBusMessageIter dicts, dict, dict_value;
+    DBusError error;
+    char *tmp, *name = NULL;
+
+    if (!obex_addr || !*obex_addr)
+        return NULL;
+
+    dbus_error_init (&error);
+    conn = dbus_bus_get_private (DBUS_BUS_SYSTEM, &error);
+    
+    if (!conn) {
+        dbus_error_free(&error);
+        return NULL;
+    }
+
+    /* Find first adapter with the obex_addr */
+    dbus_connection_set_exit_on_disconnect (conn, FALSE);
+
+    msg = dbus_message_new_method_call ("org.bluez", "/",
+                                        "org.bluez.Manager", "ListAdapters");
+
+    if (!msg)
+        goto escape;
+
+    dbus_error_init (&error);
+    ret_adapt = dbus_connection_send_with_reply_and_block (conn, msg, -1,
+                                                           &error);
+    dbus_message_unref (msg);
+
+    if (dbus_error_is_set (&error)) {
+        dbus_error_free (&error);
+        goto escape_adapt;
+    }
+
+    if (!dbus_message_iter_init (ret_adapt, &iter_adapt)) {
+        dbus_message_unref (ret_adapt);
+        goto escape_adapt;
+    }
+
+    dbus_message_iter_recurse (&iter_adapt, &adapts);
+
+    do {
+        if (dbus_message_iter_get_arg_type (&adapts) != DBUS_TYPE_OBJECT_PATH)
+            continue;
+
+        dbus_message_iter_get_basic (&adapts, &tmp);
+
+        if (!tmp || !*tmp)
+            continue;
+
+        /* Get device path to call GetProperties */
+        msg = dbus_message_new_method_call ("org.bluez", tmp,
+                                            "org.bluez.Adapter", "FindDevice");
+
+        if (!msg)
+            continue;
+
+        dbus_message_iter_init_append (msg, &iter_dev);
+        dbus_message_iter_append_basic (&iter_dev, DBUS_TYPE_STRING,
+                                        &obex_addr);
+
+        dbus_error_init (&error);
+        ret_dev = dbus_connection_send_with_reply_and_block (conn, msg, -1,
+                                                             &error);
+        dbus_message_unref (msg);
+
+        if (dbus_error_is_set (&error)) {
+            dbus_error_free (&error);
+            continue;
+        }
+
+        if (!dbus_message_iter_init (ret_dev, &iter_dev) ||
+            dbus_message_iter_get_arg_type (&iter_dev) != DBUS_TYPE_OBJECT_PATH) {
+            dbus_message_unref (ret_dev);
+            continue;
+        }
+
+        dbus_message_iter_get_basic (&iter_dev, &tmp);
+        dbus_message_unref (ret_dev);
+
+        /* We have the device, let's get the name */
+        msg = dbus_message_new_method_call ("org.bluez", tmp,
+                                        "org.bluez.Device", "GetProperties");
+
+        if (!msg)
+            continue;
+
+        dbus_error_init (&error);
+        ret_dev = dbus_connection_send_with_reply_and_block (conn, msg, -1,
+                                                             &error);
+        dbus_message_unref (msg);
+
+        if (dbus_error_is_set (&error)) {
+            dbus_error_free (&error);
+            continue;
+        }
+
+        if (!dbus_message_iter_init (ret_dev, &iter_dev)) {
+            dbus_message_unref (ret_dev);
+            continue;
+        }
+
+        dbus_message_iter_recurse (&iter_dev, &dicts);
+
+        do {
+
+            if (dbus_message_iter_get_arg_type (&dicts) != DBUS_TYPE_DICT_ENTRY)
+                continue;
+
+            dbus_message_iter_recurse (&dicts, &dict);
+
+            /* Try to get the Key */
+            dbus_message_iter_get_basic (&dict, &tmp);
+            /* We only care about one property */
+            if (g_strcmp0 (tmp, property) ||
+                /* Go to the value */
+                !dbus_message_iter_next (&dict) ||
+                dbus_message_iter_get_arg_type (&dict) != DBUS_TYPE_VARIANT)
+                continue;
+
+            dbus_message_iter_recurse(&dict, &dict_value);
+            dbus_message_iter_get_basic (&dict_value, &tmp);
+            name = g_strdup(tmp);
+
+            dbus_message_unref (ret_dev);
+
+            goto escape_adapt;
+        } while (dbus_message_iter_next (&dicts));
+
+        dbus_message_unref (ret_dev);
+
+    } while (dbus_message_iter_next (&adapts));
+
+escape_adapt:
+    dbus_message_unref (ret_adapt);
+
+escape:
+    dbus_connection_close (conn);
+    dbus_connection_unref (conn);
+
+    return name;
+}
+
+
 static gchar *_get_icon_from_uri (gchar *uri)
 {
+#ifdef BT_GCONF_ENABLED
     GConfClient *gconf_client;
-    gchar *ret = NULL;
     gchar key[] = BT_GCONF_DEVICE "icon";
+#endif
+    gchar *icon, *ret = NULL;
 
     g_assert (uri != NULL);
+
+#ifdef BT_GCONF_ENABLED
     gconf_client = gconf_client_get_default ();
 
     if (!gconf_client) {
@@ -336,17 +493,37 @@ static gchar *_get_icon_from_uri (gchar *uri)
 
     g_object_unref (gconf_client);
 
+    if (ret && *ret) {
+        return ret;
+    }
+    g_free (ret);
+#endif
+
+    ret = g_strndup (uri + BT_URI_BDA_INDEX, BT_BDA_LENGTH);
+    icon = _dbus_bluez_get_property (ret, "Icon");
+    g_free (ret);
+    ret = NULL;
+
+    if (icon && *icon)
+        ret = g_strconcat (BT_DBUS_ICON_PREFIX, icon, NULL);
+
+    g_free (icon);
+
     return ret;
 }
 
 
 static gchar *_obex_addr_to_display_name(gchar *obex_addr)
 {
+#ifdef BT_GCONF_ENABLED
     GConfClient *gconf_client;
     gchar *ret = NULL;
     gchar key[] = BT_GCONF_DEVICE "name";
+#endif
 
     g_assert (obex_addr != NULL);
+
+#ifdef BT_GCONF_ENABLED
     gconf_client = gconf_client_get_default ();
 
     if (!gconf_client) {
@@ -360,5 +537,11 @@ static gchar *_obex_addr_to_display_name(gchar *obex_addr)
 
     g_object_unref (gconf_client);
 
-    return ret;
+    if (ret && *ret) {
+        return ret;
+    }
+    g_free (ret);
+#endif
+
+    return _dbus_bluez_get_property (obex_addr, "Alias");
 }
