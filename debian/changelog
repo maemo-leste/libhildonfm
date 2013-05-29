@@ -1,3 +1,10 @@
+libhildonfm (1:2.28.22+0cssu4) unstable; urgency=low
+
+  * Show correct name for "Bluetooth"
+  * Obtain icon and name from bluez via dbus (gconf not reliable) 
+
+ -- Christian Ratzenhofer <christian.ratzenhofer@cdnm.at>  Wed, 29 May 2013 17:13:13 +0200
+
 libhildonfm (1:2.28.22+0cssu3) unstable; urgency=low
 
   * Enable browsing bluetooth devices using obexFTP
