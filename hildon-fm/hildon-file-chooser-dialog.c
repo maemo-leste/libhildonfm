@@ -57,7 +57,6 @@
 #include <libintl.h>
 #include <gdk/gdkx.h>
 #include <stdlib.h>
-#include <libgnomevfs/gnome-vfs.h>
 
 #include "hildon-file-common-private.h"
 
@@ -1816,12 +1815,13 @@ static void response_handler(GtkWidget * widget, gint arg1, gpointer data)
                         case GTK_FILE_CHOOSER_CONFIRMATION_CONFIRM:
                             if (priv->confirmation_note == NULL)
                             {
-                                GnomeVFSURI *uripath = gnome_vfs_uri_new (uri);
-                                if (uripath && gnome_vfs_uri_exists (uripath))
+                                GFile *file = g_file_new_for_uri (uri);
+
+                                if (g_file_query_exists (file, NULL))
                                 {
                                     gchar *basename, *label;
 
-                                    basename = gnome_vfs_uri_extract_short_path_name (uripath);
+                                    basename = g_file_get_basename (file);
                                     label = g_strconcat (_("docm_nc_replace_file"), "\n", basename, NULL);
 
                                     priv->confirmation_note =
@@ -1836,8 +1836,8 @@ static void response_handler(GtkWidget * widget, gint arg1, gpointer data)
                                     g_free (label);
                                     g_free (basename);
                                 }
-                                if (uripath)
-                                    gnome_vfs_uri_unref (uripath);
+
+                                g_object_unref (file);
                             }
                             else
                             {
