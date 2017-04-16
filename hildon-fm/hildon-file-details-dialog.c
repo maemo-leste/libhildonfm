@@ -37,8 +37,7 @@
 #include <gtk/gtkscrolledwindow.h>
 #include <time.h>
 #include <libintl.h>
-#include <libgnomevfs/gnome-vfs.h>
-#include <libgnomevfs/gnome-vfs-mime-handlers.h>
+#include <sys/stat.h>
 
 #include <hildon/hildon.h>
 
@@ -71,8 +70,6 @@ struct _HildonFileDetailsDialogPrivate {
     GtkWidget *file_readonly, *file_device;
     GtkWidget *file_location_image, *file_device_image;
     GtkWidget *scroll;
-
-    GnomeVFSResult change_permissions_result;
 
     GtkTreeRowReference *active_file;
     gboolean checkbox_original_state;
@@ -135,40 +132,23 @@ GType hildon_file_details_dialog_get_type(void)
 
 static gboolean write_access(const gchar *uri)
 {
-  GnomeVFSFileInfo *info;
+  GFile     *file = g_file_new_for_uri (uri);
+  GFileInfo *info;
   gboolean result = FALSE;
 
-  /* Get information about file */
-  info = gnome_vfs_file_info_new ();
-  if (gnome_vfs_get_file_info(uri, info,
-    GNOME_VFS_FILE_INFO_GET_ACCESS_RIGHTS) == GNOME_VFS_OK)
+  info = g_file_query_info (file, G_FILE_ATTRIBUTE_ACCESS_CAN_WRITE,
+                            G_FILE_QUERY_INFO_NONE, NULL, NULL);
+  g_object_unref (file);
 
+  /* Get information about file */
+  if (info) {
     /* Detect that the file is writable or not */
-    result = ((info->permissions & GNOME_VFS_PERM_ACCESS_WRITABLE)
-              == GNOME_VFS_PERM_ACCESS_WRITABLE);
+    result =
+        g_file_info_get_attribute_boolean(info,
+                                          G_FILE_ATTRIBUTE_ACCESS_CAN_WRITE);
+    g_object_unref (info);
+  }
 
-  gnome_vfs_file_info_unref(info);
-  return result;
-}
-
-static GnomeVFSResult guess_change_permissions_result (const gchar *uri)
-{
-  GnomeVFSFileInfo *info;
-  gboolean result;
-
-  /* Get information about file */
-  info = gnome_vfs_file_info_new ();
-  result = gnome_vfs_get_file_info (uri, info, GNOME_VFS_FILE_INFO_DEFAULT);
-  if (result == GNOME_VFS_OK)
-    {
-      if (info->valid_fields & GNOME_VFS_FILE_INFO_FIELDS_PERMISSIONS)
-	result = gnome_vfs_set_file_info (uri, info,
-					  GNOME_VFS_SET_FILE_INFO_PERMISSIONS);
-      else
-	result = GNOME_VFS_ERROR_GENERIC;
-    }
-
-  gnome_vfs_file_info_unref(info);
   return result;
 }
 
@@ -198,40 +178,45 @@ static void change_state(HildonFileDetailsDialog *self, gboolean readonly)
   if (hildon_file_details_dialog_get_file_iter(self, &iter))
   {
     gchar *uri;
-    GnomeVFSFileInfo *info;
-    GnomeVFSResult result;
+    GFile *file;
+    GFileInfo *info;
+    GError *error = NULL;
 
     /* Get the value of cells referenced by a tree_modle */
     gtk_tree_model_get(GTK_TREE_MODEL(self->priv->model), &iter,
       HILDON_FILE_SYSTEM_MODEL_COLUMN_URI, &uri, -1);
 
-    info = gnome_vfs_file_info_new();
-    result = gnome_vfs_get_file_info(uri, info,
-      GNOME_VFS_FILE_INFO_DEFAULT);
+    file = g_file_new_for_uri(uri);
+    info = g_file_query_info (file, G_FILE_ATTRIBUTE_UNIX_MODE,
+                              G_FILE_QUERY_INFO_NONE, NULL, NULL);
+    g_object_unref (file);
 
     /* Change the file information */
-    if (result == GNOME_VFS_OK)
+    if (info)
     {
+      guint32 mode =
+          g_file_info_get_attribute_uint32 (info,
+                                            G_FILE_ATTRIBUTE_UNIX_MODE);
       if (readonly)
-        info->permissions &= ~(S_IWUSR | S_IWGRP | S_IWOTH);
+        mode &= ~(S_IWUSR | S_IWGRP | S_IWOTH);
       else
-        info->permissions |= (S_IWUSR | S_IWGRP);
+        mode |= (S_IWUSR | S_IWGRP);
 
-      result = gnome_vfs_set_file_info(uri, info,
-          GNOME_VFS_SET_FILE_INFO_PERMISSIONS);
+      g_file_info_set_attribute_uint32(info, G_FILE_ATTRIBUTE_UNIX_MODE, mode);
+      g_object_unref (info);
     }
 
-    if (result != GNOME_VFS_OK) {
+    if (error) {
             GtkWidget *infnote;
-            infnote = hildon_note_new_information(GTK_WINDOW(self), gnome_vfs_result_to_string (result));
+            infnote = hildon_note_new_information(GTK_WINDOW(self), error->message);
             if (infnote) {
                     gtk_widget_show(infnote);
                     gtk_dialog_run((GtkDialog *) infnote);
                     gtk_widget_destroy(infnote);
             }
+            g_error_free (error);
     }
-    
-    gnome_vfs_file_info_unref(info);
+
     g_free(uri);
   }
 }
@@ -636,7 +621,7 @@ void hildon_file_details_dialog_set_file_iter(HildonFileDetailsDialog *self, Gtk
   GtkTreeModel *model;
   GtkTreePath *path, *path_old;
   GtkTreeIter temp_iter, parent_iter;
-  gchar *name, *mime, *uri, *size_string;
+  gchar *name, *mime, *uri, *size_string, *desc;
   const gchar *fmt;
   gint64 time_stamp, size;
   struct tm *time_struct;
@@ -678,8 +663,10 @@ void hildon_file_details_dialog_set_file_iter(HildonFileDetailsDialog *self, Gtk
     -1);
 
   hildon_caption_set_value (HILDON_CAPTION (self->priv->file_name), name);
-  hildon_caption_set_value (HILDON_CAPTION (self->priv->file_type),
-      gnome_vfs_mime_get_description (mime));
+  desc = g_content_type_get_description (mime);
+  hildon_caption_set_value (HILDON_CAPTION (self->priv->file_type), desc);
+  g_free (desc);
+
   if (!(mime && *mime))
       g_warning("COLUMN_MIME_TYPE contains empty mime type for file: %s", name);
 
@@ -793,8 +780,7 @@ void hildon_file_details_dialog_set_file_iter(HildonFileDetailsDialog *self, Gtk
   if (location_readonly || !write_access(uri)) {
     gtk_widget_show (self->priv->file_readonly);
   }
-  self->priv->change_permissions_result =
-    guess_change_permissions_result (uri);
+
   g_free(uri);
   g_free(name);
   g_free(mime);
