@@ -233,7 +233,7 @@ struct _HildonFileSelectionPrivate {
     GtkWidget *label_device;
 
     gboolean show_localdevice;
-    GVolumeMonitor *volume_monitor;
+    GVolumeMonitor *monitor;
 };
 
 #if 0
@@ -660,10 +660,10 @@ static void hildon_file_selection_finalize(GObject * obj)
         segfaults earlier. */
     hildon_file_selection_set_filter(self, NULL);
 
-    if (priv->volume_monitor)
+    if (priv->monitor)
     {
-      g_object_unref(priv->volume_monitor);
-      priv->volume_monitor = NULL;
+      g_object_unref(priv->monitor);
+      priv->monitor = NULL;
     }
 
     G_OBJECT_CLASS(hildon_file_selection_parent_class)->finalize(obj);
@@ -3028,11 +3028,10 @@ update_local_device_visibility (GMount              *mount,
                                 HildonFileSelection *selection)
 {
   HildonFileSelectionPrivate *priv = selection->priv;
-  gchar* uri;
-  GFile *file = g_mount_get_root (mount);
+  GFile *root = g_mount_get_root (mount);
+  gchar* uri = g_file_get_uri(root);
 
-  uri = g_file_get_uri (file);
-  g_object_unref (file);
+  g_object_unref (root);
 
   if (!(uri && g_str_has_prefix (uri, "file:///home/"))) {
     g_free (uri);
@@ -3057,7 +3056,7 @@ update_local_device_visibility (GMount              *mount,
       if (priv->view_filter) {
 	gtk_tree_model_filter_refilter(GTK_TREE_MODEL_FILTER
                                                (priv->view_filter));
-	hildon_file_selection_inspect_view(priv);        
+	hildon_file_selection_inspect_view(priv);
       }
 #if someone_explains_this
       reload_local_device_folders(selection);
@@ -3068,17 +3067,17 @@ update_local_device_visibility (GMount              *mount,
 }
 
 static void
-hildon_file_selection_volume_mounted_cb (GVolumeMonitor        *monitor,
-                                         GMount                *mount,
-                                         HildonFileSelection   *selection)
+hildon_file_selection_mounted_added_cb (GVolumeMonitor        *volume_monitor,
+                                        GMount                *mount,
+                                        HildonFileSelection   *selection)
 {
   update_local_device_visibility (mount, TRUE, selection);
 }
 
 static void
-hildon_file_selection_volume_unmounted_cb (GVolumeMonitor        *monitor,
-                                           GMount                *mount,
-                                           HildonFileSelection   *selection)
+hildon_file_selection_mounted_removed_cb (GVolumeMonitor      *volume_monitor,
+                                          GMount              *mount,
+                                          HildonFileSelection *selection)
 {
   update_local_device_visibility (mount, FALSE, selection);
 }
@@ -3189,50 +3188,6 @@ static void hildon_file_selection_init(HildonFileSelection * self)
       G_CALLBACK(hildon_file_selection_check_scroll), NULL);
 }
 
-static GMount *_get_mount_for_path(GVolumeMonitor *monitor, const char *path)
-{
-    struct stat statbuf;
-    dev_t device;
-    GList *l;
-    GMount *res = NULL;
-    GList *mounts = g_volume_monitor_get_mounts (monitor);
-
-    if (stat (path, &statbuf) != 0)
-	return NULL;
-
-    device = statbuf.st_dev;
-
-    for (l = mounts; l != NULL; l = l->next)
-      {
-	GFile *file =g_mount_get_root (l->data);
-	gchar *mount_path = g_file_get_path (file);
-
-	g_object_unref (file);
-
-	if (stat (mount_path, &statbuf) != 0)
-	  {
-	    g_free(mount_path);
-	    continue;
-	  }
-
-	g_free(mount_path);
-
-	if (statbuf.st_dev == device)
-	  {
-	    res = l->data;
-	    g_object_ref(res);
-	    break;
-	  }
-      }
-
-    for (l = mounts; l; l = l->next)
-      g_object_unref(l->data);
-
-    g_list_free(mounts);
-
-    return res;
-}
-
 static GObject *hildon_file_selection_constructor(GType type,
                                                   guint
                                                   n_construct_properties,
@@ -3254,38 +3209,39 @@ static GObject *hildon_file_selection_constructor(GType type,
     priv = self->priv;
   /*priv->sort_model =   <SNIP> */
 
-    priv->volume_monitor = g_volume_monitor_get ();
+    priv->monitor = g_volume_monitor_get ();
+
     /* Special-case scratchbox */
     if (g_file_test ("/scratchbox/", G_FILE_TEST_EXISTS))
         self->priv->show_localdevice = TRUE;
     else
       {
-	const gchar* path;
-	gchar *uri;
-	GMount *mount;
-	GVolumeMonitor *monitor = priv->volume_monitor;
+        const gchar* path;
+        GMount* mount;
+        GFile *file;
 
-	path = g_getenv ("MYDOCSDIR");
-	mount = _get_mount_for_path (priv->volume_monitor, path);
+        path = g_getenv ("MYDOCSDIR");
+        file = g_file_new_for_uri (path);
+        mount = g_file_find_enclosing_mount (file, NULL, NULL);
+        g_object_unref (file);
 
-	if (mount)
-	  {
-	    GFile *file = g_mount_get_root (mount);
+        if (mount)
+          {
+            GFile *root = g_mount_get_root (mount);
+            gchar *uri = g_file_get_uri(root);
 
-	    uri = g_file_get_uri (file);
-	    g_object_unref (file);
+            g_object_unref(root);
 
-	    if (g_str_has_prefix (uri, "file:///"))
-	      {
-		if (g_str_equal (&uri[7], g_getenv ("MYDOCSDIR")))
-		  hildon_file_selection_volume_mounted_cb (monitor, mount, self);
-		else
-		  hildon_file_selection_volume_unmounted_cb (monitor, mount, self);
-	      }
-
-	    g_object_unref (mount);
-	    g_free (uri);
-	  }
+            if (g_str_has_prefix (uri, "file:///"))
+              {
+                if (g_str_equal (&uri[7], g_getenv ("MYDOCSDIR")))
+                  hildon_file_selection_mounted_added_cb (priv->monitor, mount, self);
+                else
+                  hildon_file_selection_mounted_removed_cb (priv->monitor, mount, self);
+              }
+            g_object_unref (mount);
+            g_free (uri);
+          }
       }
 
       /* we need to create view models here, even if dummy ones */
@@ -3311,7 +3267,7 @@ static GObject *hildon_file_selection_constructor(GType type,
     priv->live_search = HILDON_LIVE_SEARCH (hildon_live_search_new ());
     hildon_live_search_set_filter (priv->live_search,
         GTK_TREE_MODEL_FILTER (priv->view_filter));
-    
+
     hildon_live_search_widget_hook (priv->live_search,
         GTK_WIDGET (priv->view_selector),
         priv->view[1]);
@@ -3325,7 +3281,7 @@ static GObject *hildon_file_selection_constructor(GType type,
     gtk_box_pack_start (GTK_BOX (self->priv->view_selector),
 		      self->priv->scroll_thumb, TRUE, TRUE, 0);
     gtk_box_pack_start (GTK_BOX (self->priv->view_selector),
-		      GTK_WIDGET(self->priv->live_search), FALSE, FALSE, 0);
+                      GTK_WIDGET(self->priv->live_search), FALSE, FALSE, 0);
 
     /* Also the views of the navigation pane are trees (and this is
        needed). Let's deny expanding */
@@ -3383,11 +3339,11 @@ static GObject *hildon_file_selection_constructor(GType type,
     g_signal_connect_object(priv->main_model, "device-disconnected",
       G_CALLBACK(hildon_file_selection_check_location), self, 0);
 
-    g_signal_connect_object(priv->volume_monitor, "mount-added",
-                            G_CALLBACK(hildon_file_selection_volume_mounted_cb),
+    g_signal_connect_object(priv->monitor, "mount-added",
+                            G_CALLBACK(hildon_file_selection_mounted_added_cb),
                             self, 0);
-    g_signal_connect_object(priv->volume_monitor, "mount-removed",
-                            G_CALLBACK(hildon_file_selection_volume_unmounted_cb),
+    g_signal_connect_object(priv->monitor, "mount-removed",
+                            G_CALLBACK(hildon_file_selection_mounted_removed_cb),
                             self, 0);
 
     hildon_file_selection_set_select_multiple(self, FALSE);
