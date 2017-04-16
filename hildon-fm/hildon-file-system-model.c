@@ -696,80 +696,27 @@ static gboolean
 path_is_readonly(GtkFileSystem *file_system,
                  GtkFilePath   *path)
 {
-  GnomeVFSFileInfo *info = NULL;
-  GnomeVFSResult result;
-  GnomeVFSURI *uripath = NULL;
+  GFileInfo *info;
   gboolean retval = FALSE;
-  gchar *dirpath = NULL;
   gchar *uri = gtk_file_system_path_to_uri(file_system, path);
+  GFile *file;
 
-  uripath = gnome_vfs_uri_new (uri);
-  if (uripath == NULL)
-  {
-      g_free (uri);
-      return TRUE;
-  }
+  if (!uri)
+    return TRUE;
 
-  /* Don't check possibly slow remote locations */
-
-  if (!gnome_vfs_uri_is_local (uripath))
-  {
-      g_free (uri);
-      gnome_vfs_uri_unref (uripath);
-      return FALSE;
-  }
-
-  if (!gnome_vfs_uri_exists (uripath))
-  {
-      g_free (uri);
-      if (uripath != NULL)
-        gnome_vfs_uri_unref (uripath);
-      return TRUE;
-  }
-
-  info = gnome_vfs_file_info_new ();
-  if (info == NULL)
-  {
-      g_free (uri);
-      if (uripath != NULL)
-        gnome_vfs_uri_unref (uripath);
-      return TRUE;
-  }
-
-  result = gnome_vfs_get_file_info (uri, info,
-      (GNOME_VFS_FILE_INFO_GET_ACCESS_RIGHTS
-     | GNOME_VFS_FILE_INFO_DEFAULT
-     | GNOME_VFS_FILE_INFO_FOLLOW_LINKS));
+  file = g_file_new_for_uri (uri);
   g_free (uri);
+  info = g_file_query_info (file, G_FILE_ATTRIBUTE_ACCESS_CAN_WRITE,
+                            G_FILE_QUERY_INFO_NONE, NULL, NULL);
+  g_object_unref (file);
 
-  if (result == GNOME_VFS_OK)
-  {
-      if (!(info->valid_fields & GNOME_VFS_FILE_INFO_FIELDS_PERMISSIONS))
-      {
-          /* could not get access permission from uri, treat as readwrite */
-          retval = FALSE;
-      }
-      else
-      {
-          // check permission of path to be read and not write
-          if ((info->permissions & GNOME_VFS_PERM_USER_READ) &&
-            !(info->permissions & GNOME_VFS_PERM_USER_WRITE))
-              retval = TRUE;
-          else
-              retval = FALSE;
-      }
-  }
-  else
-  {
-      g_warning ("Unable to determine readonly status");
-      retval = TRUE;
-  }
-  g_free (dirpath);
-  if (uripath != NULL)
-    gnome_vfs_uri_unref (uripath);
+  if (!info)
+      return TRUE;
 
-  if (info != NULL)
-    gnome_vfs_file_info_unref (info);
+  retval =
+      !g_file_info_get_attribute_boolean (info,
+                                          G_FILE_ATTRIBUTE_ACCESS_CAN_WRITE);
+  g_object_unref (info);
 
   return retval;
 }
@@ -1162,23 +1109,14 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
               /* the following if clause handles the hourglass icon */
               if (!model_node->thumbnail_cache)
               {
-                HildonMimeCategory cat;
-                GnomeVFSURI *vfs_uri = gnome_vfs_uri_new (uri);
+                HildonMimeCategory cat =
+                    hildon_mime_get_category_for_mime_type(mime_type);
 
-                /* FIXME: hack to workaround problem with Sketch files.
-                 * Second check is because we cannot make thumbnails for
-                 * non local images. */
-                if (g_strcmp0(mime_type, "sketch/png") != 0
-                    && gnome_vfs_uri_is_local (vfs_uri))
-                {
-                  cat = hildon_mime_get_category_for_mime_type(mime_type);
-                  if (cat == HILDON_MIME_CATEGORY_IMAGES)
-                    model_node->thumbnail_cache =
+                if (cat == HILDON_MIME_CATEGORY_IMAGES)
+                  model_node->thumbnail_cache =
                       _hildon_file_system_load_icon_cached(
-                      gtk_icon_theme_get_default(),
-                      "filemanager_file_loading", THUMBNAIL_ICON);
-                }
-                gnome_vfs_uri_unref (vfs_uri);
+                        gtk_icon_theme_get_default(),
+                        "filemanager_file_loading", THUMBNAIL_ICON);
               }
             }
 
@@ -1979,7 +1917,7 @@ link_file_folder (GNode *node, const GtkFilePath *path)
 {
   HildonFileSystemModel *model;
   HildonFileSystemModelNode *model_node;
-  GtkFileFolder *parent_folder;
+/*  GtkFileFolder *parent_folder; */
   HandleData *handle_data;
   GNode *child_node;
 
@@ -2005,8 +1943,8 @@ link_file_folder (GNode *node, const GtkFilePath *path)
   if (!model_node->path)
     model_node->path = gtk_file_path_copy(path);
 
-  parent_folder = (node->parent && node->parent->data) ?
-      ((HildonFileSystemModelNode *) node->parent->data)->folder : NULL;
+/*  parent_folder = (node->parent && node->parent->data) ?
+      ((HildonFileSystemModelNode *) node->parent->data)->folder : NULL; */
 
   /* Reset the present_flags.
    */
@@ -3601,7 +3539,7 @@ gboolean _hildon_file_system_model_mount_device_iter(HildonFileSystemModel
                                                      GtkTreeIter * iter)
 {
     HildonFileSystemModelNode *model_node;
-    HildonFileSystemModelPrivate *priv;
+/*    HildonFileSystemModelPrivate *priv; */
     GNode *node;
     static gboolean active_flag = FALSE;
 
@@ -3609,7 +3547,7 @@ gboolean _hildon_file_system_model_mount_device_iter(HildonFileSystemModel
     g_return_val_if_fail(iter != NULL, FALSE);
     g_return_val_if_fail(model->priv->stamp == iter->stamp, FALSE);
 
-    priv = model->priv;
+/*    priv = model->priv; */
     node = iter->user_data;
     model_node = node->data;
 
