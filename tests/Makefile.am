@@ -2,10 +2,10 @@ MAINTAINERCLEANFILES = Makefile.in
 
 TEST_PROGS = 
 noinst_PROGRAMS	= $(TEST_PROGS)
-tests_ldadd = $(GTK_LIBS) $(HILDON_LIBS) $(GNOMEVFS_LIBS) \
+tests_ldadd = $(GTK_LIBS) $(HILDON_LIBS) $(GIO_LIBS) \
               $(top_builddir)/hildon-fm/libhildonfm.la $(HILDON_THUMBNAIL_LIBS)
 tests_ldflags = -module -avoid-version
-tests_cflags = $(GTK_CFLAGS) $(HILDON_CFLAGS) $(GCONF_CFLAGS) $(GNOMEVFS_CFLAGS) \
+tests_cflags = $(GTK_CFLAGS) $(HILDON_CFLAGS) $(GCONF_CFLAGS) $(GIO_CFLAGS) \
                -I$(top_srcdir)/hildon-fm $(WARN_CFLAGS)
 
 TEST_PROGS += check_test
