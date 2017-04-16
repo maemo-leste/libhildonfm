@@ -33,6 +33,7 @@
 #endif
 
 #include <gtk/gtk.h>
+#include <gio/gio.h>
 #include <hildon-thumbnail-factory.h>
 #include <hildon-albumart-factory.h>
 
@@ -48,8 +49,9 @@
 #include <unistd.h>
 #include <errno.h>
 #include <hildon-mime.h>
+#ifdef UPSTREAM_DISABLED
 #include <tracker.h>
-
+#endif
 #include "hildon-file-common-private.h"
 #include "hildon-file-system-special-location.h"
 #include "hildon-file-system-root.h"
@@ -125,8 +127,9 @@ struct _HildonFileSystemModelPrivate {
        them immediately after composed image is ready */
     GdkPixbuf *expanded_emblem, *collapsed_emblem;
     guint timeout_id;
-
+#ifdef UPSTREAM_DISABLED
     TrackerClient *tracker_client;
+#endif
 
     /* Properties */
     gchar *backend_name;
@@ -1246,6 +1249,7 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
     case HILDON_FILE_SYSTEM_MODEL_COLUMN_AUTHOR:
     case HILDON_FILE_SYSTEM_MODEL_COLUMN_ALBUM:
     {
+#ifdef UPSTREAM_DISABLED
         const gchar *keys [] =  {
             "Audio:Artist",
             "Audio:Title",
@@ -1293,6 +1297,24 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
         else
           g_assert_not_reached ();
         break;
+#else
+      if (!model_node->thumb_author)
+      {
+          g_warning("Tracker support not implemented, using dummy values");
+          model_node->thumb_author = g_strdup("Author");
+          model_node->thumb_title = g_strdup("Title");
+          model_node->thumb_album = g_strdup("Album");
+      }
+      if (column == HILDON_FILE_SYSTEM_MODEL_COLUMN_AUTHOR)
+        g_value_set_string(value, model_node->thumb_author);
+      else if (column == HILDON_FILE_SYSTEM_MODEL_COLUMN_TITLE)
+        g_value_set_string(value, model_node->thumb_title);
+      else if (column == HILDON_FILE_SYSTEM_MODEL_COLUMN_ALBUM)
+        g_value_set_string(value, model_node->thumb_album);
+      else
+        g_assert_not_reached ();
+      break;
+#endif
     }
     case HILDON_FILE_SYSTEM_MODEL_COLUMN_IS_HIDDEN:
     {
@@ -2517,8 +2539,9 @@ static void hildon_file_system_model_init(HildonFileSystemModel * self)
 	G_TYPE_STRING;
     priv->column_types[PRIV_COLUMN_DISPLAY_ATTRS] =
         PANGO_TYPE_ATTR_LIST;
-
+#ifdef UPSTREAM_DISABLED
     priv->tracker_client = tracker_connect(FALSE);
+#endif
     priv->hour24_changed_handler = g_signal_connect_swapped(_hildon_file_system_settings_get_instance(),
 							    "notify::hour24",
 							    G_CALLBACK(invalidate_display_props),
@@ -2554,13 +2577,13 @@ static void hildon_file_system_model_dispose(GObject *self)
     hildon_file_system_model_kick_node(priv->roots, self);
     priv->roots = NULL;
   }
-
+#ifdef UPSTREAM_DISABLED
   if (priv->tracker_client)
   {
       tracker_disconnect(priv->tracker_client);
       priv->tracker_client = NULL;
   }
-
+#endif
   G_OBJECT_CLASS(hildon_file_system_model_parent_class)->dispose(self);
 }
 

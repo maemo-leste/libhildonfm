@@ -208,9 +208,13 @@ GNode *_hildon_file_system_get_locations(GtkFileSystem *fs)
             HILDON_FILE_SYSTEM_MODEL_SAFE_FOLDER_DOCUMENTS);
 	g_free(localpath);
 
+#if UPSTREAM_DISABLED
 	if ((localpath = g_strdup(hildon_get_user_named_dir ("NOKIA_CAMERA_DIR"))) == NULL) {
 	    localpath = g_build_path(G_DIR_SEPARATOR_S, rootpath, ".camera", NULL);
 	}
+#else
+	localpath = g_build_path(G_DIR_SEPARATOR_S, rootpath, ".camera", NULL);
+#endif
         setup_safe_folder(localpath, rootnode, 
             _("sfil_li_folder_camera"), "filemanager_camera_folder",
  	    HILDON_FILE_SYSTEM_MODEL_SAFE_FOLDER_CAMERA);

@@ -1475,7 +1475,7 @@ main (int    argc,
         g_thread_init (NULL);
     g_assert(gnome_vfs_init());
     gtk_test_init (&argc, &argv, NULL);
-
+    g_log_set_always_fatal(0);
     /* Create test case for file selection modes */
     g_test_add_data_func ("/HildonfmFileSelection/creation",
         (fm_test_func)test_file_selection_creation, fm_test_setup);

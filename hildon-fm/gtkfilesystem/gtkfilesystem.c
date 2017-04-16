@@ -1407,6 +1407,7 @@ gtk_file_system_create (const char *file_system_name)
     }
 
   fs = NULL;
+#if UPSTREAM_DISABLED
   if (g_module_supported ())
     {
       #if GTK_CHECK_VERSION (2, 14, 0)
@@ -1430,7 +1431,7 @@ gtk_file_system_create (const char *file_system_name)
       
       g_free (module_path);
     }
-  
+#endif
   return fs;
 }
 

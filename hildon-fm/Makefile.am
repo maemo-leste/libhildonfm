@@ -7,8 +7,7 @@ INCLUDES = $(GTK_CFLAGS) $(HILDON_CFLAGS) $(GCONF_CFLAGS) $(HILDON_THUMBNAIL_CFL
            $(LIBOSSOMIME_CFLAGS) -I$(srcdir)/..				\
            $(DEBUG_CPPFLAGS) -DG_LOG_DOMAIN=\"hildon-fm\"
 
-AM_CFLAGS = $(WARN_CFLAGS)
-
+AM_CFLAGS = $(WARN_CFLAGS) -fPIC
 lib_LTLIBRARIES = libhildonfm.la
 
 
