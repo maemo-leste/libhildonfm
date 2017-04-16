@@ -196,14 +196,13 @@ root_file_folder_get_info (GtkFileFolder      *folder,
                            GError            **error)
 {
   GtkFileInfo *info;
-
+  gchar *basename = g_path_get_basename (gtk_file_path_get_string (path));
   /* XXX - maybe provide more detail...
    */
 
   info = gtk_file_info_new ();
-  gtk_file_info_set_display_name (info,
-                                  g_basename
-                                  (gtk_file_path_get_string (path)));
+  gtk_file_info_set_display_name (info, basename);
+  g_free (basename);
   gtk_file_info_set_is_folder (info, TRUE);
   return info;
 }
@@ -216,46 +215,47 @@ root_file_folder_list_children (GtkFileFolder  *folder,
   RootFileFolder *root_folder = ROOT_FILE_FOLDER (folder);
   GtkFileSystem *fs = root_folder->filesystem;
 
-  GnomeVFSVolumeMonitor *monitor;
-  GList *volumes, *v, *drives, *d;
+  GVolumeMonitor *monitor;
+  GList *mounts, *m, *volumes, *v;
 
-  monitor = gnome_vfs_get_volume_monitor ();
-
+  monitor = g_volume_monitor_get ();
   *children = NULL;
+  mounts = g_volume_monitor_get_mounts (monitor);
 
-  volumes = gnome_vfs_volume_monitor_get_mounted_volumes (monitor);
+  for (m = mounts; m; m = m->next)
+    {
+      GMount *mount = m->data;
+      GFile *root = g_mount_get_root (mount);
+      char *uri = g_file_get_uri (root);
+
+      g_object_unref (root);
+      *children = g_slist_append (*children,
+                                  gtk_file_system_uri_to_path (fs, uri));
+      g_free (uri);
+
+    }
+
+  g_list_foreach (mounts, (GFunc) g_object_unref, NULL);
+  g_list_free (mounts);
+  /* FIXME: do we really need to duplicate mounts with volumes? */
+  volumes = g_volume_monitor_get_volumes (monitor);
+
   for (v = volumes; v; v = v->next)
     {
-      GnomeVFSVolume *volume = v->data;
+      GVolume *volume = v->data;
+      char *id = g_volume_get_identifier (volume,
+                                          G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE);
+      char *uri = g_strdup_printf ("drive://%s", id);
 
-      if (gnome_vfs_volume_is_user_visible (volume))
-        {
-          char *uri = gnome_vfs_volume_get_activation_uri (volume);
-          *children = g_slist_append (*children,
-                                      gtk_file_system_uri_to_path (fs, uri));
-          g_free (uri);
-        }
+      g_free (id);
+      *children = g_slist_append (*children,
+                                  gtk_file_system_uri_to_path (fs, uri));
+      g_free (uri);
     }
+
   g_list_foreach (volumes, (GFunc) g_object_unref, NULL);
   g_list_free (volumes);
-
-  drives = gnome_vfs_volume_monitor_get_connected_drives (monitor);
-  for (d = drives; d; d = d->next)
-    {
-      GnomeVFSDrive *drive = d->data;
-
-      if (gnome_vfs_drive_is_user_visible (drive))
-        {
-          char *uri =
-            g_strdup_printf ("drive://%s",
-                             gnome_vfs_drive_get_device_path (drive));
-          *children = g_slist_append (*children,
-                                      gtk_file_system_uri_to_path (fs, uri));
-          g_free (uri);
-        }
-    }
-  g_list_foreach (drives, (GFunc) g_object_unref, NULL);
-  g_list_free (drives);
+  g_object_unref (monitor);
 
   return TRUE;
 }
