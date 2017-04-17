@@ -5,7 +5,7 @@ includedir=@includedir@
 
 Name: hildon-fm
 Description: Hildon file management widgets 
-Requires: gtk+-2.0 >= @GTK_VERSION@ gconf-2.0 gnome-vfs-2.0
+Requires: gtk+-2.0 >= @GTK_VERSION@ gconf-2.0
 Version: @VERSION@
 Libs: -L${libdir} -lhildonfm
 Cflags: -I${includedir}/hildon-fm-2
