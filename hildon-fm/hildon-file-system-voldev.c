@@ -154,10 +154,10 @@ hildon_file_system_voldev_finalize (GObject *obj)
 
     voldev = HILDON_FILE_SYSTEM_VOLDEV (obj);
 
-    if (voldev->volume)
-      gnome_vfs_volume_unref (voldev->volume);
+    if (voldev->mount)
+      g_object_unref (voldev->mount);
     if (voldev->drive)
-      gnome_vfs_drive_unref (voldev->drive);
+      g_object_unref (voldev->drive);
 
     G_OBJECT_CLASS (hildon_file_system_voldev_parent_class)->finalize (obj);
 }
@@ -204,75 +204,66 @@ hildon_file_system_voldev_is_visible (HildonFileSystemSpecialLocation *location,
   g_debug("%s type: %d, used_over_usb: %d", location->basepath,
                voldev->vol_type, voldev->used_over_usb);
 
-  if (voldev->volume && !voldev->used_over_usb && !cover_open)
-    visible = gnome_vfs_volume_is_mounted (voldev->volume);
+  if (voldev->mount && !voldev->used_over_usb && !cover_open)
+    visible = TRUE;
   else if (voldev->drive && voldev->vol_type == USB_STORAGE)
-    visible = FALSE; /* USB drives are never visible */
+    visible = FALSE; /* USB drives are never visible */ /* fmg - WHY? */
   else if (voldev->drive && !voldev->used_over_usb && !cover_open)
-    visible = (gnome_vfs_drive_is_connected (voldev->drive)
-	       && !gnome_vfs_drive_is_mounted (voldev->drive)
-	       && corrupted);
+  {
+    GMount *mount = g_volume_get_mount (voldev->drive);
+
+    visible = (g_volume_can_mount (voldev->drive) && !mount && corrupted);
+
+    if (mount)
+      g_object_unref (mount);
+  }
 
   return visible;
 }
 
-static GnomeVFSDrive *
-find_drive (const char *device)
+static GVolume *
+find_volume (const char *device)
 {
-  GnomeVFSVolumeMonitor *monitor;
-  GList *drives, *d;
-  GnomeVFSDrive *drive = NULL;
-
-  monitor = gnome_vfs_get_volume_monitor ();
-
-  drives = gnome_vfs_volume_monitor_get_connected_drives (monitor);
-  for (d = drives; d; d = d->next)
-    {
-      GnomeVFSDrive *dr = d->data;
-
-      if (!strcmp (device, gnome_vfs_drive_get_device_path (dr)))
-        {
-          drive = dr;
-          break;
-        }
-    }
-  g_list_free (drives);
-
-  if (drive)
-    gnome_vfs_drive_ref (drive);
-
-  return drive;
-}
-
-GnomeVFSVolume *
-find_volume (const char *uri)
-{
-  GnomeVFSVolumeMonitor *monitor;
+  GVolumeMonitor *monitor;
   GList *volumes, *v;
-  GnomeVFSVolume *volume = NULL;
+  GVolume *volume = NULL;
 
-  monitor = gnome_vfs_get_volume_monitor ();
+  monitor = g_volume_monitor_get ();
+  volumes = g_volume_monitor_get_volumes (monitor);
 
-  volumes = gnome_vfs_volume_monitor_get_mounted_volumes (monitor);
   for (v = volumes; v; v = v->next)
     {
-      GnomeVFSVolume *vo = v->data;
-      gchar *activation_uri = gnome_vfs_volume_get_activation_uri (vo);
+      GVolume *vol = v->data;
+      gchar *id =
+          g_volume_get_identifier (vol, G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE);
 
-      if (!strcmp (uri, activation_uri))
+      if (id && !strcmp (device, id))
         {
-          g_free (activation_uri);
-          volume = vo;
+          volume = vol;
+          g_object_ref (volume);
+          g_free (id);
           break;
         }
-      g_free (activation_uri);
-    }
-  g_list_free (volumes);
 
-  if (volume)
-    gnome_vfs_volume_ref (volume);
+      g_free (id);
+    }
+
+  g_list_foreach (volumes, (GFunc) g_object_unref, NULL);
+  g_list_free (volumes);
+  g_object_unref (monitor);
 
   return volume;
+}
+
+GMount *
+find_mount (const char *uri)
+{
+  GFile *file = g_file_new_for_uri (uri);
+  GMount *mount = g_file_find_enclosing_mount (file, NULL, NULL);
+
+  g_object_unref(file);
+
+  return mount;
 }
 
 static void
@@ -404,39 +395,44 @@ hildon_file_system_voldev_volumes_changed (HildonFileSystemSpecialLocation
 {
   HildonFileSystemVoldev *voldev = HILDON_FILE_SYSTEM_VOLDEV (location);
 
-  if (voldev->volume)
+  if (voldev->mount)
     {
-      gnome_vfs_volume_unref (voldev->volume);
-      voldev->volume = NULL;
+      g_object_unref (voldev->mount);
+      voldev->mount = NULL;
     }
   if (voldev->drive)
     {
-      gnome_vfs_drive_unref (voldev->drive);
+      g_object_unref (voldev->drive);
       voldev->drive = NULL;
     }
 
   if (g_str_has_prefix (location->basepath, "drive://"))
-    voldev->drive = find_drive (location->basepath + 8);
+    voldev->drive = find_volume (location->basepath + 8);
   else
-    voldev->volume = find_volume (location->basepath);
+    voldev->mount = find_mount (location->basepath);
 
   if (!voldev->vol_type_valid)
     init_vol_type (location->basepath, voldev);
 
-  if (voldev->volume)
+  if (voldev->mount)
     {
+      GIcon *icon = g_mount_get_icon (voldev->mount);
+
       g_free (location->fixed_title);
       g_free (location->fixed_icon);
-      location->fixed_title =
-        gnome_vfs_volume_get_display_name (voldev->volume);
-      location->fixed_icon = gnome_vfs_volume_get_icon (voldev->volume);
+      location->fixed_title = g_mount_get_name (voldev->mount);
+      location->fixed_icon = g_icon_to_string (icon);
+      g_object_unref (icon);
     }
   else if (voldev->drive)
     {
+      GIcon *icon = g_volume_get_icon (voldev->drive);
+
       g_free (location->fixed_title);
       g_free (location->fixed_icon);
-      location->fixed_title = gnome_vfs_drive_get_display_name (voldev->drive);
-      location->fixed_icon = gnome_vfs_drive_get_icon (voldev->drive);
+      location->fixed_title = g_volume_get_name (voldev->drive);
+      location->fixed_icon = g_icon_to_string (icon);
+      g_object_unref (icon);
     }
 
   /* XXX - GnomeVFS should provide the right icons and display names.
@@ -478,12 +474,20 @@ hildon_file_system_voldev_get_extra_info (HildonFileSystemSpecialLocation
 					  *location)
 {
   HildonFileSystemVoldev *voldev = HILDON_FILE_SYSTEM_VOLDEV (location);
+  gchar *rv = NULL;
 
-  if (voldev->volume)
-    return g_strdup (gnome_vfs_volume_get_device_path (voldev->volume));
-  else if (voldev->drive)
-    return g_strdup (gnome_vfs_drive_get_device_path (voldev->drive));
-  else
-    return NULL;
+  if (voldev->mount) {
+    GVolume *v = g_mount_get_volume (voldev->mount);
+    if (v) {
+      rv = g_volume_get_identifier (v, G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE);
+      g_object_unref (v);
+    }
+  }
+  else if (voldev->drive) {
+    rv = g_volume_get_identifier (voldev->drive,
+                                  G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE);
+  }
+
+  return rv;
 }
 

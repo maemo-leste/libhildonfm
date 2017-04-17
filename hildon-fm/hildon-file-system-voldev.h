@@ -26,7 +26,7 @@
 
 #include "hildon-file-system-remote-device.h"
 
-#include <libgnomevfs/gnome-vfs.h>
+#include <gio/gio.h>
 #include <gconf/gconf-client.h>
 
 G_BEGIN_DECLS
@@ -52,8 +52,8 @@ typedef enum
 struct _HildonFileSystemVoldev
 {
   HildonFileSystemSpecialLocation parent_instance;
-  GnomeVFSVolume *volume;
-  GnomeVFSDrive *drive;
+  GMount *mount;
+  GVolume *drive;
   gboolean used_over_usb;
   voldev_t vol_type;
   gboolean vol_type_valid;
@@ -67,7 +67,7 @@ struct _HildonFileSystemVoldevClass
 
 GType hildon_file_system_voldev_get_type (void) G_GNUC_CONST;
 
-GnomeVFSVolume *find_volume (const char *uri);
+GMount *find_mount (const char *uri);
 
 gboolean
 hildon_file_system_voldev_is_visible (HildonFileSystemSpecialLocation *location,

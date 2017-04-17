@@ -2088,8 +2088,8 @@ static gboolean notify_volumes_changed(GNode *node, gpointer data)
 	     if ((voldev->vol_type == EXT_CARD) || 
 		(voldev->vol_type == USB_STORAGE) ||
 		(voldev->vol_type == INT_CARD)){
-	        voldev->volume = find_volume(model_node->location->basepath);
-	       if (voldev->volume != NULL){
+                voldev->mount = find_mount(model_node->location->basepath);
+               if (voldev->mount != NULL){
 		 if (hildon_file_system_voldev_is_visible(model_node->location, FALSE) == TRUE){ 
        g_signal_emit(model_node->model, signals[VOLDEV_MOUNTED],
                      0, model_node->location->basepath);
