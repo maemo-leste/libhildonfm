@@ -2,7 +2,7 @@ SUBDIRS = gtkfilesystem
 
 INCLUDES = $(GTK_CFLAGS) $(HILDON_CFLAGS) $(GCONF_CFLAGS) $(HILDON_THUMBNAIL_CFLAGS)	\
            $(GWCONNECT_CFLAGS) $(DBUSGLIB_CFLAGS) $(GIO_CFLAGS) 	\
-           $(LIBOSSO_CFLAGS)  $(TRACKER_CFLAGS)				\
+           $(LIBOSSO_CFLAGS) $(TRACKER_CFLAGS) $(GCONF_CFLAGS)		\
            $(MCE_CFLAGS) -DLOCALEDIR=\"$(localedir)\"			\
            $(LIBOSSOMIME_CFLAGS) -I$(srcdir)/..				\
            $(DEBUG_CPPFLAGS) -DG_LOG_DOMAIN=\"hildon-fm\"
@@ -18,7 +18,7 @@ EXTRA_DIST =
 
 libhildonfm_la_LIBADD = $(GTK_LIBS) $(HILDON_LIBS) $(GCONF_LIBS) $(HILDON_THUMBNAIL_LIBS) \
 	$(GWCONNECT_LIBS) $(DBUSGLIB_LIBS) $(LIBOSSOMIME_LIBS) $(GIO_LIBS) $(TRACKER_LIBS) \
-	gtkfilesystem/xdgmime/libxdgmime.la
+	$(GCONF_LIBS) gtkfilesystem/xdgmime/libxdgmime.la
 
 libhildonfm_la_LDFLAGS = -version-info 2:0:0
 libhildonfm_la_SOURCES =			\
