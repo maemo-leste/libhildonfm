@@ -29,7 +29,6 @@
 #include <gtk/gtkfilesystem.h>
 #endif
 
-#include <libgnomevfs/gnome-vfs.h>
 #include "hildon-file-common-private.h"
 #include "hildon-file-system-local-device.h"
 #include "hildon-file-system-settings.h"
@@ -193,20 +192,31 @@ static char *
 hildon_file_system_local_device_get_extra_info (HildonFileSystemSpecialLocation
 						*location)
 {
-  const gchar* path;
-  const gchar* device;
-  GnomeVFSVolumeMonitor *monitor;
-  GnomeVFSVolume* volume;
+  const gchar *path;
+  gchar *device = NULL;
+  GMount *mount;
+  GFile *file;
 
   path = g_getenv ("MYDOCSDIR");
-  monitor = gnome_vfs_get_volume_monitor ();
-  volume = gnome_vfs_volume_monitor_get_volume_for_path (monitor, path);
 
-  if (volume) {
-    device = gnome_vfs_volume_get_device_path (volume);
-    g_object_unref (volume);
-    return device;
-  }
-  else
+  if (!path)
     return NULL;
+
+  file = g_file_new_for_path (path);
+  mount = g_file_find_enclosing_mount (file, NULL, NULL);
+  g_object_unref (file);
+
+  if (mount) {
+    GVolume *volume = g_mount_get_volume (mount);
+
+    g_object_unref (mount);
+
+    if (volume) {
+      device = g_volume_get_identifier (volume,
+                                        G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE);
+      g_object_unref (volume);
+    }
+  }
+
+  return device;
 }
