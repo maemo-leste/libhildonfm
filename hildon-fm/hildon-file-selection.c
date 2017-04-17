@@ -3214,37 +3214,41 @@ static GObject *hildon_file_selection_constructor(GType type,
     /* Special-case scratchbox */
     if (g_file_test ("/scratchbox/", G_FILE_TEST_EXISTS))
         self->priv->show_localdevice = TRUE;
-    else
-      {
-        const gchar* path;
-        GMount* mount;
-        GFile *file;
+    else {
+        const gchar* path = g_getenv ("MYDOCSDIR");
 
-        path = g_getenv ("MYDOCSDIR");
-        file = g_file_new_for_uri (path);
-        mount = g_file_find_enclosing_mount (file, NULL, NULL);
-        g_object_unref (file);
+        if (path) {
+            GFile *file = g_file_new_for_uri (path);
+            GMount* mount = g_file_find_enclosing_mount (file, NULL, NULL);
 
-        if (mount)
-          {
-            GFile *root = g_mount_get_root (mount);
-            gchar *uri = g_file_get_uri(root);
+            g_object_unref (file);
 
-            g_object_unref(root);
+            if (mount) {
+                GFile *root = g_mount_get_root (mount);
 
-            if (g_str_has_prefix (uri, "file:///"))
-              {
-                if (g_str_equal (&uri[7], g_getenv ("MYDOCSDIR")))
-                  hildon_file_selection_mounted_added_cb (priv->monitor, mount, self);
-                else
-                  hildon_file_selection_mounted_removed_cb (priv->monitor, mount, self);
-              }
-            g_object_unref (mount);
-            g_free (uri);
-          }
-      }
+                if (root) {
+                  gchar *uri = g_file_get_uri(root);
 
-      /* we need to create view models here, even if dummy ones */
+                  g_object_unref(root);
+
+                  if (g_str_has_prefix (uri, "file:///")) {
+                    if (g_str_equal (&uri[7], g_getenv ("MYDOCSDIR")))
+                      hildon_file_selection_mounted_added_cb (priv->monitor,
+                                                              mount, self);
+                    else
+                      hildon_file_selection_mounted_removed_cb (priv->monitor,
+                                                                mount, self);
+                  }
+
+                  g_free (uri);
+                }
+
+                g_object_unref (mount);
+            }
+        }
+    }
+
+    /* we need to create view models here, even if dummy ones */
 
     temp_path = gtk_tree_path_new_from_string("0");
     priv->view_filter = gtk_tree_model_filter_new(priv->main_model, temp_path);
