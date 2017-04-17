@@ -156,8 +156,8 @@ hildon_file_system_voldev_finalize (GObject *obj)
 
     if (voldev->mount)
       g_object_unref (voldev->mount);
-    if (voldev->drive)
-      g_object_unref (voldev->drive);
+    if (voldev->volume)
+      g_object_unref (voldev->volume);
 
     G_OBJECT_CLASS (hildon_file_system_voldev_parent_class)->finalize (obj);
 }
@@ -206,13 +206,13 @@ hildon_file_system_voldev_is_visible (HildonFileSystemSpecialLocation *location,
 
   if (voldev->mount && !voldev->used_over_usb && !cover_open)
     visible = TRUE;
-  else if (voldev->drive && voldev->vol_type == USB_STORAGE)
+  else if (voldev->volume && voldev->vol_type == USB_STORAGE)
     visible = FALSE; /* USB drives are never visible */ /* fmg - WHY? */
-  else if (voldev->drive && !voldev->used_over_usb && !cover_open)
+  else if (voldev->volume && !voldev->used_over_usb && !cover_open)
   {
-    GMount *mount = g_volume_get_mount (voldev->drive);
+    GMount *mount = g_volume_get_mount (voldev->volume);
 
-    visible = (g_volume_can_mount (voldev->drive) && !mount && corrupted);
+    visible = (g_volume_can_mount (voldev->volume) && !mount && corrupted);
 
     if (mount)
       g_object_unref (mount);
@@ -400,14 +400,14 @@ hildon_file_system_voldev_volumes_changed (HildonFileSystemSpecialLocation
       g_object_unref (voldev->mount);
       voldev->mount = NULL;
     }
-  if (voldev->drive)
+  if (voldev->volume)
     {
-      g_object_unref (voldev->drive);
-      voldev->drive = NULL;
+      g_object_unref (voldev->volume);
+      voldev->volume = NULL;
     }
 
   if (g_str_has_prefix (location->basepath, "drive://"))
-    voldev->drive = find_volume (location->basepath + 8);
+    voldev->volume = find_volume (location->basepath + 8);
   else
     voldev->mount = find_mount (location->basepath);
 
@@ -424,13 +424,13 @@ hildon_file_system_voldev_volumes_changed (HildonFileSystemSpecialLocation
       location->fixed_icon = g_icon_to_string (icon);
       g_object_unref (icon);
     }
-  else if (voldev->drive)
+  else if (voldev->volume)
     {
-      GIcon *icon = g_volume_get_icon (voldev->drive);
+      GIcon *icon = g_volume_get_icon (voldev->volume);
 
       g_free (location->fixed_title);
       g_free (location->fixed_icon);
-      location->fixed_title = g_volume_get_name (voldev->drive);
+      location->fixed_title = g_volume_get_name (voldev->volume);
       location->fixed_icon = g_icon_to_string (icon);
       g_object_unref (icon);
     }
@@ -483,8 +483,8 @@ hildon_file_system_voldev_get_extra_info (HildonFileSystemSpecialLocation
       g_object_unref (v);
     }
   }
-  else if (voldev->drive) {
-    rv = g_volume_get_identifier (voldev->drive,
+  else if (voldev->volume) {
+    rv = g_volume_get_identifier (voldev->volume,
                                   G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE);
   }
 

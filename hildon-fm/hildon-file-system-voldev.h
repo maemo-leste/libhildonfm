@@ -53,7 +53,7 @@ struct _HildonFileSystemVoldev
 {
   HildonFileSystemSpecialLocation parent_instance;
   GMount *mount;
-  GVolume *drive;
+  GVolume *volume;
   gboolean used_over_usb;
   voldev_t vol_type;
   gboolean vol_type_valid;
