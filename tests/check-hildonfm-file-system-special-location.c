@@ -77,7 +77,7 @@ fx_setup_hildonfm_file_system_special_location ()
     path = gtk_file_system_uri_to_path (gfs, folder);
     fail_if (!path,
              "Getting a file path failed");
-
+    printf("%s\n", path);
     location = _hildon_file_system_get_special_location (gfs, path);
     fail_if (!HILDON_IS_FILE_SYSTEM_SPECIAL_LOCATION (location),
              "Getting a special location failed");

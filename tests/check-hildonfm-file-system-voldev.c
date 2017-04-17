@@ -61,7 +61,7 @@ END_TEST
 START_TEST (test_file_system_voldev_find_volume)
 {
     gchar *uri = "file:///";
-    GnomeVFSVolume *volume = NULL;
+    GMount *mount = NULL;
     HildonFileSystemModel *model = NULL;
     HildonFileSelection *fs = NULL;
 
@@ -73,13 +73,13 @@ START_TEST (test_file_system_voldev_find_volume)
     fail_if (!HILDON_IS_FILE_SELECTION (fs),
              "File selection creation failed");
 
-    volume = find_volume (uri);
+    mount = find_mount (uri);
     /*
     if (volume == NULL)
         printf ("NULL!!!\n");
     */
-    fail_if (!GNOME_IS_VFS_VOLUME (volume),
-             "Locating a GnomeVFSVolume with 'file:///' as uri failed");
+    fail_if (!mount,
+             "Locating a GMount with 'file:///' as uri failed");
 }
 END_TEST
 
@@ -89,8 +89,13 @@ int
 main (int    argc,
       char** argv)
 {
+#if !GLIB_CHECK_VERSION(2,32,0)
+#ifdef	G_THREADS_ENABLED
     if (!g_thread_supported ())
         g_thread_init (NULL);
+#endif
+#endif
+
     gtk_test_init (&argc, &argv, NULL);
 
     /* Create a test case for general filesystem voldev testing */

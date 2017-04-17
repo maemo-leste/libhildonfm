@@ -33,7 +33,6 @@
 
 #include <gtk/gtk.h>
 #include <hildon/hildon.h>
-#include <libgnomevfs/gnome-vfs.h>
 
 #include "hildon-file-selection.h"
 #include "hildon-file-system-info.h"
@@ -1471,11 +1470,15 @@ int
 main (int    argc,
       char** argv)
 {
+#if !GLIB_CHECK_VERSION(2,32,0)
+#ifdef	G_THREADS_ENABLED
     if (!g_thread_supported ())
         g_thread_init (NULL);
-    g_assert(gnome_vfs_init());
+#endif
+#endif
+
     gtk_test_init (&argc, &argv, NULL);
-    g_log_set_always_fatal(0);
+
     /* Create test case for file selection modes */
     g_test_add_data_func ("/HildonfmFileSelection/creation",
         (fm_test_func)test_file_selection_creation, fm_test_setup);

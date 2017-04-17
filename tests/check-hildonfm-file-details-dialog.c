@@ -31,7 +31,6 @@
 
 #include <gtk/gtk.h>
 #include <hildon/hildon.h>
-#include <libgnomevfs/gnome-vfs.h>
 
 #include "hildon-file-details-dialog.h"
 #include "hildon-file-system-model.h"
@@ -221,9 +220,13 @@ int
 main (int    argc,
       char** argv)
 {
+#if !GLIB_CHECK_VERSION(2,32,0)
+#ifdef	G_THREADS_ENABLED
     if (!g_thread_supported ())
         g_thread_init (NULL);
-    g_assert (gnome_vfs_init ());
+#endif
+#endif
+
     gtk_test_init (&argc, &argv, NULL);
 
     /* Create a test case for file details dialog iterator tests*/
