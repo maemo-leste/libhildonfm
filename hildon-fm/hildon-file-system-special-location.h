@@ -73,10 +73,10 @@ struct _HildonFileSystemSpecialLocationClass
 
   #ifndef HILDON_DISABLE_DEPRECATED
   /* private */
-  gchar* (*get_display_name) (HildonFileSystemSpecialLocation *location, GtkFileSystem *fs);
+  gchar* (*get_display_name) (HildonFileSystemSpecialLocation *location);
   gchar* (*get_extra_info) (HildonFileSystemSpecialLocation *location);
   GdkPixbuf* (*get_icon) (HildonFileSystemSpecialLocation *location,
-			  GtkFileSystem *fs, GtkWidget *ref_widget, int size);
+                          GtkWidget *ref_widget, int size);
   gboolean (*is_available) (HildonFileSystemSpecialLocation *location);
   gboolean (*is_visible) (HildonFileSystemSpecialLocation *location,
 			  gboolean has_children);
@@ -111,7 +111,7 @@ GType hildon_file_system_special_location_get_type (void) G_GNUC_CONST;
 /* Title that should be used for the location. If the virtual function is not
  * defined, then NULL is returned (which in turn can be intepreted as fallback
  * to GtkFileInfo) */
-gchar *hildon_file_system_special_location_get_display_name (HildonFileSystemSpecialLocation *location, GtkFileSystem *fs);
+gchar *hildon_file_system_special_location_get_display_name (HildonFileSystemSpecialLocation *location);
 #endif
 
 /* Title that should be used for the location. If the virtual function is not
@@ -123,7 +123,7 @@ gchar *hildon_file_system_special_location_get_extra_info (HildonFileSystemSpeci
 /* Note! We cannot return just icon name, since some icons are created using
  * gtk_file_system_render_icon, which doesn't provide icon names. Returns
  * fixed icon, if such is available. */
-GdkPixbuf *hildon_file_system_special_location_get_icon (HildonFileSystemSpecialLocation *location, GtkFileSystem *fs, GtkWidget *ref_widget, int size);
+GdkPixbuf *hildon_file_system_special_location_get_icon (HildonFileSystemSpecialLocation *location, GtkWidget *ref_widget, int size);
 #endif
 
 /* Whether or not the location should be dimmed. May depend on flightmode,

@@ -319,7 +319,7 @@ _hildon_file_system_get_special_location(const gchar *path)
     data.uri = g_file_get_uri(uri);
     data.result = NULL;
 
-    g_object_free(uri);
+    g_object_unref(uri);
 
     if (data.uri) {
         /* Let's precalculate the length for the entire search */
@@ -332,8 +332,8 @@ _hildon_file_system_get_special_location(const gchar *path)
 
 	if (!data.result) {
 	    /* No matching node found, try to create one */
-	    data.result = create_child_location (locations->children->data,
-						 locations, data.uri);
+            data.result = create_child_location (locations->children->data,
+                                                 locations, data.uri);
 	    data.is_child = TRUE;
         }
 
@@ -491,7 +491,7 @@ _hildon_file_system_create_image (GtkFileSystem *fs,
     if (location) {
         GdkPixbuf *pixbuf;
         pixbuf = hildon_file_system_special_location_get_icon(location,
-               fs, ref_widget, size);
+                                                              ref_widget, size);
         if (pixbuf) return pixbuf;
     }
 
@@ -588,7 +588,7 @@ _hildon_file_system_create_file_name (GtkFileSystem *fs,
   char *name = NULL;
 
   if (location)
-    name = hildon_file_system_special_location_get_display_name (location, fs);
+    name = hildon_file_system_special_location_get_display_name (location);
 
   if (name == NULL && info)
     name = g_strdup (gtk_file_info_get_display_name (info));

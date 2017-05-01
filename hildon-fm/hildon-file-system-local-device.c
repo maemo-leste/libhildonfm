@@ -43,8 +43,7 @@ hildon_file_system_local_device_finalize (GObject *obj);
 static void
 btname_changed(GObject *settings, GParamSpec *param, gpointer data);
 static gchar*
-hildon_file_system_local_device_get_display_name (HildonFileSystemSpecialLocation
-                                                  *location, GtkFileSystem *fs);
+hildon_file_system_local_device_get_display_name (HildonFileSystemSpecialLocation *location);
 static GtkFileSystemHandle*
 hildon_file_system_local_device_get_folder (HildonFileSystemSpecialLocation *location,
                                             GtkFileSystem *fs,
@@ -132,8 +131,8 @@ btname_changed(GObject *settings, GParamSpec *param, gpointer data)
  * to GtkFileInfo)
  */
 static gchar*
-hildon_file_system_local_device_get_display_name (HildonFileSystemSpecialLocation
-                                                  *location, GtkFileSystem *fs)
+hildon_file_system_local_device_get_display_name(
+    HildonFileSystemSpecialLocation *location)
 {
     HildonFileSystemSettings *fs_settings;
     gchar *name = NULL;

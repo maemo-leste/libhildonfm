@@ -117,7 +117,7 @@ hildon_file_system_special_location_finalize (GObject *obj)
  */
 gchar*
 hildon_file_system_special_location_get_display_name (
-                HildonFileSystemSpecialLocation *location, GtkFileSystem *fs)
+                HildonFileSystemSpecialLocation *location)
 {
     HildonFileSystemSpecialLocationClass *klass;
 
@@ -127,7 +127,7 @@ hildon_file_system_special_location_get_display_name (
     klass = HILDON_FILE_SYSTEM_SPECIAL_LOCATION_GET_CLASS (location);
 
     if (klass->get_display_name)
-        return klass->get_display_name (location, fs);
+      return klass->get_display_name (location);
 
     if (location->fixed_title)
         return g_strdup (location->fixed_title);
@@ -161,7 +161,6 @@ hildon_file_system_special_location_get_extra_info (
 GdkPixbuf*
 hildon_file_system_special_location_get_icon (HildonFileSystemSpecialLocation
                                               *location,
-                                              GtkFileSystem *fs,
                                               GtkWidget *ref_widget, int size)
 {
     HildonFileSystemSpecialLocationClass *klass;
@@ -172,7 +171,7 @@ hildon_file_system_special_location_get_icon (HildonFileSystemSpecialLocation
     klass = HILDON_FILE_SYSTEM_SPECIAL_LOCATION_GET_CLASS (location);
 
     if (klass->get_icon)
-        return klass->get_icon (location, fs, ref_widget, size);
+        return klass->get_icon (location, ref_widget, size);
 
     if (location->fixed_icon)
         return _hildon_file_system_load_icon_cached (
@@ -310,7 +309,7 @@ hildon_file_system_special_location_volumes_changed (
     klass = HILDON_FILE_SYSTEM_SPECIAL_LOCATION_GET_CLASS (location);
 
     if (klass->volumes_changed)
-	return klass->volumes_changed (location);
+        return klass->volumes_changed (location);
 }
 
 GtkFileSystemHandle *
