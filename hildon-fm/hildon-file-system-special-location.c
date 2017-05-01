@@ -301,7 +301,7 @@ hildon_file_system_special_location_create_child_location (
 
 void
 hildon_file_system_special_location_volumes_changed (
-                HildonFileSystemSpecialLocation *location, GtkFileSystem *fs)
+    HildonFileSystemSpecialLocation *location)
 {
     HildonFileSystemSpecialLocationClass *klass;
 
@@ -310,7 +310,7 @@ hildon_file_system_special_location_volumes_changed (
     klass = HILDON_FILE_SYSTEM_SPECIAL_LOCATION_GET_CLASS (location);
 
     if (klass->volumes_changed)
-        return klass->volumes_changed (location, fs);
+	return klass->volumes_changed (location);
 }
 
 GtkFileSystemHandle *

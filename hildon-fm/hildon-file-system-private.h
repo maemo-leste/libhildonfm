@@ -43,7 +43,7 @@ G_BEGIN_DECLS
 gboolean 
 _hildon_file_system_compare_ignore_last_separator(const char *a, const char *b);
 
-GNode *_hildon_file_system_get_locations(GtkFileSystem *fs);
+GNode *_hildon_file_system_get_locations(void);
 
 HildonFileSystemSpecialLocation *
 _hildon_file_system_get_special_location(GtkFileSystem *fs, const GtkFilePath *path);

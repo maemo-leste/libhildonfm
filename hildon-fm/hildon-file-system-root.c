@@ -107,7 +107,7 @@ hildon_file_system_root_create_child_location (HildonFileSystemSpecialLocation
       child = g_object_new (HILDON_TYPE_FILE_SYSTEM_VOLDEV, NULL);
       child->basepath = g_strdup (uri);
       child->permanent = FALSE;
-      hildon_file_system_special_location_volumes_changed (child, NULL);
+      hildon_file_system_special_location_volumes_changed (child);
     }
 
   return child;

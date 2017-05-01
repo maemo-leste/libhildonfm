@@ -2077,7 +2077,7 @@ static gboolean notify_volumes_changed(GNode *node, gpointer data)
     HildonFileSystemVoldev *voldev = NULL;
  
     if (model_node->location){
- 	hildon_file_system_special_location_volumes_changed(model_node->location, data);
+	hildon_file_system_special_location_volumes_changed(model_node->location);
 	/* check if the special location is voldev */
 	if (HILDON_IS_FILE_SYSTEM_VOLDEV(model_node->location)){
 	  if (model_node->model == NULL){
@@ -2853,8 +2853,7 @@ create_model_node_for_location(HildonFileSystemModel *self,
         model_node->location = g_object_ref(location);
 
         /* Let the location to initialize it's state */
-        hildon_file_system_special_location_volumes_changed(location,
-            self->priv->filesystem);
+	hildon_file_system_special_location_volumes_changed(location);
 
     } else {
         g_debug("BASE LOCATION: %s FAILED => SKIPPING", location->basepath);
@@ -2975,8 +2974,7 @@ hildon_file_system_model_constructor(GType type,
     {
         /* Let's use device tree as a base of our tree */
         priv->roots = my_copy_deep(
-                        _hildon_file_system_get_locations(priv->filesystem),
-                        obj);
+			_hildon_file_system_get_locations(), obj);
 
         priv->volumes_changed_handler = g_signal_connect_object(priv->filesystem,
                                      "volumes-changed",

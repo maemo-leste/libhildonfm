@@ -84,8 +84,7 @@ struct _HildonFileSystemSpecialLocationClass
   gboolean (*requires_access) (HildonFileSystemSpecialLocation *location);
   gboolean (*failed_access) (HildonFileSystemSpecialLocation *location);
   HildonFileSystemSpecialLocation* (*create_child_location) (HildonFileSystemSpecialLocation *location, gchar *uri);
-  void (*volumes_changed) (HildonFileSystemSpecialLocation *location,
-                             GtkFileSystem *fs);
+  void (*volumes_changed) (HildonFileSystemSpecialLocation *location);
 
   GtkFileSystemHandle * (*get_folder)  (HildonFileSystemSpecialLocation *location,
 					GtkFileSystem                  *file_system,
@@ -160,7 +159,7 @@ hildon_file_system_special_location_create_child_location (HildonFileSystemSpeci
 
 #ifndef HILDON_DISABLE_DEPRECATED
 void
-hildon_file_system_special_location_volumes_changed (HildonFileSystemSpecialLocation *location, GtkFileSystem *fs);
+hildon_file_system_special_location_volumes_changed (HildonFileSystemSpecialLocation *location);
 
 GtkFileSystemHandle *
 hildon_file_system_special_location_get_folder (HildonFileSystemSpecialLocation *location,

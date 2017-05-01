@@ -137,7 +137,7 @@ setup_safe_folder(const gchar                   *local_path,
     return result;
 }
 
-GNode *_hildon_file_system_get_locations(GtkFileSystem *fs)
+GNode *_hildon_file_system_get_locations(void)
 {
     static GNode *locations = NULL;
 
@@ -315,7 +315,7 @@ _hildon_file_system_get_special_location(GtkFileSystem *fs,
     CallbackData data;
     GNode *locations;
 
-    locations = _hildon_file_system_get_locations(fs);
+    locations = _hildon_file_system_get_locations();
     data.uri = gtk_file_system_path_to_uri(fs, path);
     data.result = NULL;
 
@@ -338,7 +338,7 @@ _hildon_file_system_get_special_location(GtkFileSystem *fs,
     }
 
     if (data.result)
-      hildon_file_system_special_location_volumes_changed (data.result, fs);
+      hildon_file_system_special_location_volumes_changed (data.result);
 
     return data.result;
 }
