@@ -217,7 +217,7 @@ hildon_file_system_info_async_new (const gchar *uri,
   result->fs = fs;
   result->path = path;
   result->info = NULL;
-  result->location = _hildon_file_system_get_special_location(fs, path);
+  result->location = _hildon_file_system_get_special_location(path);
 
   result->callback = callback;
   result->userdata = userdata;

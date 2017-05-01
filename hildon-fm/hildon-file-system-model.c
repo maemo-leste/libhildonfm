@@ -2215,8 +2215,8 @@ hildon_file_system_model_add_node (GtkTreeModel * model,
 	|| (file_info && gtk_file_info_get_is_folder(file_info))
 	|| g_str_has_prefix (gtk_file_path_get_string (path), "obex:///"))
     {
-        model_node->location = _hildon_file_system_get_special_location(
-                                   priv->filesystem, real_path);
+	model_node->location =
+	    _hildon_file_system_get_special_location(real_path);
         setup_node_for_location(node);
     }
 
@@ -3459,7 +3459,7 @@ gchar *hildon_file_system_model_new_item(HildonFileSystemModel * model,
       {
         HildonFileSystemSpecialLocation *location;
 
-        location = _hildon_file_system_get_special_location(fs, path);
+	location = _hildon_file_system_get_special_location(path);
         if (location) /* Ok, we are trying to autoname a special location. Let's use user visible name */
         {
           allocated = _hildon_file_system_create_file_name(fs, path, location, NULL);

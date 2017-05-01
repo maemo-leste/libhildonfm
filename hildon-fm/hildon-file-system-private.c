@@ -309,15 +309,17 @@ static gboolean get_special_location_callback(GNode *node, gpointer data)
 }
 
 HildonFileSystemSpecialLocation *
-_hildon_file_system_get_special_location(GtkFileSystem *fs,
-                                         const GtkFilePath *path)
+_hildon_file_system_get_special_location(const gchar *path)
 {
     CallbackData data;
     GNode *locations;
+    GFile *uri = g_file_new_for_path(path);
 
     locations = _hildon_file_system_get_locations();
-    data.uri = gtk_file_system_path_to_uri(fs, path);
+    data.uri = g_file_get_uri(uri);
     data.result = NULL;
+
+    g_object_free(uri);
 
     if (data.uri) {
         /* Let's precalculate the length for the entire search */
@@ -330,7 +332,8 @@ _hildon_file_system_get_special_location(GtkFileSystem *fs,
 
 	if (!data.result) {
 	    /* No matching node found, try to create one */
-	    data.result = create_child_location (locations->children->data, locations, data.uri);
+	    data.result = create_child_location (locations->children->data,
+						 locations, data.uri);
 	    data.is_child = TRUE;
         }
 

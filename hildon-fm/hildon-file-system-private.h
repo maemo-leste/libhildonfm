@@ -46,7 +46,7 @@ _hildon_file_system_compare_ignore_last_separator(const char *a, const char *b);
 GNode *_hildon_file_system_get_locations(void);
 
 HildonFileSystemSpecialLocation *
-_hildon_file_system_get_special_location(GtkFileSystem *fs, const GtkFilePath *path);
+_hildon_file_system_get_special_location(const gchar *path);
 
 GdkPixbuf *_hildon_file_system_create_image (GtkFileSystem *fs, 
 					     GtkWidget *ref_widget,
