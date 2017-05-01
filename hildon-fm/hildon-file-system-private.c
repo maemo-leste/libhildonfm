@@ -653,11 +653,19 @@ _hildon_file_system_create_display_name(GtkFileSystem *fs,
   return str;
 }
 
-GtkFilePath *_hildon_file_system_path_for_location(GtkFileSystem *fs,
-  HildonFileSystemSpecialLocation *location)
+gchar *_hildon_file_system_path_for_location(
+    HildonFileSystemSpecialLocation *location)
 {
+  GFile *file;
+  gchar *path;
+
   g_assert(HILDON_IS_FILE_SYSTEM_SPECIAL_LOCATION(location));
-  return gtk_file_system_uri_to_path(fs, location->basepath);
+
+  file = g_file_new_for_uri(location->basepath);
+  path = g_file_get_uri(file);
+  g_object_unref(file);
+
+  return path;
 }
 
 /* You can omit either type or base */
@@ -666,14 +674,14 @@ _hildon_file_system_get_volume_for_location(GtkFileSystem *fs,
     HildonFileSystemSpecialLocation *location)
 {
     GSList *volumes, *iter;
-    GtkFilePath *mount_path, *path;
+    gchar *mount_path, *path;
     GtkFileSystemVolume *vol, *result = NULL;
     const char *path_a, *path_b;
 
     /* We cannot just use get_volume_for_path, because it won't
         work work with URIs other than file:// */
     volumes = gtk_file_system_list_volumes(fs);
-    mount_path = _hildon_file_system_path_for_location(fs, location);
+    mount_path = _hildon_file_system_path_for_location(location);
     path_a = gtk_file_path_get_string(mount_path);
 
     for (iter = volumes; iter; iter = g_slist_next(iter))
@@ -691,7 +699,7 @@ _hildon_file_system_get_volume_for_location(GtkFileSystem *fs,
         gtk_file_path_free(path);
       }
 
-    gtk_file_path_free(mount_path);
+    g_free(mount_path);
     g_slist_free(volumes);
 
     return result;

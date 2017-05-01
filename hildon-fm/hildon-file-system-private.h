@@ -62,8 +62,7 @@ gchar *_hildon_file_system_create_display_name(GtkFileSystem *fs,
   const GtkFilePath *path, HildonFileSystemSpecialLocation *location,  
   GtkFileInfo *info);
 
-GtkFilePath *_hildon_file_system_path_for_location(GtkFileSystem *fs, 
-  HildonFileSystemSpecialLocation *location);
+gchar *_hildon_file_system_path_for_location(HildonFileSystemSpecialLocation *location);
 
 GtkFileSystemVolume *
 _hildon_file_system_get_volume_for_location(GtkFileSystem *fs, 

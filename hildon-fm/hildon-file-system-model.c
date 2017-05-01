@@ -2077,7 +2077,7 @@ static gboolean notify_volumes_changed(GNode *node, gpointer data)
     HildonFileSystemVoldev *voldev = NULL;
  
     if (model_node->location){
-	hildon_file_system_special_location_volumes_changed(model_node->location);
+        hildon_file_system_special_location_volumes_changed(model_node->location);
 	/* check if the special location is voldev */
 	if (HILDON_IS_FILE_SYSTEM_VOLDEV(model_node->location)){
 	  if (model_node->model == NULL){
@@ -2215,8 +2215,8 @@ hildon_file_system_model_add_node (GtkTreeModel * model,
 	|| (file_info && gtk_file_info_get_is_folder(file_info))
 	|| g_str_has_prefix (gtk_file_path_get_string (path), "obex:///"))
     {
-	model_node->location =
-	    _hildon_file_system_get_special_location(real_path);
+        model_node->location =
+            _hildon_file_system_get_special_location(real_path);
         setup_node_for_location(node);
     }
 
@@ -2786,8 +2786,7 @@ location_connection_state_changed(HildonFileSystemSpecialLocation *location,
     g_assert(HILDON_IS_FILE_SYSTEM_SPECIAL_LOCATION(location));
     g_assert(model_node != NULL);
 
-    path = _hildon_file_system_path_for_location(
-             model_node->model->priv->filesystem, location);
+    path = _hildon_file_system_path_for_location(location);
 
     if (path) {
         if (hildon_file_system_special_location_is_available(location))
@@ -2813,7 +2812,7 @@ location_connection_state_changed(HildonFileSystemSpecialLocation *location,
     } else {
         g_debug("LOCATION %s FAILED => KICKING AWAY!!", location->basepath);
         hildon_file_system_model_kick_node(node, model_node->model);
-        gtk_file_path_free(path);
+        g_free(path);
     }
 }
 
@@ -2837,10 +2836,9 @@ create_model_node_for_location(HildonFileSystemModel *self,
     HildonFileSystemSpecialLocation *location)
 {
     HildonFileSystemModelNode *model_node = NULL;
-    GtkFilePath *path;
+    gchar *path;
 
-    path = _hildon_file_system_path_for_location(
-            self->priv->filesystem, location);
+    path = _hildon_file_system_path_for_location(location);
 
     if (path) {
 	g_debug ("BASE %s PATH %s\n", location->basepath, (char *)path);
@@ -2853,7 +2851,7 @@ create_model_node_for_location(HildonFileSystemModel *self,
         model_node->location = g_object_ref(location);
 
         /* Let the location to initialize it's state */
-	hildon_file_system_special_location_volumes_changed(location);
+        hildon_file_system_special_location_volumes_changed(location);
 
     } else {
         g_debug("BASE LOCATION: %s FAILED => SKIPPING", location->basepath);
@@ -2974,7 +2972,7 @@ hildon_file_system_model_constructor(GType type,
     {
         /* Let's use device tree as a base of our tree */
         priv->roots = my_copy_deep(
-			_hildon_file_system_get_locations(), obj);
+                        _hildon_file_system_get_locations(), obj);
 
         priv->volumes_changed_handler = g_signal_connect_object(priv->filesystem,
                                      "volumes-changed",
@@ -3459,7 +3457,7 @@ gchar *hildon_file_system_model_new_item(HildonFileSystemModel * model,
       {
         HildonFileSystemSpecialLocation *location;
 
-	location = _hildon_file_system_get_special_location(path);
+        location = _hildon_file_system_get_special_location(path);
         if (location) /* Ok, we are trying to autoname a special location. Let's use user visible name */
         {
           allocated = _hildon_file_system_create_file_name(fs, path, location, NULL);

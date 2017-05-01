@@ -213,7 +213,6 @@ root_file_folder_list_children (GtkFileFolder  *folder,
                                 GError        **error)
 {
   RootFileFolder *root_folder = ROOT_FILE_FOLDER (folder);
-  GtkFileSystem *fs = root_folder->filesystem;
 
   GVolumeMonitor *monitor;
   GList *mounts, *m, *volumes, *v;
@@ -226,13 +225,10 @@ root_file_folder_list_children (GtkFileFolder  *folder,
     {
       GMount *mount = m->data;
       GFile *root = g_mount_get_root (mount);
-      char *uri = g_file_get_uri (root);
+      char *path = g_file_get_path (root);
 
       g_object_unref (root);
-      *children = g_slist_append (*children,
-                                  gtk_file_system_uri_to_path (fs, uri));
-      g_free (uri);
-
+      *children = g_slist_append (*children, path);
     }
 
   g_list_foreach (mounts, (GFunc) g_object_unref, NULL);
@@ -245,12 +241,7 @@ root_file_folder_list_children (GtkFileFolder  *folder,
       GVolume *volume = v->data;
       char *id = g_volume_get_identifier (volume,
                                           G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE);
-      char *uri = g_strdup_printf ("drive://%s", id);
-
-      g_free (id);
-      *children = g_slist_append (*children,
-                                  gtk_file_system_uri_to_path (fs, uri));
-      g_free (uri);
+      *children = g_slist_append (*children, id);
     }
 
   g_list_foreach (volumes, (GFunc) g_object_unref, NULL);
