@@ -108,7 +108,7 @@ struct _GtkFileSystemModel
   GtkFileSystem  *file_system;
   GtkFileInfoType types;
   FileModelNode  *roots;
-  GtkFileFolder  *root_folder;
+  GtkFolder  *root_folder;
   GtkFilePath    *root_path;
 
   GtkFileSystemModelFilter filter_func;
@@ -134,7 +134,7 @@ struct _FileModelNode
   FileModelNode *next;
 
   GtkFileInfo *info;
-  GtkFileFolder *folder;
+  GtkFolder *folder;
   
   FileModelNode *children;
   FileModelNode *parent;

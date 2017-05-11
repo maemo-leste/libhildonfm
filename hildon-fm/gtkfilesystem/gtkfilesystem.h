@@ -27,8 +27,8 @@ G_BEGIN_DECLS
 
 typedef gint64 GtkFileTime;
 
-typedef struct _GtkFileFolder       GtkFileFolder;
-typedef struct _GtkFileFolderIface  GtkFileFolderIface;
+typedef struct _GtkFolder       GtkFolder;
+typedef struct _GtkFolderIface  GtkFolderIface;
 typedef struct _GtkFileInfo         GtkFileInfo;
 typedef struct _GtkFileSystem       GtkFileSystem;
 typedef struct _GtkFileSystemIface  GtkFileSystemIface;
@@ -104,15 +104,10 @@ void                  gtk_file_info_set_size              (GtkFileInfo       *in
 void                  gtk_file_info_set_icon_name         (GtkFileInfo       *info,
 							   const gchar       *con_name);
 G_CONST_RETURN gchar *gtk_file_info_get_icon_name         (const GtkFileInfo *info);
-GdkPixbuf            *gtk_file_info_render_icon           (const GtkFileInfo *info,
-							   GtkWidget         *widget,
-							   gint               pixel_size,
-							   GError           **error);
-
-#ifdef MAEMO_CHANGES
-void                  gtk_file_info_set_icon_pixbuf       (GtkFileInfo *info,
-							   GdkPixbuf   *icon_pixbuf);
-#endif /* MAEMO_CHANGES */
+GdkPixbuf            *gtk_file_info_render_icon           (GFileInfo *info,
+							   GtkWidget *widget,
+							   gint       icon_size);
+gboolean _gtk_file_info_consider_as_directory (GFileInfo *info);
 
 /* GtkFileSystemHandle
  */
@@ -153,19 +148,19 @@ GType gtk_file_system_handle_get_type (void);
 /* Callbacks for the asynchronous GtkFileSystem operations
  */
 
-typedef void (* GtkFileSystemGetInfoCallback) (GtkFileSystemHandle *handle,
-					       const GtkFileInfo   *file_info,
+typedef void (* GtkFileSystemGetInfoCallback) (GCancellable *cancellable,
+					       GFileInfo           *file_info,
 					       const GError        *error,
 					       gpointer             data);
-typedef void (* GtkFileSystemGetFolderCallback) (GtkFileSystemHandle *handle,
-						 GtkFileFolder       *folder,
-						 const GError        *error,
-						 gpointer             data);
-typedef void (* GtkFileSystemCreateFolderCallback) (GtkFileSystemHandle *handle,
+typedef void (* GtkFileSystemGetFolderCallback) (GCancellable *cancellable,
+						 GtkFolder    *folder,
+						 const GError *error,
+						 gpointer      data);
+typedef void (* GtkFileSystemCreateFolderCallback) (GCancellable *cancellable,
 						    const GtkFilePath   *path,
 						    const GError        *error,
 						    gpointer             data);
-typedef void (* GtkFileSystemVolumeMountCallback) (GtkFileSystemHandle *handle,
+typedef void (* GtkFileSystemVolumeMountCallback) (GCancellable *cancellable,
 						   GtkFileSystemVolume *volume,
 						   const GError        *error,
 						   gpointer             data);
@@ -183,20 +178,20 @@ struct _GtkFileSystemIface
   GtkFileSystemVolume * (*get_volume_for_path) (GtkFileSystem     *file_system,
 						const GtkFilePath *path);
 
-  GtkFileSystemHandle * (*get_folder)  (GtkFileSystem                  *file_system,
-					const GtkFilePath              *path,
-					GtkFileInfoType                 types,
+  GCancellable        * (*get_folder)  (GtkFileSystem                  *file_system,
+					const GFile                    *file,
+					const gchar                    *attributes,
 					GtkFileSystemGetFolderCallback  callback,
 					gpointer                        data);
-  GtkFileSystemHandle * (*get_info) (GtkFileSystem                *file_system,
+  GCancellable        * (*get_info) (GtkFileSystem                *file_system,
 				     const GtkFilePath            *path,
-				     GtkFileInfoType               types,
+				     const char                   *attributes,
 				     GtkFileSystemGetInfoCallback  callback,
 				     gpointer                      data);
-  GtkFileSystemHandle * (*create_folder)  (GtkFileSystem                     *file_system,
-					   const GtkFilePath                 *path,
-					   GtkFileSystemCreateFolderCallback  callback,
-					   gpointer                           data);
+  GCancellable * (*create_folder)  (GtkFileSystem                     *file_system,
+				    const GtkFilePath                 *path,
+				    GtkFileSystemCreateFolderCallback  callback,
+				    gpointer                           data);
 
   void               (*cancel_operation) (GtkFileSystemHandle *handle);
 
@@ -300,20 +295,20 @@ gboolean          gtk_file_system_get_parent     (GtkFileSystem     *file_system
 						  const GtkFilePath *path,
 						  GtkFilePath      **parent,
 						  GError           **error);
-GtkFileSystemHandle *gtk_file_system_get_folder  (GtkFileSystem                  *file_system,
+GCancellable *gtk_file_system_get_folder(GtkFileSystem                  *file_system,
+					 GFile                          *file,
+					 const char                     *attributes,
+					 GtkFileSystemGetFolderCallback  callback,
+					 gpointer                        data);
+GCancellable *gtk_file_system_get_info(GtkFileSystem                  *file_system,
 						  const GtkFilePath              *path,
-						  GtkFileInfoType                 types,
-						  GtkFileSystemGetFolderCallback  callback,
-						  gpointer                        data);
-GtkFileSystemHandle *gtk_file_system_get_info    (GtkFileSystem                  *file_system,
-						  const GtkFilePath              *path,
-						  GtkFileInfoType                 types,
+						  const char *attributes,
 						  GtkFileSystemGetInfoCallback    callback,
 						  gpointer                        data);
-GtkFileSystemHandle *gtk_file_system_create_folder (GtkFileSystem                     *file_system,
-						    const GtkFilePath                 *path,
-						    GtkFileSystemCreateFolderCallback  callback,
-						    gpointer                           data);
+GCancellable *gtk_file_system_create_folder (GtkFileSystem                     *file_system,
+					     const GtkFilePath                 *path,
+					     GtkFileSystemCreateFolderCallback  callback,
+					     gpointer                           data);
 void              gtk_file_system_cancel_operation (GtkFileSystemHandle *handle);
 GtkFilePath *     gtk_file_system_make_path      (GtkFileSystem     *file_system,
 						  const GtkFilePath *base_path,
@@ -356,21 +351,21 @@ void     gtk_file_system_set_bookmark_label (GtkFileSystem     *file_system,
 /*
  * Detailed information about a particular folder
  */
-#define GTK_TYPE_FILE_FOLDER             (gtk_file_folder_get_type ())
-#define GTK_FILE_FOLDER(obj)             (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_FILE_FOLDER, GtkFileFolder))
-#define GTK_IS_FILE_FOLDER(obj)          (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_FILE_FOLDER))
-#define GTK_FILE_FOLDER_GET_IFACE(inst)  (G_TYPE_INSTANCE_GET_INTERFACE ((inst), GTK_TYPE_FILE_FOLDER, GtkFileFolderIface))
+#define GTK_TYPE_FOLDER             (gtk_file_folder_get_type ())
+#define GTK_FOLDER(obj)             (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_FOLDER, GtkFolder))
+#define GTK_IS_FOLDER(obj)          (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_FOLDER))
+#define GTK_FOLDER_GET_IFACE(inst)  (G_TYPE_INSTANCE_GET_INTERFACE ((inst), GTK_TYPE_FOLDER, GtkFolderIface))
 
-struct _GtkFileFolderIface
+struct _GtkFolderIface
 {
   GTypeInterface base_iface;
 
   /* Methods
    */
-  GtkFileInfo *      (*get_info)       (GtkFileFolder     *folder,
+  GFileInfo *        (*get_info)       (GtkFolder     *folder,
 					const GtkFilePath *path,
 				        GError           **error);
-  gboolean           (*list_children)  (GtkFileFolder     *folder,
+  gboolean           (*list_children)  (GtkFolder     *folder,
 				        GSList           **children,
 				        GError           **error);
 
@@ -378,28 +373,28 @@ struct _GtkFileFolderIface
 
   /* Signals
    */
-  void (*deleted)       (GtkFileFolder *monitor);
-  void (*files_added)   (GtkFileFolder *monitor,
+  void (*deleted)       (GtkFolder *monitor);
+  void (*files_added)   (GtkFolder *monitor,
 			 GSList        *paths);
-  void (*files_changed) (GtkFileFolder *monitor,
+  void (*files_changed) (GtkFolder *monitor,
 			 GSList        *paths);
-  void (*files_removed) (GtkFileFolder *monitor,
+  void (*files_removed) (GtkFolder *monitor,
 			 GSList        *paths);
 
   /* Method / signal */
-  gboolean (*is_finished_loading) (GtkFileFolder *folder);
-  void     (*finished_loading)    (GtkFileFolder *folder);
+  gboolean (*is_finished_loading) (GtkFolder *folder);
+  void     (*finished_loading)    (GtkFolder *folder);
 };
 
 GType        gtk_file_folder_get_type      (void) G_GNUC_CONST;
-gboolean     gtk_file_folder_list_children (GtkFileFolder      *folder,
+gboolean     gtk_file_folder_list_children (GtkFolder      *folder,
 					    GSList            **children,
 					    GError            **error);
-GtkFileInfo *gtk_file_folder_get_info      (GtkFileFolder      *folder,
+GFileInfo *gtk_file_folder_get_info(GtkFolder      *folder,
 					    const GtkFilePath  *path,
 					    GError            **error);
 
-gboolean     gtk_file_folder_is_finished_loading (GtkFileFolder *folder);
+gboolean     gtk_file_folder_is_finished_loading (GtkFolder *folder);
 
 
 /* GtkFilePath */

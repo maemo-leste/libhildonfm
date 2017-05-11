@@ -21,6 +21,7 @@
 #include <config.h>
 #include <string.h>
 #include <gmodule.h>
+#include <glib/gi18n-lib.h>
 
 #include "gtkfilesystem.h"
 
@@ -288,7 +289,7 @@ gtk_file_info_set_icon_pixbuf (GtkFileInfo *info,
 			       GdkPixbuf *icon_pixbuf)
 {
   g_return_if_fail (info != NULL);
-  
+
   g_object_ref (icon_pixbuf);
   if (info->icon_pixbuf)
     g_object_unref (info->icon_pixbuf);
@@ -296,60 +297,109 @@ gtk_file_info_set_icon_pixbuf (GtkFileInfo *info,
 }
 #endif
 
-GdkPixbuf *
-gtk_file_info_render_icon (const GtkFileInfo  *info,
-			   GtkWidget          *widget,
-			   gint                pixel_size,
-			   GError            **error)
+/* GFileInfo helper functions */
+static GdkPixbuf *
+get_pixbuf_from_gicon (GIcon      *icon,
+		       GtkWidget  *widget,
+		       gint        icon_size,
+		       GError    **error)
 {
+  GdkScreen *screen;
+  GtkIconTheme *icon_theme;
+  GtkIconInfo *icon_info;
+  GdkPixbuf *pixbuf;
+
+  screen = gtk_widget_get_screen (GTK_WIDGET (widget));
+  icon_theme = gtk_icon_theme_get_for_screen (screen);
+
+  icon_info = gtk_icon_theme_lookup_by_gicon (icon_theme,
+					      icon,
+					      icon_size,
+					      GTK_ICON_LOOKUP_USE_BUILTIN);
+
+  if (!icon_info)
+    return NULL;
+
+  pixbuf = gtk_icon_info_load_icon (icon_info, error);
+  gtk_icon_info_free (icon_info);
+
+  return pixbuf;
+}
+
+GdkPixbuf *
+gtk_file_info_render_icon (GFileInfo *info,
+			   GtkWidget *widget,
+			   gint       icon_size)
+{
+  GIcon *icon;
   GdkPixbuf *pixbuf = NULL;
+  const gchar *thumbnail_path;
 
-  g_return_val_if_fail (info != NULL, NULL);
-  g_return_val_if_fail (GTK_IS_WIDGET (widget), NULL);
+  thumbnail_path = g_file_info_get_attribute_byte_string (info, G_FILE_ATTRIBUTE_THUMBNAIL_PATH);
 
-#ifdef MAEMO_CHANGES
-  if (info->icon_pixbuf)
-    {
-      pixbuf = info->icon_pixbuf;
-      gdk_pixbuf_ref (pixbuf);
-    }
-#endif
-
-  if (info->icon_name && !pixbuf)
-    {
-      if (g_path_is_absolute (info->icon_name))
-	pixbuf = gdk_pixbuf_new_from_file_at_size (info->icon_name,
-						   pixel_size,
-						   pixel_size,
-						   NULL);
-      else
-        {
-          GtkIconTheme *icon_theme;
-
-	  icon_theme = gtk_icon_theme_get_for_screen (gtk_widget_get_screen (widget));
-          if (gtk_icon_theme_has_icon (icon_theme, info->icon_name))
-            pixbuf = gtk_icon_theme_load_icon (icon_theme, info->icon_name,
-                                               pixel_size, 0, NULL);
-	}
-    }
+  if (thumbnail_path)
+    pixbuf = gdk_pixbuf_new_from_file_at_size (thumbnail_path,
+					       icon_size, icon_size,
+					       NULL);
 
   if (!pixbuf)
     {
-      /* load a fallback icon */
-      pixbuf = gtk_widget_render_icon (widget,
-                                       gtk_file_info_get_is_folder (info)
-                                        ? GTK_STOCK_DIRECTORY : GTK_STOCK_FILE,
-                                       GTK_ICON_SIZE_MENU,
-                                       NULL);
-      if (!pixbuf && error)
-        g_set_error (error,
-		     GTK_FILE_SYSTEM_ERROR,
-		     GTK_FILE_SYSTEM_ERROR_FAILED,
-		     _("Could not get a stock icon for %s\n"),
-		     info->icon_name);
+      icon = g_file_info_get_icon (info);
+
+      if (icon)
+	pixbuf = get_pixbuf_from_gicon (icon, widget, icon_size, NULL);
+
+      if (!pixbuf)
+	{
+	  /* Use general fallback for all files without icon */
+	  icon = g_themed_icon_new ("text-x-generic");
+	  pixbuf = get_pixbuf_from_gicon (icon, widget, icon_size, NULL);
+	  g_object_unref (icon);
+	}
     }
 
   return pixbuf;
+}
+
+static const gchar *root_volume_token = N_("File System");
+#define IS_ROOT_VOLUME(volume) ((gpointer) (volume) == (gpointer) root_volume_token)
+
+GdkPixbuf *
+_gtk_file_system_gio_volume_render_icon (GtkFileSystemVolume  *volume,
+					 GtkWidget            *widget,
+					 gint                  icon_size,
+					 GError              **error)
+{
+  GIcon *icon = NULL;
+  GdkPixbuf *pixbuf;
+
+  if (IS_ROOT_VOLUME (volume))
+    icon = g_themed_icon_new ("drive-harddisk");
+  else if (G_IS_DRIVE (volume))
+    icon = g_drive_get_icon (G_DRIVE (volume));
+  else if (G_IS_VOLUME (volume))
+    icon = g_volume_get_icon (G_VOLUME (volume));
+  else if (G_IS_MOUNT (volume))
+    icon = g_mount_get_icon (G_MOUNT (volume));
+
+  if (!icon)
+    return NULL;
+
+  pixbuf = get_pixbuf_from_gicon (icon, widget, icon_size, error);
+
+  g_object_unref (icon);
+
+  return pixbuf;
+}
+
+gboolean
+_gtk_file_info_consider_as_directory (GFileInfo *info)
+{
+  GFileType type = g_file_info_get_file_type (info);
+
+  return (type == G_FILE_TYPE_DIRECTORY ||
+	  type == G_FILE_TYPE_MOUNTABLE ||
+	  type == G_FILE_TYPE_SHORTCUT);
 }
 
 /*****************************************
@@ -481,24 +531,25 @@ gtk_file_system_list_volumes (GtkFileSystem  *file_system)
   return GTK_FILE_SYSTEM_GET_IFACE (file_system)->list_volumes (file_system);
 }
 
-GtkFileSystemHandle *
+GCancellable *
 gtk_file_system_get_folder (GtkFileSystem                  *file_system,
-			    const GtkFilePath              *path,
-			    GtkFileInfoType                 types,
+			    GFile                          *file,
+			    const char                     *attributes,
 			    GtkFileSystemGetFolderCallback  callback,
 			    gpointer                        data)
 {
   g_return_val_if_fail (GTK_IS_FILE_SYSTEM (file_system), NULL);
-  g_return_val_if_fail (path != NULL, NULL);
+  g_return_val_if_fail (G_IS_FILE(file), NULL);
+  g_return_val_if_fail (attributes != NULL, NULL);
   g_return_val_if_fail (callback != NULL, NULL);
 
-  return GTK_FILE_SYSTEM_GET_IFACE (file_system)->get_folder (file_system, path, types, callback, data);
+  return GTK_FILE_SYSTEM_GET_IFACE (file_system)->get_folder (file_system, file, attributes, callback, data);
 }
 
-GtkFileSystemHandle *
+GCancellable *
 gtk_file_system_get_info (GtkFileSystem *file_system,
 			  const GtkFilePath *path,
-			  GtkFileInfoType types,
+			  const char *attributes,
 			  GtkFileSystemGetInfoCallback callback,
 			  gpointer data)
 {
@@ -506,10 +557,10 @@ gtk_file_system_get_info (GtkFileSystem *file_system,
   g_return_val_if_fail (path != NULL, NULL);
   g_return_val_if_fail (callback != NULL, NULL);
 
-  return GTK_FILE_SYSTEM_GET_IFACE (file_system)->get_info (file_system, path, types, callback, data);
+  return GTK_FILE_SYSTEM_GET_IFACE (file_system)->get_info (file_system, path, attributes, callback, data);
 }
 
-GtkFileSystemHandle *
+GCancellable *
 gtk_file_system_create_folder (GtkFileSystem                     *file_system,
 			       const GtkFilePath                 *path,
 			       GtkFileSystemCreateFolderCallback  callback,
@@ -1048,7 +1099,7 @@ gtk_file_system_set_bookmark_label (GtkFileSystem     *file_system,
 }
 
 /*****************************************
- *             GtkFileFolder             *
+ *             GtkFolder             *
  *****************************************/
 GType
 gtk_file_folder_get_type (void)
@@ -1059,13 +1110,13 @@ gtk_file_folder_get_type (void)
     {
       const GTypeInfo file_folder_info =
       {
-	sizeof (GtkFileFolderIface),  /* class_size */
+	sizeof (GtkFolderIface),  /* class_size */
 	gtk_file_folder_base_init,    /* base_init */
 	NULL,                         /* base_finalize */
       };
 
       file_folder_type = g_type_register_static (G_TYPE_INTERFACE,
-						 I_("GtkFileFolder"),
+						 I_("GtkFolder"),
 						 &file_folder_info, 0);
       
       g_type_interface_add_prerequisite (file_folder_type, G_TYPE_OBJECT);
@@ -1086,14 +1137,14 @@ gtk_file_folder_base_init (gpointer g_class)
       g_signal_new (I_("deleted"),
 		    iface_type,
 		    G_SIGNAL_RUN_LAST,
-		    G_STRUCT_OFFSET (GtkFileFolderIface, deleted),
+		    G_STRUCT_OFFSET (GtkFolderIface, deleted),
 		    NULL, NULL,
 		    g_cclosure_marshal_VOID__VOID,
 		    G_TYPE_NONE, 0);
       g_signal_new (I_("files-added"),
 		    iface_type,
 		    G_SIGNAL_RUN_LAST,
-		    G_STRUCT_OFFSET (GtkFileFolderIface, files_added),
+		    G_STRUCT_OFFSET (GtkFolderIface, files_added),
 		    NULL, NULL,
 		    g_cclosure_marshal_VOID__POINTER,
 		    G_TYPE_NONE, 1,
@@ -1101,7 +1152,7 @@ gtk_file_folder_base_init (gpointer g_class)
       g_signal_new (I_("files-changed"),
 		    iface_type,
 		    G_SIGNAL_RUN_LAST,
-		    G_STRUCT_OFFSET (GtkFileFolderIface, files_changed),
+		    G_STRUCT_OFFSET (GtkFolderIface, files_changed),
 		    NULL, NULL,
 		    g_cclosure_marshal_VOID__POINTER,
 		    G_TYPE_NONE, 1,
@@ -1109,7 +1160,7 @@ gtk_file_folder_base_init (gpointer g_class)
       g_signal_new (I_("files-removed"),
 		    iface_type,
 		    G_SIGNAL_RUN_LAST,
-		    G_STRUCT_OFFSET (GtkFileFolderIface, files_removed),
+		    G_STRUCT_OFFSET (GtkFolderIface, files_removed),
 		    NULL, NULL,
 		    g_cclosure_marshal_VOID__POINTER,
 		    G_TYPE_NONE, 1,
@@ -1117,7 +1168,7 @@ gtk_file_folder_base_init (gpointer g_class)
       g_signal_new (I_("finished-loading"),
 		    iface_type,
 		    G_SIGNAL_RUN_LAST,
-		    G_STRUCT_OFFSET (GtkFileFolderIface, finished_loading),
+		    G_STRUCT_OFFSET (GtkFolderIface, finished_loading),
 		    NULL, NULL,
 		    g_cclosure_marshal_VOID__VOID,
 		    G_TYPE_NONE, 0);
@@ -1127,17 +1178,17 @@ gtk_file_folder_base_init (gpointer g_class)
 }
 
 gboolean
-gtk_file_folder_list_children (GtkFileFolder    *folder,
+gtk_file_folder_list_children (GtkFolder    *folder,
 			       GSList          **children,
 			       GError          **error)
 {
   gboolean result;
   GSList *tmp_children = NULL;
   
-  g_return_val_if_fail (GTK_IS_FILE_FOLDER (folder), FALSE);
+  g_return_val_if_fail (GTK_IS_FOLDER (folder), FALSE);
   g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
 
-  result = GTK_FILE_FOLDER_GET_IFACE (folder)->list_children (folder, &tmp_children, error);
+  result = GTK_FOLDER_GET_IFACE (folder)->list_children (folder, &tmp_children, error);
   g_assert (result || tmp_children == NULL);
 
   if (children)
@@ -1148,25 +1199,25 @@ gtk_file_folder_list_children (GtkFileFolder    *folder,
   return result;
 }
 
-GtkFileInfo *
-gtk_file_folder_get_info (GtkFileFolder     *folder,
+GFileInfo *
+gtk_file_folder_get_info (GtkFolder     *folder,
 			  const GtkFilePath *path,
 			  GError           **error)
 {
-  g_return_val_if_fail (GTK_IS_FILE_FOLDER (folder), NULL);
+  g_return_val_if_fail (GTK_IS_FOLDER (folder), NULL);
   g_return_val_if_fail (error == NULL || *error == NULL, NULL);
 
-  return GTK_FILE_FOLDER_GET_IFACE (folder)->get_info (folder, path, error);
+  return GTK_FOLDER_GET_IFACE (folder)->get_info (folder, path, error);
 }
 
 gboolean
-gtk_file_folder_is_finished_loading (GtkFileFolder *folder)
+gtk_file_folder_is_finished_loading (GtkFolder *folder)
 {
-  GtkFileFolderIface *iface;
+  GtkFolderIface *iface;
 
-  g_return_val_if_fail (GTK_IS_FILE_FOLDER (folder), TRUE);
+  g_return_val_if_fail (GTK_IS_FOLDER (folder), TRUE);
 
-  iface = GTK_FILE_FOLDER_GET_IFACE (folder);
+  iface = GTK_FOLDER_GET_IFACE (folder);
   if (!iface->is_finished_loading)
     return TRUE;
   else
@@ -1255,10 +1306,7 @@ gtk_file_paths_copy (GSList *paths)
 void
 gtk_file_paths_free (GSList *paths)
 {
-  GSList *tmp_list;
-
-  for (tmp_list = paths; tmp_list; tmp_list = tmp_list->next)
-    gtk_file_path_free (tmp_list->data);
+  g_slist_foreach (paths, (GFunc) g_object_unref, NULL);
 
   g_slist_free (paths);
 }
@@ -1394,7 +1442,9 @@ GtkFileSystem *
 gtk_file_system_create (const char *file_system_name)
 {
   GSList *l;
+#if UPSTREAM_DISABLED
   char *module_path;
+#endif
   GtkFileSystemModule *fs_module;
   GtkFileSystem *fs;
 

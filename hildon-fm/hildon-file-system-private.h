@@ -50,17 +50,17 @@ _hildon_file_system_get_special_location(const gchar *path);
 
 GdkPixbuf *_hildon_file_system_create_image (GtkFileSystem *fs, 
 					     GtkWidget *ref_widget,
-					     GtkFileInfo *info, 
+					     GFileInfo *info, 
 					     HildonFileSystemSpecialLocation *location,
 					     gint size);
 
 gchar *_hildon_file_system_create_file_name(GtkFileSystem *fs, 
   const GtkFilePath *path, HildonFileSystemSpecialLocation *location,  
-  GtkFileInfo *info);
+  GFileInfo *info);
 
 gchar *_hildon_file_system_create_display_name(GtkFileSystem *fs, 
   const GtkFilePath *path, HildonFileSystemSpecialLocation *location,  
-  GtkFileInfo *info);
+  GFileInfo *info);
 
 gchar *_hildon_file_system_path_for_location(HildonFileSystemSpecialLocation *location);
 

@@ -48,6 +48,7 @@
 #include "hildon-file-system-obex.h"
 
 extern GtkFileSystem *gtk_file_system_unix_new();
+extern GtkFileSystem *gtk_file_system_gio_new();
 
 /* Let's make sure that we survise with folder names both ending and
  * not ending to slash */
@@ -313,13 +314,10 @@ _hildon_file_system_get_special_location(const gchar *path)
 {
     CallbackData data;
     GNode *locations;
-    GFile *uri = g_file_new_for_path(path);
 
     locations = _hildon_file_system_get_locations();
-    data.uri = g_file_get_uri(uri);
+    data.uri = g_strdup (gtk_file_path_get_string (path));
     data.result = NULL;
-
-    g_object_unref(uri);
 
     if (data.uri) {
         /* Let's precalculate the length for the entire search */
@@ -481,7 +479,7 @@ GdkPixbuf *_hildon_file_system_load_icon_cached(GtkIconTheme *theme,
 GdkPixbuf *
 _hildon_file_system_create_image (GtkFileSystem *fs,
                                   GtkWidget *ref_widget,
-                                  GtkFileInfo *info,
+				  GFileInfo *info,
                                   HildonFileSystemSpecialLocation *location,
                                   gint size)
 {
@@ -496,7 +494,7 @@ _hildon_file_system_create_image (GtkFileSystem *fs,
     }
 
     if (info)
-      return gtk_file_info_render_icon (info, ref_widget, size, NULL);
+      return gtk_file_info_render_icon (info, ref_widget, size);
     else
       return NULL;
 }
@@ -583,26 +581,32 @@ gchar *
 _hildon_file_system_create_file_name (GtkFileSystem *fs,
                                       const GtkFilePath *path,
                                       HildonFileSystemSpecialLocation *location,
-                                      GtkFileInfo *info)
+				      GFileInfo *info)
 {
   char *name = NULL;
+  gchar *rv;
 
   if (location)
     name = hildon_file_system_special_location_get_display_name (location);
 
   if (name == NULL && info)
-    name = g_strdup (gtk_file_info_get_display_name (info));
+    name = g_strdup (g_file_info_get_display_name (info));
+
+  g_warning ("%s info name %s", __FUNCTION__, name);
 
   if (name == NULL)
     name = hildon_file_system_unescape_string (get_custom_root_name (path));
 
-  return translate_special_name (name);
+  rv = translate_special_name (name);
+
+  g_warning ("%s path %s->name %s info %p", __FUNCTION__, path, rv, info);
+  return rv;
 }
 
 gchar *
 _hildon_file_system_create_display_name(GtkFileSystem *fs,
   const GtkFilePath *path, HildonFileSystemSpecialLocation *location,
-  GtkFileInfo *info)
+  GFileInfo *info)
 {
   gboolean only_known, is_folder;
   const gchar *mime_type;
@@ -613,8 +617,8 @@ _hildon_file_system_create_display_name(GtkFileSystem *fs,
   if (info)
   {
     only_known = TRUE;
-    is_folder = (location != NULL) || gtk_file_info_get_is_folder (info);
-    mime_type = gtk_file_info_get_mime_type (info);
+    is_folder = (location != NULL) || _gtk_file_info_consider_as_directory(info);
+    mime_type = g_file_info_get_content_type (info);
 
     /* XXX - This is a very special hack for the GtkFileSystemMemory
              that is used to handle bookmarks.
@@ -728,7 +732,7 @@ GtkFileSystem *hildon_file_system_create_backend(const gchar *name, gboolean use
             g_warning("Cannot create \"%s\" backend", name);
     }
     if (use_fallback && !GTK_IS_FILE_SYSTEM(result))
-        result = gtk_file_system_unix_new();
+	result = gtk_file_system_gio_new();
 
     g_free(default_name);
     return result;

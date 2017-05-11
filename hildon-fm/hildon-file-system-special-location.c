@@ -312,12 +312,12 @@ hildon_file_system_special_location_volumes_changed (
         return klass->volumes_changed (location);
 }
 
-GtkFileSystemHandle *
+GCancellable *
 hildon_file_system_special_location_get_folder
     (HildonFileSystemSpecialLocation *location,
      GtkFileSystem                  *file_system,
      const GtkFilePath              *path,
-     GtkFileInfoType                 types,
+     const char                     *attributes,
      GtkFileSystemGetFolderCallback  callback,
      gpointer                        data)
 {
@@ -332,15 +332,24 @@ hildon_file_system_special_location_get_folder
       return klass->get_folder (location,
                                 file_system,
                                 path,
-                                types,
+				attributes,
                                 callback,
                                 data);
     else
-      return gtk_file_system_get_folder (file_system,
-                                         path,
-                                         types,
-                                         callback,
-                                         data);
+      {
+	/* FIXME */
+	GCancellable *rv;
+	GFile *file = g_file_new_for_uri (gtk_file_path_get_string(path));
+
+	rv = gtk_file_system_get_folder (file_system,
+					 file,
+					 attributes,
+					 callback,
+					 data);
+	g_object_unref (file);
+
+	return rv;
+      }
 }
 
 /* Convenience function for setting fixed name. If fixed name is enough, name

@@ -40,14 +40,14 @@ struct _HildonFileSystemInfo
 
   GtkFileSystem *fs;
   GtkFilePath *path;
-  GtkFileInfo *info;
+  GFileInfo *info;
   HildonFileSystemSpecialLocation *location;
 
   gchar *name_cache;
   GdkPixbuf *icon_cache;
   gint size;
 
-  GtkFileSystemHandle *get_info_handle;
+  GtkFileSystemHandle *cancellable;
   guint idle_handler_id;
 
   HildonFileSystemInfoCallback callback;
@@ -60,11 +60,11 @@ hildon_file_system_info_free (HildonFileSystemInfo *info)
   /* The info structure doubles as the handle, but that role must be
      over now.
   */
-  g_assert (info->get_info_handle == NULL);
+  g_assert (info->cancellable == NULL);
   g_assert (info->idle_handler_id == 0);
 
   if (info->info)
-    gtk_file_info_free (info->info);
+    g_object_unref (info->info);
 
   if (info->icon_cache)
     g_object_unref(info->icon_cache);
@@ -78,18 +78,18 @@ hildon_file_system_info_free (HildonFileSystemInfo *info)
 
 
 static void
-get_info_callback (GtkFileSystemHandle *handle,
-                   const GtkFileInfo *file_info,
+get_info_callback (GCancellable *cancellable,
+		   GFileInfo *file_info,
                    const GError *error,
                    gpointer data)
 {
-  gboolean cancelled = handle->cancelled;
+  gboolean cancelled = g_cancellable_is_cancelled (cancellable);
   HildonFileSystemInfo *info = data;
 
-  g_object_unref (handle);
-  info->get_info_handle = NULL;
+  g_object_unref (cancellable);
+  info->cancellable = NULL;
 
-  info->info = (GtkFileInfo *)file_info;
+  info->info = file_info;
 
   if (!cancelled)
     info->callback ((HildonFileSystemInfoHandle *)info,
@@ -111,8 +111,9 @@ get_info_callback (GtkFileSystemHandle *handle,
       info->info = NULL;
       hildon_file_system_info_free (info);
     }
+  /* FIXME - check if we need to ref it once again
   else
-    info->info = gtk_file_info_copy (info->info);
+    info->info = gtk_file_info_copy (info->info);*/
 }
 
 static gboolean
@@ -124,7 +125,7 @@ idle_callback (gpointer data)
   info->callback ((HildonFileSystemInfoHandle *)info,
                   info, NULL, info->userdata);
 
-  /* See get_info_handle for the meaning of the FREE_AFTER_CALLBACK
+  /* See cancellable for the meaning of the FREE_AFTER_CALLBACK
      kluge.  We don't need to worry about info->info here since it is
      always NULL for special locations.
   */
@@ -145,11 +146,11 @@ hildon_file_system_info_async_cancel (HildonFileSystemInfoHandle *handle)
 {
   HildonFileSystemInfo *info = (HildonFileSystemInfo *)handle;
 
-  if (info->get_info_handle)
+  if (info->cancellable)
     {
       /* get_info_callback takes care of the cleanup.
        */
-      gtk_file_system_cancel_operation (info->get_info_handle);
+      gtk_file_system_cancel_operation (info->cancellable);
     }
   else if (info->idle_handler_id > 0)
     {
@@ -232,9 +233,9 @@ hildon_file_system_info_async_new (const gchar *uri,
     }
   else
     {
-      result->get_info_handle =
+      result->cancellable =
         gtk_file_system_get_info (fs, path,
-                                  GTK_FILE_INFO_ALL,
+				  "*",
                                   get_info_callback,
                                   result);
     }

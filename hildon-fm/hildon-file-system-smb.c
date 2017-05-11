@@ -50,14 +50,13 @@ static GtkFileSystemHandle *
 hildon_file_system_smb_get_folder (HildonFileSystemSpecialLocation *location,
                                    GtkFileSystem                  *file_system,
                                    const GtkFilePath              *path,
-                                   GtkFileInfoType                 types,
+				   const char *attributes,
                                    GtkFileSystemGetFolderCallback  callback,
                                    gpointer                        data);
 
-static GtkFileSystemHandle *
-hildon_file_system_smb_get_workgroups_folder (GtkFileSystem *file_system,
+static GCancellable *hildon_file_system_smb_get_workgroups_folder(GtkFileSystem *file_system,
                                               const GtkFilePath *path,
-                                              GtkFileInfoType types,
+					      const char *attributes,
                                               GtkFileSystemGetFolderCallback callback,
                                               gpointer data);
 
@@ -182,19 +181,19 @@ static GtkFileSystemHandle *
 hildon_file_system_smb_get_folder (HildonFileSystemSpecialLocation *location,
                                    GtkFileSystem                  *file_system,
                                    const GtkFilePath              *path,
-                                   GtkFileInfoType                 types,
+				   const char                     *attributes,
                                    GtkFileSystemGetFolderCallback  callback,
                                    gpointer                        data)
 {
   return hildon_file_system_smb_get_workgroups_folder (file_system,
                                                        path,
-                                                       types,
+						       attributes,
                                                        callback,
                                                        data);
 }
 
 
-/* Collapsing GtkFileFolders
+/* Collapsing GtkFolders
 
    XXX - This just implements enough to make the weird smb://
    namespace work.
@@ -220,8 +219,8 @@ struct _MyFileFolder
   GObject parent_instance;
 
   GtkFileSystem *filesystem;
-  GtkFileInfoType types;
-  GtkFileFolder *root;
+  const char *attributes;
+  GtkFolder *root;
   GList *children;
   int n_children_waiting;    /* The number of child folders we have
                                 asked for but not yet received.
@@ -230,20 +229,20 @@ struct _MyFileFolder
 };
 
 static GType my_file_folder_get_type (void);
-static void my_file_folder_iface_init (GtkFileFolderIface *iface);
+static void my_file_folder_iface_init (GtkFolderIface *iface);
 static void my_file_folder_init (MyFileFolder *impl);
 static void my_file_folder_finalize (GObject *object);
 
-static GtkFileInfo *my_file_folder_get_info (GtkFileFolder  *folder,
+static GtkFileInfo *my_file_folder_get_info (GtkFolder  *folder,
                                              const GtkFilePath    *path,
                                              GError        **error);
-static gboolean my_file_folder_list_children (GtkFileFolder  *folder,
+static gboolean my_file_folder_list_children (GtkFolder  *folder,
                                               GSList        **children,
                                               GError        **error);
-static gboolean my_file_folder_is_finished_loading (GtkFileFolder *folder);
+static gboolean my_file_folder_is_finished_loading (GtkFolder *folder);
 
 G_DEFINE_TYPE_WITH_CODE (MyFileFolder, my_file_folder, G_TYPE_OBJECT,
-                         G_IMPLEMENT_INTERFACE (GTK_TYPE_FILE_FOLDER,
+                         G_IMPLEMENT_INTERFACE (GTK_TYPE_FOLDER,
                                                 my_file_folder_iface_init))
 
 static void
@@ -255,7 +254,7 @@ my_file_folder_class_init (MyFileFolderClass *class)
 }
 
 static void
-my_file_folder_iface_init (GtkFileFolderIface *iface)
+my_file_folder_iface_init (GtkFolderIface *iface)
 {
   iface->get_info = my_file_folder_get_info;
   iface->list_children = my_file_folder_list_children;
@@ -292,7 +291,7 @@ my_file_folder_finalize (GObject *object)
 }
 
 static GtkFileInfo *
-my_file_folder_get_info (GtkFileFolder      *folder,
+my_file_folder_get_info (GtkFolder      *folder,
                          const GtkFilePath  *path,
                          GError            **error)
 {
@@ -310,7 +309,7 @@ my_file_folder_get_info (GtkFileFolder      *folder,
 }
 
 static gboolean
-my_file_folder_list_children (GtkFileFolder  *folder,
+my_file_folder_list_children (GtkFolder  *folder,
                               GSList        **children,
                               GError        **error)
 {
@@ -321,7 +320,7 @@ my_file_folder_list_children (GtkFileFolder  *folder,
   for (c = my_folder->children; c; c = c->next)
     {
       GSList *childrens_children;
-      if (!gtk_file_folder_list_children (GTK_FILE_FOLDER (c->data),
+      if (!gtk_file_folder_list_children (GTK_FOLDER (c->data),
                                           &childrens_children, error))
         {
           g_slist_free (*children);
@@ -334,12 +333,12 @@ my_file_folder_list_children (GtkFileFolder  *folder,
 }
 
 static gboolean
-my_file_folder_is_finished_loading (GtkFileFolder *folder)
+my_file_folder_is_finished_loading (GtkFolder *folder)
 {
   MyFileFolder *my_folder = MY_FILE_FOLDER (folder);
   GList *c;
 
-  if (!gtk_file_folder_is_finished_loading (GTK_FILE_FOLDER (my_folder->root)))
+  if (!gtk_file_folder_is_finished_loading (GTK_FOLDER (my_folder->root)))
     return FALSE;
 
   if (my_folder->n_children_waiting > 0)
@@ -347,7 +346,7 @@ my_file_folder_is_finished_loading (GtkFileFolder *folder)
 
   for (c = my_folder->children; c; c = c->next)
     {
-      if (!gtk_file_folder_is_finished_loading (GTK_FILE_FOLDER (c->data)))
+      if (!gtk_file_folder_is_finished_loading (GTK_FOLDER (c->data)))
         return FALSE;
     }
 
@@ -391,7 +390,7 @@ my_file_folder_collaps_path (GtkFilePath *from)
 }
 
 static void
-my_file_folder_child_files_added (GtkFileFolder *folder,
+my_file_folder_child_files_added (GtkFolder *folder,
                                  GSList *paths,
                                  gpointer data)
 {
@@ -426,7 +425,7 @@ my_file_folder_child_files_added (GtkFileFolder *folder,
 
 static void
 my_file_folder_child_folder_added (GtkFileSystemHandle *handle,
-                                  GtkFileFolder *folder,
+				  GtkFolder *folder,
                                   const GError *error,
                                   gpointer data)
 {
@@ -456,7 +455,7 @@ my_file_folder_child_folder_added (GtkFileSystemHandle *handle,
 
 
 static void
-my_file_folder_root_files_added (GtkFileFolder *folder,
+my_file_folder_root_files_added (GtkFolder *folder,
                                  GSList *paths,
                                  gpointer data)
 {
@@ -470,7 +469,7 @@ my_file_folder_root_files_added (GtkFileFolder *folder,
       my_folder->n_children_waiting++;
       handle = gtk_file_system_get_folder (my_folder->filesystem,
 					   p,
-					   my_folder->types,
+					   my_folder->attributes,
 					   my_file_folder_child_folder_added,
 					   my_folder);
       my_folder->handles = g_slist_prepend (my_folder->handles, handle);
@@ -479,7 +478,7 @@ my_file_folder_root_files_added (GtkFileFolder *folder,
 }
 
 static void
-my_file_folder_setup_root (MyFileFolder *my_folder, GtkFileFolder *root)
+my_file_folder_setup_root (MyFileFolder *my_folder, GtkFolder *root)
 {
   my_folder->root = root;
   g_signal_connect (root, "files-added",
@@ -488,14 +487,14 @@ my_file_folder_setup_root (MyFileFolder *my_folder, GtkFileFolder *root)
 
 struct get_root_folder_clos {
   GtkFileSystem *filesystem;
-  GtkFileInfoType types;
+  const char *attributes;
   GtkFileSystemGetFolderCallback callback;
   gpointer data;
 };
 
 static void
 get_root_folder_callback (GtkFileSystemHandle *handle,
-                          GtkFileFolder *folder,
+			  GtkFolder *folder,
                           const GError *error,
                           gpointer data)
 {
@@ -506,7 +505,7 @@ get_root_folder_callback (GtkFileSystemHandle *handle,
     {
       my_folder = g_object_new (MY_TYPE_FILE_FOLDER, NULL);
       my_folder->filesystem = clos->filesystem;
-      my_folder->types = clos->types;
+      my_folder->attributes = clos->attributes;
       my_file_folder_setup_root (my_folder, folder);
     }
   else
@@ -515,29 +514,32 @@ get_root_folder_callback (GtkFileSystemHandle *handle,
         g_object_unref (folder);
     }
 
-  clos->callback (handle, GTK_FILE_FOLDER (my_folder), error, clos->data);
+  clos->callback (handle, GTK_FOLDER (my_folder), error, clos->data);
   g_free (clos);
 }
 
-static GtkFileSystemHandle *
+static GCancellable *
 hildon_file_system_smb_get_workgroups_folder (GtkFileSystem *file_system,
                                               const GtkFilePath *path,
-                                              GtkFileInfoType types,
+					      const char *attributes,
                                               GtkFileSystemGetFolderCallback callback,
                                               gpointer data)
 {
   struct get_root_folder_clos *clos = g_new (struct get_root_folder_clos, 1);
-
+  /* FIXME */
+  GFile *file = g_file_new_for_uri (gtk_file_path_get_string(path));
   clos->filesystem = g_object_ref (file_system);
-  clos->types = types;
+  clos->attributes = attributes;
   clos->callback = callback;
   clos->data = data;
 
-  GtkFileSystemHandle *ret =  gtk_file_system_get_folder (file_system,
-                                                          path,
-                                                          types,
-                                                          get_root_folder_callback,
-                                                          clos);
+  GCancellable *ret =  gtk_file_system_get_folder (file_system,
+						   file,
+						   attributes,
+						   get_root_folder_callback,
+						   clos);
+  g_object_unref (file);
+
   if (ret == NULL)
   {
       g_free (clos);

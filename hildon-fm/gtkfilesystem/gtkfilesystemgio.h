@@ -1,5 +1,5 @@
 /* GTK - The GIMP Toolkit
- * gtkfilesystemunix.h: Default implementation of GtkFileSystem for UNIX-like systems
+ * gtkfilesystemgio.h: Filesystem abstraction functions.
  * Copyright (C) 2003, Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
@@ -18,23 +18,23 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __GTK_FILE_SYSTEM_UNIX_H__
-#define __GTK_FILE_SYSTEM_UNIX_H__
+#ifndef __GTK_FILE_SYSTEM_GIO_H__
+#define __GTK_FILE_SYSTEM_GIO_H__
 
-#include <glib-object.h>
+#include <gio/gio.h>
+#include <gtk/gtkwidget.h>	/* For icon handling */
 #include "gtkfilesystem.h"
 
 G_BEGIN_DECLS
 
-#define GTK_TYPE_FILE_SYSTEM_UNIX             (gtk_file_system_unix_get_type ())
-#define GTK_FILE_SYSTEM_UNIX(obj)             (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_FILE_SYSTEM_UNIX, GtkFileSystemUnix))
-#define GTK_IS_FILE_SYSTEM_UNIX(obj)          (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_FILE_SYSTEM_UNIX))
+#define GTK_TYPE_FILE_SYSTEM_GIO         (_gtk_file_system_gio_get_type ())
+#define GTK_FILE_SYSTEM_GIO(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), GTK_TYPE_FILE_SYSTEM_GIO, GtkFileSystemGio))
+#define GTK_IS_FILE_SYSTEM_GIO(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), GTK_TYPE_FILE_SYSTEM_GIO))
 
-typedef struct _GtkFileSystemUnix      GtkFileSystemUnix;
+typedef struct GtkFileSystemGio GtkFileSystemGio;
+GType           _gtk_file_system_gio_get_type     (void) G_GNUC_CONST;
+GtkFileSystem *gtk_file_system_gio_new (void);
 
-GtkFileSystem *gtk_file_system_unix_new       (void);
-GType          gtk_file_system_unix_get_type (void) G_GNUC_CONST;
-     
 G_END_DECLS
 
-#endif /* __GTK_FILE_SYSTEM_UNIX_H__ */
+#endif /* __GTK_FILE_SYSTEM_GIO_H__ */

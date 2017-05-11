@@ -145,7 +145,7 @@ struct _HildonFileChooserDialogPrivate {
     gint max_full_path_length;
     gint max_filename_length;
     gboolean popup_protect;
-    GtkFileSystemHandle *create_folder_handle;
+    GCancellable *cancellable;
 
     /* Popup menu contents */
     GtkWidget *sort_type, *sort_name, *sort_date, *sort_size;
@@ -1414,7 +1414,7 @@ static GtkWidget
     return dialog;
 }
 
-static void create_folder_callback(GtkFileSystemHandle *handle,
+static void create_folder_callback(GCancellable *cancellable,
     const GtkFilePath *path, const GError *error, gpointer data)
 {
     HildonFileChooserDialog *self;
@@ -1427,10 +1427,16 @@ static void create_folder_callback(GtkFileSystemHandle *handle,
     /* There can be still pending cancelled handles
      * from previous operations, just ignore them
      */
-    if (self->priv->create_folder_handle != handle)
-	    return;
+    if (self->priv->cancellable != cancellable)
+      {
+	g_object_unref (cancellable);
+	return;
+      }
 
-    self->priv->create_folder_handle = NULL;
+    g_object_unref (cancellable);
+    g_object_unref (self->priv->cancellable);
+    self->priv->cancellable = NULL;
+
     dialog = GTK_DIALOG(self);
 
     if (error) {
@@ -1476,14 +1482,15 @@ static void dialog_response_cb(GtkDialog *dialog,
             HildonFileChooserDialogPrivate *sub_priv =
                     HILDON_FILE_CHOOSER_DIALOG (dialog)->priv;
     
-            if (sub_priv->create_folder_handle)
+	    if (sub_priv->cancellable)
             {
-                gtk_file_system_cancel_operation (sub_priv->create_folder_handle);
-                sub_priv->create_folder_handle = NULL;
+		g_cancellable_cancel (sub_priv->cancellable);
+		g_object_unref (sub_priv->cancellable);
+		sub_priv->cancellable = NULL;
             }
     
             /* Callback is quaranteed to be called, it unrefs the object data */
-            sub_priv->create_folder_handle =
+	    sub_priv->cancellable =
             gtk_file_system_create_folder (backend, self->priv->dg_file_path,
                                             create_folder_callback,
                                             g_object_ref(dialog));
@@ -1497,8 +1504,8 @@ static void dialog_response_cb(GtkDialog *dialog,
     
         /* If user cancelled the operation, we still can have handle
         */
-        if (self->priv->create_folder_handle)
-        gtk_file_system_cancel_operation (self->priv->create_folder_handle);
+	if (self->priv->cancellable)
+	  g_cancellable_cancel (self->priv->cancellable);
     
         /* If we created a folder, change into it */
         if (response_id == HILDON_RESPONSE_FOLDER_CREATED)
@@ -1591,14 +1598,15 @@ static void handle_folder_popup_sync (HildonFileChooserDialog *self)
 	HildonFileChooserDialogPrivate *sub_priv =
 		HILDON_FILE_CHOOSER_DIALOG (dialog)->priv;
 
-	if (sub_priv->create_folder_handle)
+	if (sub_priv->cancellable)
           {
-	    gtk_file_system_cancel_operation (sub_priv->create_folder_handle);
-	    sub_priv->create_folder_handle = NULL;
+	    g_cancellable_cancel (sub_priv->cancellable);
+	    g_object_unref (sub_priv->cancellable);
+	    sub_priv->cancellable = NULL;
 	  }
 
 	/* Callback is quaranteed to be called, it unrefs the object data */
-	sub_priv->create_folder_handle =
+	sub_priv->cancellable =
 	  gtk_file_system_create_folder (backend, file_path,
 					 create_folder_callback,
 					 g_object_ref(dialog));
@@ -1609,8 +1617,12 @@ static void handle_folder_popup_sync (HildonFileChooserDialog *self)
 
     /* If user cancelled the operation, we still can have handle
      */
-    if (self->priv->create_folder_handle)
-      gtk_file_system_cancel_operation (self->priv->create_folder_handle);
+    if (self->priv->cancellable)
+      {
+	g_cancellable_cancel (self->priv->cancellable);
+	g_object_unref (self->priv->cancellable);
+	self->priv->cancellable = NULL;
+      }
 
     /* If we created a folder, change into it */
     if (response == HILDON_RESPONSE_FOLDER_CREATED)

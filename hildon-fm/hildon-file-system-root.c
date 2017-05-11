@@ -45,11 +45,10 @@ static void
 hildon_file_system_root_volumes_changed (HildonFileSystemSpecialLocation
                                         *location, GtkFileSystem *fs);
 
-static GtkFileSystemHandle *
-hildon_file_system_root_get_folder (HildonFileSystemSpecialLocation *location,
+static GCancellable *hildon_file_system_root_get_folder(HildonFileSystemSpecialLocation *location,
                                     GtkFileSystem                *filesystem,
                                     const GtkFilePath              *path,
-                                    GtkFileInfoType                 types,
+				    const char *attributes,
                                     GtkFileSystemGetFolderCallback  callback,
                                     gpointer                        data);
 
@@ -113,7 +112,7 @@ hildon_file_system_root_create_child_location (HildonFileSystemSpecialLocation
   return child;
 }
 
-/* Wrapping GtkFileVolumes in a GtkFileFolder
+/* Wrapping GtkFileVolumes in a GtkFolder
  */
 
 #define ROOT_TYPE_FILE_FOLDER             (root_file_folder_get_type ())
@@ -140,20 +139,20 @@ struct _RootFileFolder
 };
 
 static GType root_file_folder_get_type (void);
-static void root_file_folder_iface_init (GtkFileFolderIface *iface);
+static void root_file_folder_iface_init (GtkFolderIface *iface);
 static void root_file_folder_init (RootFileFolder *impl);
 static void root_file_folder_finalize (GObject *object);
 
-static GtkFileInfo *root_file_folder_get_info (GtkFileFolder  *folder,
+static GFileInfo *root_file_folder_get_info(GtkFolder  *folder,
                                              const GtkFilePath    *path,
                                              GError        **error);
-static gboolean root_file_folder_list_children (GtkFileFolder  *folder,
+static gboolean root_file_folder_list_children (GtkFolder  *folder,
                                               GSList        **children,
                                               GError        **error);
-static gboolean root_file_folder_is_finished_loading (GtkFileFolder *folder);
+static gboolean root_file_folder_is_finished_loading (GtkFolder *folder);
 
 G_DEFINE_TYPE_WITH_CODE (RootFileFolder, root_file_folder, G_TYPE_OBJECT,
-                         G_IMPLEMENT_INTERFACE (GTK_TYPE_FILE_FOLDER,
+			 G_IMPLEMENT_INTERFACE (GTK_TYPE_FOLDER,
                                                 root_file_folder_iface_init))
 
 static void
@@ -165,7 +164,7 @@ root_file_folder_class_init (RootFileFolderClass *class)
 }
 
 static void
-root_file_folder_iface_init (GtkFileFolderIface *iface)
+root_file_folder_iface_init (GtkFolderIface *iface)
 {
   iface->get_info = root_file_folder_get_info;
   iface->list_children = root_file_folder_list_children;
@@ -190,25 +189,27 @@ root_file_folder_finalize (GObject *object)
   G_OBJECT_CLASS (root_file_folder_parent_class)->finalize (object);
 }
 
-static GtkFileInfo *
-root_file_folder_get_info (GtkFileFolder      *folder,
+static GFileInfo *
+root_file_folder_get_info (GtkFolder      *folder,
                            const GtkFilePath  *path,
                            GError            **error)
 {
-  GtkFileInfo *info;
+  /* FIXME */
+  GFileInfo *info = g_file_info_new ();
   gchar *basename = g_path_get_basename (gtk_file_path_get_string (path));
+
   /* XXX - maybe provide more detail...
    */
-
-  info = gtk_file_info_new ();
-  gtk_file_info_set_display_name (info, basename);
+  g_warning ("%s path %s basename %s", __FUNCTION__, path, basename);
+  g_file_info_set_display_name (info, basename);
   g_free (basename);
-  gtk_file_info_set_is_folder (info, TRUE);
+  g_file_info_set_file_type (info, G_FILE_TYPE_DIRECTORY);
+
   return info;
 }
 
 static gboolean
-root_file_folder_list_children (GtkFileFolder  *folder,
+root_file_folder_list_children (GtkFolder  *folder,
                                 GSList        **children,
                                 GError        **error)
 {
@@ -225,40 +226,43 @@ root_file_folder_list_children (GtkFileFolder  *folder,
     {
       GMount *mount = m->data;
       GFile *root = g_mount_get_root (mount);
-      char *path = g_file_get_path (root);
 
-      g_object_unref (root);
-      *children = g_slist_append (*children, path);
+      *children = g_slist_append (*children, root);
     }
 
   g_list_foreach (mounts, (GFunc) g_object_unref, NULL);
   g_list_free (mounts);
+
+#if 0
   /* FIXME: do we really need to duplicate mounts with volumes? */
   volumes = g_volume_monitor_get_volumes (monitor);
 
   for (v = volumes; v; v = v->next)
     {
       GVolume *volume = v->data;
+
       char *id = g_volume_get_identifier (volume,
-                                          G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE);
-      *children = g_slist_append (*children, id);
+					  G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE);
+      *children = g_slist_append (*children, g_file_new_for_uri (id));
+      g_free (id);
     }
 
   g_list_foreach (volumes, (GFunc) g_object_unref, NULL);
   g_list_free (volumes);
+#endif
   g_object_unref (monitor);
 
   return TRUE;
 }
 
 static gboolean
-root_file_folder_is_finished_loading (GtkFileFolder *folder)
+root_file_folder_is_finished_loading (GtkFolder *folder)
 {
   return TRUE;
 }
 
 struct get_folder_clos {
-  GtkFileSystemHandle *handle;
+  GCancellable *cancellable;
   RootFileFolder *root_folder;
   GtkFileSystemGetFolderCallback callback;
   gpointer data;
@@ -269,23 +273,22 @@ deliver_get_folder_callback (gpointer data)
 {
   struct get_folder_clos *clos = (struct get_folder_clos *)data;
   GDK_THREADS_ENTER ();
-  clos->callback (clos->handle, GTK_FILE_FOLDER (clos->root_folder),
+  clos->callback (clos->cancellable, GTK_FOLDER (clos->root_folder),
                   NULL, clos->data);
   GDK_THREADS_LEAVE ();
   g_free (clos);
   return FALSE;
 }
 
-static GtkFileSystemHandle *
+static GCancellable *
 hildon_file_system_root_get_folder (HildonFileSystemSpecialLocation *location,
                                     GtkFileSystem                *filesystem,
                                     const GtkFilePath              *path,
-                                    GtkFileInfoType                 types,
+				    const char                     *attributes,
                                     GtkFileSystemGetFolderCallback  callback,
                                     gpointer                        data)
 {
-  GtkFileSystemHandle *handle = g_object_new (GTK_TYPE_FILE_SYSTEM_HANDLE,
-                                              NULL);
+  GCancellable *cancellable = g_cancellable_new ();
   RootFileFolder *root_folder = g_object_new (ROOT_TYPE_FILE_FOLDER, NULL);
   struct get_folder_clos *clos = g_new (struct get_folder_clos, 1);
 
@@ -293,16 +296,11 @@ hildon_file_system_root_get_folder (HildonFileSystemSpecialLocation *location,
   root_folder->root = HILDON_FILE_SYSTEM_ROOT (location);
   g_object_ref (location);
 
-  /* This tells the HildonFileSystemModel never to call
-     gtk_file_system_cancel_operation on this handle.
-  */
-  handle->file_system = NULL;
-
-  clos->handle = handle;
+  clos->cancellable = cancellable;
   clos->root_folder = root_folder;
   clos->callback = callback;
   clos->data = data;
 
   g_idle_add (deliver_get_folder_callback, clos);
-  return handle;
+  return cancellable;
 }

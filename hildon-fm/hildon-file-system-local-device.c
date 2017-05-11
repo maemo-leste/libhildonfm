@@ -44,16 +44,16 @@ static void
 btname_changed(GObject *settings, GParamSpec *param, gpointer data);
 static gchar*
 hildon_file_system_local_device_get_display_name (HildonFileSystemSpecialLocation *location);
-static GtkFileSystemHandle*
+static GCancellable *
 hildon_file_system_local_device_get_folder (HildonFileSystemSpecialLocation *location,
-                                            GtkFileSystem *fs,
-                                            const GtkFilePath *path,
-                                            GtkFileInfoType types,
-                                            GtkFileSystemGetFolderCallback callack,
-                                            gpointer data);
+					    GtkFileSystem *fs,
+					    const GtkFilePath *path,
+					    const char *attributes,
+					    GtkFileSystemGetFolderCallback callack,
+					    gpointer data);
 static void
 hildon_file_system_local_device_volumes_changed (HildonFileSystemSpecialLocation
-						 *location, GtkFileSystem *fs);
+						 *location);
 
 static char *
 hildon_file_system_local_device_get_extra_info (HildonFileSystemSpecialLocation
@@ -149,14 +149,15 @@ hildon_file_system_local_device_get_display_name(
     return name;
 }
 
-static GtkFileSystemHandle*
+static GCancellable*
 hildon_file_system_local_device_get_folder (HildonFileSystemSpecialLocation *location,
-                                            GtkFileSystem *fs,
-                                            const GtkFilePath *path,
-                                            GtkFileInfoType types,
-                                            GtkFileSystemGetFolderCallback callback,
-                                            gpointer data)
+					    GtkFileSystem *fs,
+					    const GtkFilePath *path,
+					    const char *attributes,
+					    GtkFileSystemGetFolderCallback callback,
+					    gpointer data)
 {
+#ifdef UPSTREAM_DISABLED
   GtkFilePath *real_path;
   GtkFileSystemHandle *retval;
 
@@ -167,22 +168,38 @@ hildon_file_system_local_device_get_folder (HildonFileSystemSpecialLocation *loc
   if (g_str_has_prefix (path, "file:///"))
     {
       real_path = gtk_file_system_uri_to_path (fs, path);
-      retval = gtk_file_system_get_folder (fs, real_path, types,
-                                           callback, data);
+      retval = gtk_file_system_get_folder (fs, file, attributes,
+					   callback, data);
       gtk_file_path_free (real_path);
     }
   else
     {
-      retval = gtk_file_system_get_folder (fs, path, types,
-                                           callback, data);
+      retval = gtk_file_system_get_folder (fs, path, attributes,
+					   callback, data);
     }
+*/
+  retval = gtk_file_system_get_folder (fs, path, attributes,
+				       callback, data);
 
   return retval;
+#else
+  /* FIXME */
+  GCancellable *rv;
+  GFile *file = g_file_new_for_uri (gtk_file_path_get_string(path));
+
+  g_warning ("%s path %s", __FUNCTION__, path);
+
+  rv = gtk_file_system_get_folder (fs, file, attributes, callback, data);
+  g_object_unref (file);
+
+  return g_object_ref (rv);
+
+#endif
 }
 
 static void
 hildon_file_system_local_device_volumes_changed (HildonFileSystemSpecialLocation
-						 *location, GtkFileSystem *fs)
+						 *location)
 {
   g_signal_emit_by_name (location, "rescan");
 }

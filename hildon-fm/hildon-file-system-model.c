@@ -34,6 +34,7 @@
 
 #include <gtk/gtk.h>
 #include <gio/gio.h>
+
 #include <hildon-thumbnail-factory.h>
 #include <hildon-albumart-factory.h>
 
@@ -59,6 +60,8 @@
 #include "hildon-file-details-dialog.h"
 
 /*#define DEBUG*/
+#undef g_debug
+#define g_debug g_warning
 
 /*  Reload contents of removable devices after this amount of seconds */
 #define RELOAD_THRESHOLD 30
@@ -79,9 +82,9 @@ static GQuark hildon_file_system_model_quark = 0;
 
 typedef struct {
     GtkFilePath *path;
-    GtkFileInfo *info;
-    GtkFileFolder *folder;
-    GtkFileSystemHandle *get_folder_handle;
+    GFileInfo *info;
+    GtkFolder *folder;
+    GCancellable *cancellable;
     gint pending_adds;
     GdkPixbuf *icon_cache;
     GdkPixbuf *icon_cache_expanded;
@@ -108,7 +111,7 @@ typedef struct {
 
 typedef struct {
     GNode *parent_node;
-    GtkFileFolder *folder;
+    GtkFolder *folder;
     GSList *children;
     GSList *iter;
 } delayed_list_type;
@@ -187,7 +190,7 @@ hildon_file_system_model_constructor(GType type,
 static GNode *
 hildon_file_system_model_add_node(GtkTreeModel * model,
                                   GNode * parent_node,
-                                  GtkFileFolder * parent_folder,
+				  GtkFolder * parent_folder,
                                   const GtkFilePath * path,
                                   gboolean with_search);
 static void hildon_file_system_model_remove_node_list(GtkTreeModel * model,
@@ -195,7 +198,7 @@ static void hildon_file_system_model_remove_node_list(GtkTreeModel * model,
                                                       GSList * children);
 static void hildon_file_system_model_change_node_list(GtkTreeModel * model,
                                                       GNode * parent_node,
-                                                      GtkFileFolder *
+						      GtkFolder *
                                                       folder,
                                                       GSList * children);
 static gboolean is_node_loaded (GNode * node);
@@ -207,7 +210,7 @@ static void unlink_file_folder(GNode *node);
 static gboolean
 link_file_folder(GNode *node, const GtkFilePath *path);
 static void
-hildon_file_system_model_folder_finished_loading(GtkFileFolder *monitor,
+hildon_file_system_model_folder_finished_loading(GtkFolder *monitor,
   gpointer data);
 static void emit_node_changed(GNode *node);
 static void
@@ -305,7 +308,7 @@ static void hildon_file_system_model_real_device_disconnected(
 
   if (model_node->info)
   {
-    gtk_file_info_free (model_node->info);
+    g_object_unref (model_node->info);
     model_node->info = NULL;
   }
 
@@ -429,7 +432,7 @@ node_needs_reload (HildonFileSystemModel *model, GNode *node,
       return FALSE;
     }
 
-  if (model_node->get_folder_handle != NULL
+  if (model_node->cancellable != NULL
       || (model_node->folder
 	  && gtk_file_folder_is_finished_loading (model_node->folder)))
     {
@@ -728,8 +731,9 @@ model_node_is_folder(HildonFileSystemModelNode *model_node)
 {
     return model_node->folder
 	|| model_node->location
-	|| model_node->get_folder_handle
-	|| (model_node->info && gtk_file_info_get_is_folder(model_node->info));
+	|| model_node->cancellable
+	|| (model_node->info &&
+	    _gtk_file_info_consider_as_directory(model_node->info));
 }
 
 static gboolean
@@ -758,7 +762,7 @@ invalidate_display_props(HildonFileSystemModel *self)
 /* Formats file_time as expected by specs.  NOTE: return value points to a
  * static buffer, don't try to free it. */
 static const char *
-get_date_string(GtkFileTime file_time)
+get_date_string(GTimeVal file_time)
 {
     static char buf[128];
     gboolean format24h;
@@ -766,10 +770,10 @@ get_date_string(GtkFileTime file_time)
     struct tm *time_struct;
     size_t ds, ts;
 
-    if (file_time == 0)
+    if (file_time.tv_sec == 0)
 	return "-";
 
-    time_val = (time_t) file_time;
+    time_val = file_time.tv_sec;
     time_struct = localtime(&time_val);
 
     ds = strftime(buf, sizeof(buf), dgettext("hildon-libs", "wdgt_va_date"), time_struct);
@@ -801,7 +805,7 @@ generate_display_text_and_attrs(HildonFileSystemModel *model, GtkTreeIter *iter)
 {
     HildonFileSystemModelNode *model_node;
     gchar *title;
-    gint64 time;
+    GTimeVal time = {0, 0};
     const gchar *mime;
     guint row1len;
     PangoAttrList *alist;
@@ -824,10 +828,10 @@ generate_display_text_and_attrs(HildonFileSystemModel *model, GtkTreeIter *iter)
      */
     text = g_string_sized_new(48);
     mime = "";
-    time = 0;
+
     if (model_node->info) {
-	mime = gtk_file_info_get_mime_type(model_node->info);
-	time = gtk_file_info_get_modification_time(model_node->info);
+	mime = g_file_info_get_content_type(model_node->info);
+	g_file_info_get_modification_time(model_node->info, &time);
     }
 
     if (model_node_is_folder(model_node)) {
@@ -867,7 +871,7 @@ generate_display_text_and_attrs(HildonFileSystemModel *model, GtkTreeIter *iter)
 
 	g_string_append(text, ", ");
 	fsize = hildon_format_file_size_for_display(model_node->info ?
-						    gtk_file_info_get_size(model_node->info)
+						    g_file_info_get_size(model_node->info)
 						    : 0);
 	g_string_append(text, fsize);
 	g_free(fsize);
@@ -901,7 +905,7 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
                                                gint column, GValue * value)
 {
     GNode *node;
-    GtkFileInfo *info;
+    GFileInfo *info;
     GtkFilePath *path;
     GtkFileSystem *fs;
     HildonFileSystemModelNode *model_node;
@@ -933,21 +937,20 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
 
     switch (column) {
     case HILDON_FILE_SYSTEM_MODEL_COLUMN_GTK_PATH_INTERNAL:
-        g_value_set_boxed(value, path);
+	g_value_set_boxed(value, path);
         break;
     case HILDON_FILE_SYSTEM_MODEL_COLUMN_LOCAL_PATH:
         g_value_take_string
-            (value, gtk_file_system_path_to_filename(fs, path));
+	    (value, gtk_file_system_path_to_filename(fs, path));
         break;
     case HILDON_FILE_SYSTEM_MODEL_COLUMN_URI:
-        g_value_take_string(value,
-                           gtk_file_system_path_to_uri(fs, path));
+	g_value_take_string(value, gtk_file_system_path_to_uri (fs, path));
         break;
     case HILDON_FILE_SYSTEM_MODEL_COLUMN_FILE_NAME:
         /* Gtk+'s display name contains also extension */
         if (model_node->name_cache == NULL)
           model_node->name_cache = _hildon_file_system_create_file_name(fs,
-                                       path, model_node->location, info);
+				       path, model_node->location, info);
         g_value_set_string(value, model_node->name_cache);
         break;
     case HILDON_FILE_SYSTEM_MODEL_COLUMN_DISPLAY_NAME:
@@ -967,7 +970,7 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
 	    if (model_node->load_time == 0
 		&& model_node->error == NULL
 		&& (model_node->location ||
-		    (info && gtk_file_info_get_is_folder (info))))
+		    (info && _gtk_file_info_consider_as_directory(info))))
 	      {
 		unlink_file_folder (node);
 		link_file_folder (node, model_node->path);
@@ -984,7 +987,7 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
         {
           gchar *name, *casefold;
 
-          name = _hildon_file_system_create_file_name(fs, path,
+	  name = _hildon_file_system_create_file_name(fs, path,
                             model_node->location, info);
           casefold = g_utf8_casefold(name, -1);
           model_node->key_cache = g_utf8_collate_key_for_filename(casefold, -1);
@@ -996,15 +999,21 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
         break;
     case HILDON_FILE_SYSTEM_MODEL_COLUMN_MIME_TYPE:
         /* get_mime_type do not make a duplicate */
-        g_value_set_string(value, info ? gtk_file_info_get_mime_type(info) : "");
+	g_value_set_string(value, info ? g_file_info_get_content_type(info) : "");
         break;
     case HILDON_FILE_SYSTEM_MODEL_COLUMN_FILE_SIZE:
-        g_value_set_int64(value, info ? gtk_file_info_get_size(info) : 0);
+	g_value_set_int64(value, info ? g_file_info_get_size(info) : 0);
         break;
     case HILDON_FILE_SYSTEM_MODEL_COLUMN_FILE_TIME:
-        g_value_set_int64(value,
-                          info ? gtk_file_info_get_modification_time(info) : 0);
-        break;
+	{
+	  GTimeVal timeval = {0, 0};
+
+	  if (info)
+	    g_file_info_get_modification_time(info, &timeval);
+
+	  g_value_set_int64(value, timeval.tv_sec);
+	  break;
+	}
     case HILDON_FILE_SYSTEM_MODEL_COLUMN_IS_FOLDER:
         g_value_set_boolean(value, model_node_is_folder(model_node));
         break;
@@ -1016,16 +1025,16 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
              !model_node->error));
         break;
     case HILDON_FILE_SYSTEM_MODEL_COLUMN_IS_READONLY:
-        g_value_set_boolean(value, path ? path_is_readonly(fs, path) : FALSE);
+	g_value_set_boolean(value, path ? path_is_readonly(fs, path) : FALSE);
         break;
     case HILDON_FILE_SYSTEM_MODEL_COLUMN_HAS_LOCAL_PATH:
         g_value_set_boolean(value,
-            path ? gtk_file_system_path_is_local(fs, path) : FALSE);
+	    path ? gtk_file_system_path_is_local(fs, path) : FALSE);
         break;
     case HILDON_FILE_SYSTEM_MODEL_COLUMN_TYPE:
         g_value_set_int(value, model_node->location ?
             model_node->location->compatibility_type :
-            (gtk_file_info_get_is_folder(info) ?
+	    (_gtk_file_info_consider_as_directory(model_node->info) ?
                 HILDON_FILE_SYSTEM_MODEL_FOLDER :
                 HILDON_FILE_SYSTEM_MODEL_FILE));
         break;
@@ -1061,11 +1070,12 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
             gboolean is_image = FALSE;
             gboolean is_audio = FALSE;
 
-            if (path)
-              uri = gtk_file_system_path_to_uri(priv->filesystem, path);
+	    if (path)
+	      uri = gtk_file_system_path_to_uri(fs, path);
+
             if (info)
             {
-              mime_type = gtk_file_info_get_mime_type(info);
+	      mime_type = g_file_info_get_content_type(info);
 	      is_image = mime_type && (g_str_has_prefix (mime_type, "image/")
 				       || g_str_has_prefix (mime_type, "sketch/png"));
 	      is_audio = mime_type && g_str_has_prefix (mime_type, "audio/");
@@ -1101,7 +1111,7 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
                 model_node->thumbnail_request =
                     hildon_thumbnail_factory_request_pixbuf(factory,
                         uri, THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT, TRUE,
-                        gtk_file_info_get_mime_type(info),
+			g_file_info_get_content_type(info),
                         thumbnail_request_pixbuf_cb, node, NULL);
                 g_object_unref(factory);
               }
@@ -1263,7 +1273,7 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
       else if (!info)
         result = FALSE;
       else
-        result = gtk_file_info_get_is_hidden(info);
+	result = g_file_info_get_is_hidden(info);
 
       if (result == TRUE)
         {
@@ -1298,7 +1308,7 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
         {
           if (!model_node->title_cache)
             model_node->title_cache = _hildon_file_system_create_display_name(
-                fs, path, model_node->location, info);
+		fs, path, model_node->location, info);
           g_value_take_string(value,
                 g_strdup_printf(model_node->location->failed_access_message,
                 model_node->title_cache));
@@ -1308,7 +1318,7 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
         /* Temporary version of the weight calculation */
         g_value_set_int(value, model_node->location ?
                 model_node->location->sort_weight : (
-            (info && gtk_file_info_get_is_folder(info)) ?
+	    (info && _gtk_file_info_consider_as_directory(info)) ?
                 SORT_WEIGHT_FOLDER : SORT_WEIGHT_FILE));
         break;
     case HILDON_FILE_SYSTEM_MODEL_COLUMN_EXTRA_INFO:
@@ -1429,22 +1439,22 @@ static gint path_compare_helper(gconstpointer a, gconstpointer b)
     if (a == NULL || b == NULL)
       return 1;
 
-    return gtk_file_path_compare((GtkFilePath *) a, (GtkFilePath *) b);
+    return !g_file_equal((GFile *) a, (GFile *) b);
 }
 
 static GNode
-    *hildon_file_system_model_search_folder(GtkFileFolder * folder)
+    *hildon_file_system_model_search_folder(GtkFolder * folder)
 {
     return (GNode *) g_object_get_qdata(G_OBJECT(folder),
                                         hildon_file_system_model_quark);
 }
 
-static void hildon_file_system_model_files_added (GtkFileFolder * monitor,
+static void hildon_file_system_model_files_added (GtkFolder * monitor,
 						  GSList * paths,
 						  gpointer data);
 
 typedef struct {
-  GtkFileFolder *monitor;
+  GtkFolder *monitor;
   GSList *paths;
   gpointer data;
   GSList *next_path;
@@ -1502,7 +1512,7 @@ dfa_run (gpointer data)
 }
 
 static void
-delay_files_added (GtkFileFolder * monitor,
+delay_files_added (GtkFolder * monitor,
 		   GSList * paths,
 		   gpointer data,
                    gboolean all_new)
@@ -1533,7 +1543,7 @@ delay_files_added (GtkFileFolder * monitor,
     }
 }
 
-static void hildon_file_system_model_files_added(GtkFileFolder * monitor,
+static void hildon_file_system_model_files_added(GtkFolder * monitor,
                                                  GSList * paths,
                                                  gpointer data)
 {
@@ -1567,25 +1577,42 @@ static void hildon_file_system_model_files_added(GtkFileFolder * monitor,
 	while (paths && i < MAX_BATCH)
             {
                 if (model_node->location)
-                    real_path = hildon_file_system_special_location_rewrite_path (model_node->location, CAST_GET_PRIVATE(model)->filesystem, paths->data);
+		  {
+		    /* FIXME */
+		    GtkFilePath *uri =
+			gtk_file_path_new_steal (g_file_get_uri (paths->data));
+
+		    real_path =
+			hildon_file_system_special_location_rewrite_path (
+			  model_node->location, CAST_GET_PRIVATE(model)->filesystem, uri);
+		    g_free (uri);
+		  }
                 else
-                    real_path = gtk_file_path_copy (paths->data);
+		  real_path = gtk_file_path_new_steal (g_file_get_uri (paths->data));
               
                 //search whether this node already exists
                 if (hildon_file_system_model_search_path_internal (node, real_path, FALSE) &&
 		    !g_str_has_prefix (gtk_file_path_get_string(real_path), "upnpav://") &&
-		    !g_str_has_prefix (gtk_file_path_get_string(real_path), "file:///media/")) {
+		    !g_str_has_prefix (gtk_file_path_get_string(real_path), "file:///media/"))
+		  {
                     //node already exists no need to add
                     all_new = FALSE;
-                } 
-		else {
+		  }
+		else
+		  {
+		    /* FIXME */
+		    GtkFilePath *uri =
+			gtk_file_path_new_steal (g_file_get_uri (paths->data));
+
                     hildon_file_system_model_add_node (model,
                                                        node,
                                                        monitor,
-                                                       (GtkFilePath *) paths->data,
-                                                       TRUE);
-                }
-                gtk_file_path_free(real_path);
+						       uri,
+						       TRUE);
+		    gtk_file_path_free (uri);
+		  }
+
+		g_free(real_path);
                 paths = paths->next;
                 i++;
             }
@@ -1603,7 +1630,7 @@ static void hildon_file_system_model_files_added(GtkFileFolder * monitor,
   }
 }
 
-static void hildon_file_system_model_files_removed(GtkFileFolder * monitor,
+static void hildon_file_system_model_files_removed(GtkFolder * monitor,
                                                    GSList * paths,
                                                    gpointer data)
 {
@@ -1621,7 +1648,7 @@ static void hildon_file_system_model_files_removed(GtkFileFolder * monitor,
   }
 }
 
-static void hildon_file_system_model_dir_removed(GtkFileFolder * monitor,
+static void hildon_file_system_model_dir_removed(GtkFolder * monitor,
                                                  gpointer data)
 {
     g_warning("Dir removed callback called, but this method is not "
@@ -1629,7 +1656,7 @@ static void hildon_file_system_model_dir_removed(GtkFileFolder * monitor,
                "it either).");
 }
 
-static void hildon_file_system_model_files_changed(GtkFileFolder * monitor,
+static void hildon_file_system_model_files_changed(GtkFolder * monitor,
                                                    GSList * paths,
                                                    gpointer data)
 {
@@ -1648,7 +1675,7 @@ static void hildon_file_system_model_files_changed(GtkFileFolder * monitor,
   }
 }
 
-static void hildon_file_system_model_folder_finished_loading(GtkFileFolder *monitor, gpointer data)
+static void hildon_file_system_model_folder_finished_loading(GtkFolder *monitor, gpointer data)
 {
   GNode *node = hildon_file_system_model_search_folder(monitor);
   if (node)
@@ -1738,23 +1765,11 @@ unlink_file_folder(GNode *node)
   HildonFileSystemModelNode *model_node = node->data;
   g_assert(model_node != NULL);
 
-  if (model_node->get_folder_handle)
+  if (model_node->cancellable)
     {
-      GtkFileSystemHandle *handle = model_node->get_folder_handle;
-      if (handle->file_system)
-	gtk_file_system_cancel_operation (model_node->get_folder_handle);
-      else
-	{
-	  /* This is a special handle created by one of our special
-	     locations.  It is not associated with any GtkFileSystem
-	     and the operation can not be cancelled.  But since the
-	     node might be going away, we set the cancelled flag
-	     directly so that get_folder_callback does the right
-	     thing.
-	  */
-	  handle->cancelled = TRUE;
-	}
-      model_node->get_folder_handle = NULL;
+      g_cancellable_cancel (model_node->cancellable);
+      g_object_unref (model_node->cancellable);
+      model_node->cancellable = NULL;
     }
 
   if (model_node->folder)
@@ -1796,18 +1811,17 @@ free_handle_data (HandleData *handle_data)
 }
 
 static void
-get_folder_callback (GtkFileSystemHandle *handle,
-                     GtkFileFolder *folder,
+get_folder_callback (GCancellable *cancellable,
+		     GtkFolder *folder,
                      const GError *error,
                      gpointer data)
 {
-  gboolean cancelled = handle->cancelled;
+  gboolean cancelled = g_cancellable_is_cancelled(cancellable);
   HildonFileSystemModelNode *model_node;
   HildonFileSystemModel *model;
   HandleData *handle_data = (HandleData *) data;
   GNode *node;
-
-  g_object_unref (handle);
+  g_object_unref (cancellable);
 
   /* When the operation has been cancelled, handle_data->node is no
      longer valid.
@@ -1823,8 +1837,11 @@ get_folder_callback (GtkFileSystemHandle *handle,
   model_node = (HildonFileSystemModelNode *) node->data;
   model = model_node->model;
 
-  model_node->get_folder_handle = NULL;
-  model_node->folder = folder;
+  g_debug ("%s %s %p", __FUNCTION__,
+	   gtk_file_path_get_string(model_node->path), folder);
+
+  model_node->cancellable = NULL;
+  model_node->folder = folder ? g_object_ref(folder) : NULL;
   model_node->error = error? g_error_copy (error) : NULL;
   model_node->linking = FALSE;
 
@@ -1837,10 +1854,13 @@ get_folder_callback (GtkFileSystemHandle *handle,
 					 "failure");
     }
 
-  g_debug ("LINK DONE %s %s %p\n",
+  g_debug ("LINK DONE %s %s model_node %p folder %p\n",
        (char *)model_node->path, error? error->message : "(success)",
-       folder);
-  
+	   model_node, folder);
+
+  if (folder)
+      g_assert (GTK_IS_FOLDER (folder));
+
   if (model_node->error)
     {
       handle_finished_node (node);
@@ -1902,9 +1922,9 @@ get_folder_callback (GtkFileSystemHandle *handle,
 	    model->priv->first_root_scan_completed = TRUE;
 
           hildon_file_system_model_folder_finished_loading
-            (model_node->folder, model);
-          gtk_file_paths_free (children);
-        }
+	    (model_node->folder, model);
+	  gtk_file_paths_free (children);
+	}
       else
 	handle_load_error (node);
     }
@@ -1917,7 +1937,7 @@ link_file_folder (GNode *node, const GtkFilePath *path)
 {
   HildonFileSystemModel *model;
   HildonFileSystemModelNode *model_node;
-/*  GtkFileFolder *parent_folder; */
+/*  GtkFolder *parent_folder; */
   HandleData *handle_data;
   GNode *child_node;
 
@@ -1927,7 +1947,7 @@ link_file_folder (GNode *node, const GtkFilePath *path)
 
   /* Folder already exists or we have already asked for it.
    */
-  if (model_node->folder || model_node->get_folder_handle)
+  if (model_node->folder || model_node->cancellable)
     return TRUE;
 
   g_debug ("LINK %s\n", (char *)model_node->path);
@@ -1965,22 +1985,26 @@ link_file_folder (GNode *node, const GtkFilePath *path)
 
   if (model_node->location)
     {
-      model_node->get_folder_handle =
+      model_node->cancellable =
         hildon_file_system_special_location_get_folder
           (model_node->location,
            model->priv->filesystem,
-           path, GTK_FILE_INFO_ALL,
+	   path, "*",
            get_folder_callback, handle_data);
     }
   else
     {
-      model_node->get_folder_handle =
+      /* FIXME */
+      GFile *file = g_file_new_for_uri (gtk_file_path_get_string(path));
+
+      model_node->cancellable =
         gtk_file_system_get_folder (model->priv->filesystem,
-                                    path, GTK_FILE_INFO_ALL,
+				    file, "*",
                                     get_folder_callback, handle_data);
+      g_object_unref (file);
     }
 
-  if (model_node->get_folder_handle == NULL)
+  if (model_node->cancellable == NULL)
     {
       model_node->linking = FALSE;
       free_handle_data (handle_data);
@@ -2008,7 +2032,7 @@ static gboolean hildon_file_system_model_destroy_model_node(GNode * node,
 
       if (model_node->info)
       {
-        gtk_file_info_free (model_node->info);
+	g_object_unref (model_node->info);
         model_node->info = NULL;
       }
 
@@ -2118,14 +2142,14 @@ static void real_volumes_changed(GtkFileSystem *fs, gpointer data)
 static GNode *
 hildon_file_system_model_add_node (GtkTreeModel * model,
 				   GNode * parent_node,
-				   GtkFileFolder * parent_folder,
+				   GtkFolder * parent_folder,
 				   const GtkFilePath *path,
                                    gboolean with_search)
 {
     GNode *node;
     HildonFileSystemModelPrivate *priv;
     HildonFileSystemModelNode *parent_model_node, *model_node;
-    GtkFileInfo *file_info = NULL;
+    GFileInfo *file_info = NULL;
     GtkTreePath *tree_path;
     GtkTreeIter iter;
     GtkFilePath *real_path;
@@ -2194,7 +2218,7 @@ hildon_file_system_model_add_node (GtkTreeModel * model,
             g_assert(model_node);
             model_node->present_flag = TRUE;
 	    if (model_node->info)
-	      gtk_file_info_free (model_node->info);
+	      g_object_unref (model_node->info);
 	    model_node->info = file_info;
 	    gtk_file_path_free (real_path);
             return node;
@@ -2212,7 +2236,7 @@ hildon_file_system_model_add_node (GtkTreeModel * model,
     g_node_append(parent_node, node);
 
     if (!parent_folder
-	|| (file_info && gtk_file_info_get_is_folder(file_info))
+	|| (file_info && _gtk_file_info_consider_as_directory(file_info))
 	|| g_str_has_prefix (gtk_file_path_get_string (path), "obex:///"))
     {
         model_node->location =
@@ -2326,19 +2350,24 @@ static void hildon_file_system_model_remove_node_list(GtkTreeModel * model,
 {
     GNode *child_node = g_node_first_child(parent_node);
 
-    while (child_node) {
+    while (child_node)
+      {
         HildonFileSystemModelNode *model_node = child_node->data;
-        if (g_slist_find_custom
-            (children, model_node->path, path_compare_helper))
-            child_node = hildon_file_system_model_kick_node(child_node, model);
+	GFile *file =
+	    g_file_new_for_uri (gtk_file_path_get_string(model_node->path));
+
+	if (g_slist_find_custom (children, file, path_compare_helper))
+	    child_node = hildon_file_system_model_kick_node (child_node, model);
         else
-            child_node = g_node_next_sibling(child_node);
-    }
+	    child_node = g_node_next_sibling (child_node);
+
+	g_object_unref (file);
+      }
 }
 
 static void hildon_file_system_model_change_node_list(GtkTreeModel * model,
                                                       GNode * parent_node,
-                                                      GtkFileFolder *
+						      GtkFolder *
                                                       folder,
                                                       GSList * children)
 {
@@ -2346,16 +2375,18 @@ static void hildon_file_system_model_change_node_list(GtkTreeModel * model,
 
     g_return_if_fail(HILDON_IS_FILE_SYSTEM_MODEL(model));
     g_return_if_fail(parent_node != NULL);
-    g_return_if_fail(GTK_IS_FILE_FOLDER(folder));
+    g_return_if_fail(GTK_IS_FOLDER(folder));
     g_return_if_fail(children != NULL);
 
     for (node = g_node_first_child(parent_node); node;
-         node = g_node_next_sibling(node)) {
+	 node = g_node_next_sibling(node))
+      {
         HildonFileSystemModelNode *model_node = node->data;
+	GFile *file =
+	    g_file_new_for_uri (gtk_file_path_get_string(model_node->path));
 
-        if (g_slist_find_custom
-            (children, model_node->path, path_compare_helper)) {
-
+	if (g_slist_find_custom (children, file, path_compare_helper))
+	  {
             g_debug("Path changed [%s]", (char *) model_node->path);
 
             /* Ok, current node is updated. We need to refresh it and send
@@ -2367,7 +2398,7 @@ static void hildon_file_system_model_change_node_list(GtkTreeModel * model,
             {
               GError *error = NULL;
 
-              gtk_file_info_free(model_node->info);
+	      g_object_unref(model_node->info);
 
               model_node->info =
                 gtk_file_folder_get_info(folder, model_node->path, &error);
@@ -2382,6 +2413,8 @@ static void hildon_file_system_model_change_node_list(GtkTreeModel * model,
 
             emit_node_changed(node);
         }
+
+	g_object_unref (file);
     }
 }
 
@@ -2391,7 +2424,7 @@ static void wait_node_load(HildonFileSystemModelPrivate * priv,
   HildonFileSystemModelNode *model_node = node->data;
 
   if (model_node->folder
-      || model_node->get_folder_handle)   /* Sanity check: node has to
+      || model_node->cancellable)   /* Sanity check: node has to
 					     be a folder */
   {
     g_debug("Waiting folder [%s] to load", (char *) model_node->path);
@@ -2844,10 +2877,11 @@ create_model_node_for_location(HildonFileSystemModel *self,
 	g_debug ("BASE %s PATH %s\n", location->basepath, (char *)path);
 
         model_node = g_new0(HildonFileSystemModelNode, 1);
+	model_node->folder = NULL;
         model_node->model = self;
         model_node->present_flag = TRUE;
         model_node->available = TRUE;
-        model_node->path = path;
+	model_node->path = gtk_file_path_new_steal(path);
         model_node->location = g_object_ref(location);
 
         /* Let the location to initialize it's state */
@@ -2925,19 +2959,24 @@ static GNode *my_copy_deep(GNode *node, gpointer data)
 			   "file:///") != 0) {
         setup_node_for_location(result);
     }
-    else {
-        if(HILDON_IS_FILE_SYSTEM_ROOT(node->data)) {
+    else
+      {
+	if(HILDON_IS_FILE_SYSTEM_ROOT(node->data))
+	  {
             setup_node_for_location(result);
         }
-        else if(HILDON_IS_FILE_SYSTEM_LOCAL_DEVICE(node->data)) {
+	else if(HILDON_IS_FILE_SYSTEM_LOCAL_DEVICE(node->data))
+	  {
             setup_node_for_location(result);
         }
-	else {
-        if (model_node->path)
-        {
-            gtk_file_path_free(model_node->path);
-            model_node->path = NULL;
-        }
+	else
+	  {
+	    if (model_node->path)
+	      {
+		gtk_file_path_free(model_node->path);
+		model_node->path = NULL;
+	      }
+
 	    model_node->path = gtk_file_path_copy ( (GtkFilePath *)model_node->location->basepath);
 	    g_signal_connect(model_node->location, "changed",
                 G_CALLBACK(location_changed), result);
@@ -2995,6 +3034,7 @@ hildon_file_system_model_constructor(GType type,
         HildonFileSystemModelNode *model_node;
 
         model_node = g_new0(HildonFileSystemModelNode, 1);
+	model_node->folder = NULL;
         model_node->path = gtk_file_path_copy(file_path);
         model_node->available = TRUE;
         priv->roots->data = model_node;
@@ -3366,7 +3406,7 @@ _hildon_file_system_model_load_children(HildonFileSystemModel *model,
 
   if (!is_node_loaded (parent_node))
     {
-      if (parent_model_node->get_folder_handle == NULL)
+      if (parent_model_node->cancellable == NULL)
 	link_file_folder (parent_node, parent_model_node->path);
       else
 	g_debug ("NOT LINKING %s\n",  (char *)parent_model_node->path);

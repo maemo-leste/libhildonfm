@@ -308,7 +308,7 @@ START_TEST (test_file_system_path_for_location)
     fail_if (!HILDON_IS_FILE_SYSTEM_SPECIAL_LOCATION (location),
              "Getting a HildonFileSystemSpecialLocation failed");
 
-    path2 = _hildon_file_system_path_for_location (system, location);
+    path2 = _hildon_file_system_path_for_location (location);
     result = gtk_file_system_path_to_uri (system, path);
     //printf("'%s'|'%s'\n", start, result);
     fail_if (strcmp (start, result), "Getting the GtkFilePath failed");

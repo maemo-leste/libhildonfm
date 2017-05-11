@@ -86,12 +86,12 @@ struct _HildonFileSystemSpecialLocationClass
   HildonFileSystemSpecialLocation* (*create_child_location) (HildonFileSystemSpecialLocation *location, gchar *uri);
   void (*volumes_changed) (HildonFileSystemSpecialLocation *location);
 
-  GtkFileSystemHandle * (*get_folder)  (HildonFileSystemSpecialLocation *location,
-					GtkFileSystem                  *file_system,
-					const GtkFilePath              *path,
-					GtkFileInfoType                 types,
-					GtkFileSystemGetFolderCallback  callback,
-					gpointer                        data);
+  GCancellable *(*get_folder)  (HildonFileSystemSpecialLocation *location,
+				GtkFileSystem                  *file_system,
+				const GtkFilePath              *path,
+				const gchar                    *attributes,
+				GtkFileSystemGetFolderCallback  callback,
+				gpointer                        data);
 
   GtkFilePath *(*rewrite_path) (HildonFileSystemSpecialLocation *location,
 				GtkFileSystem                  *file_system,
@@ -161,11 +161,10 @@ hildon_file_system_special_location_create_child_location (HildonFileSystemSpeci
 void
 hildon_file_system_special_location_volumes_changed (HildonFileSystemSpecialLocation *location);
 
-GtkFileSystemHandle *
-hildon_file_system_special_location_get_folder (HildonFileSystemSpecialLocation *location,
+GCancellable *hildon_file_system_special_location_get_folder(HildonFileSystemSpecialLocation *location,
 						GtkFileSystem                  *file_system,
 						const GtkFilePath              *path,
-						GtkFileInfoType                 types,
+						const char *attributes,
 						GtkFileSystemGetFolderCallback  callback,
 						gpointer                        data);
 #endif

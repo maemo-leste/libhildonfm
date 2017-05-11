@@ -699,7 +699,7 @@ static gboolean navigation_pane_filter_func(GtkTreeModel *model,
         && g_str_has_prefix (&uri[7], g_getenv ("MYDOCSDIR")))
       {
           g_free (uri);
-          return FALSE;
+	  return FALSE;
       }
       g_free (uri);
   }
@@ -3218,7 +3218,7 @@ static GObject *hildon_file_selection_constructor(GType type,
         const gchar* path = g_getenv ("MYDOCSDIR");
 
         if (path) {
-            GFile *file = g_file_new_for_uri (path);
+	    GFile *file = g_file_new_for_path (path);
             GMount* mount = g_file_find_enclosing_mount (file, NULL, NULL);
 
             g_object_unref (file);

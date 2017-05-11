@@ -25,10 +25,9 @@ libhildonfm_la_SOURCES =			\
 	gtkfilesystem/gtkfilechooserutils.c	\
 	gtkfilesystem/gtkfilechooserutils.h	\
 	gtkfilesystem/gtkfilesystem.c		\
-	gtkfilesystem/gtkfilesystemmodel.c	\
 	gtkfilesystem/gtkfilesystemmodel.h	\
-	gtkfilesystem/gtkfilesystemunix.c	\
-	gtkfilesystem/gtkfilesystemunix.h	\
+	gtkfilesystem/gtkfilesystemgio.c	\
+	gtkfilesystem/gtkfilesystemgio.h	\
 	gtkfilesystem/gtkfilechooserprivate.h	\
 	hildon-file-selection.c			\
 	hildon-file-system-model.c		\
