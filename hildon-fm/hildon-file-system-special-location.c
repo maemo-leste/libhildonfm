@@ -283,7 +283,7 @@ hildon_file_system_special_location_failed_access (
 
 HildonFileSystemSpecialLocation*
 hildon_file_system_special_location_create_child_location (
-                HildonFileSystemSpecialLocation *location, gchar *uri)
+		HildonFileSystemSpecialLocation *location, GFile *uri)
 {
     HildonFileSystemSpecialLocationClass *klass;
 
@@ -316,7 +316,7 @@ GCancellable *
 hildon_file_system_special_location_get_folder
     (HildonFileSystemSpecialLocation *location,
      GtkFileSystem                  *file_system,
-     const GtkFilePath              *path,
+     GFile                          *file,
      const char                     *attributes,
      GtkFileSystemGetFolderCallback  callback,
      gpointer                        data)
@@ -331,7 +331,7 @@ hildon_file_system_special_location_get_folder
     if (klass->get_folder)
       return klass->get_folder (location,
                                 file_system,
-                                path,
+				file,
 				attributes,
                                 callback,
                                 data);
@@ -339,7 +339,6 @@ hildon_file_system_special_location_get_folder
       {
 	/* FIXME */
 	GCancellable *rv;
-	GFile *file = g_file_new_for_uri (gtk_file_path_get_string(path));
 
 	rv = gtk_file_system_get_folder (file_system,
 					 file,
@@ -395,10 +394,10 @@ hildon_file_system_special_location_set_icon (
     }
 }
 
-GtkFilePath *
+GFile *
 hildon_file_system_special_location_rewrite_path (HildonFileSystemSpecialLocation *location,
 						  GtkFileSystem                  *file_system,
-						  const GtkFilePath              *path)
+						  GFile                          *file)
 {
     HildonFileSystemSpecialLocationClass *klass;
 
@@ -408,7 +407,7 @@ hildon_file_system_special_location_rewrite_path (HildonFileSystemSpecialLocatio
     klass = HILDON_FILE_SYSTEM_SPECIAL_LOCATION_GET_CLASS (location);
 
     if (klass->rewrite_path)
-      return klass->rewrite_path (location, file_system, path);
+      return klass->rewrite_path (location, file_system, file);
     else
-      return gtk_file_path_copy (path);
+      return file ? g_object_ref (file) : NULL;
 }

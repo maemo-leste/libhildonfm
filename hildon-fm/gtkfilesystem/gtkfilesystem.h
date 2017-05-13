@@ -184,7 +184,7 @@ struct _GtkFileSystemIface
 					GtkFileSystemGetFolderCallback  callback,
 					gpointer                        data);
   GCancellable        * (*get_info) (GtkFileSystem                *file_system,
-				     const GtkFilePath            *path,
+				     GFile	                  *path,
 				     const char                   *attributes,
 				     GtkFileSystemGetInfoCallback  callback,
 				     gpointer                      data);
@@ -301,10 +301,10 @@ GCancellable *gtk_file_system_get_folder(GtkFileSystem                  *file_sy
 					 GtkFileSystemGetFolderCallback  callback,
 					 gpointer                        data);
 GCancellable *gtk_file_system_get_info(GtkFileSystem                  *file_system,
-						  const GtkFilePath              *path,
-						  const char *attributes,
-						  GtkFileSystemGetInfoCallback    callback,
-						  gpointer                        data);
+				       GFile *file,
+				       const char *attributes,
+				       GtkFileSystemGetInfoCallback    callback,
+				       gpointer                        data);
 GCancellable *gtk_file_system_create_folder (GtkFileSystem                     *file_system,
 					     const GtkFilePath                 *path,
 					     GtkFileSystemCreateFolderCallback  callback,
@@ -331,7 +331,7 @@ GtkFilePath *gtk_file_system_filename_to_path (GtkFileSystem     *file_system,
 					       const gchar       *filename);
 
 gboolean     gtk_file_system_path_is_local    (GtkFileSystem     *filesystem,
-					       const GtkFilePath *path);
+					       GFile *file);
 
 gboolean gtk_file_system_insert_bookmark (GtkFileSystem     *file_system,
 					  const GtkFilePath *path,
@@ -363,8 +363,7 @@ struct _GtkFolderIface
   /* Methods
    */
   GFileInfo *        (*get_info)       (GtkFolder     *folder,
-					const GtkFilePath *path,
-				        GError           **error);
+					GFile         *file);
   gboolean           (*list_children)  (GtkFolder     *folder,
 				        GSList           **children,
 				        GError           **error);
@@ -391,8 +390,7 @@ gboolean     gtk_file_folder_list_children (GtkFolder      *folder,
 					    GSList            **children,
 					    GError            **error);
 GFileInfo *gtk_file_folder_get_info(GtkFolder      *folder,
-					    const GtkFilePath  *path,
-					    GError            **error);
+				    GFile *file);
 
 gboolean     gtk_file_folder_is_finished_loading (GtkFolder *folder);
 

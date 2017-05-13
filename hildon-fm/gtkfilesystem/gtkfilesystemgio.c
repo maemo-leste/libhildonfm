@@ -243,9 +243,7 @@ static gboolean     gtk_folder_gio_list_children (GtkFolder    *folder,
 						  GError          **error);
 static GFileInfo *  _gtk_folder_gio_get_info      (GtkFolder  *folder,
 						   GFile      *file);
-static GFileInfo *  gtk_folder_gio_get_info      (GtkFolder         *folder,
-						  const GtkFilePath *path,
-						  GError           **error);
+
 static gboolean     _gtk_folder_gio_is_finished_loading (GtkFolder *folder);
 
 
@@ -270,10 +268,6 @@ GdkPixbuf *     _gtk_file_info_render_icon (GFileInfo *info,
 					    gint       icon_size);
 
 gboolean	_gtk_file_info_consider_as_directory (GFileInfo *info);
-
-/* GFile helper functions */
-static gboolean	_gtk_file_has_native_path (GFile *file);
-
 
 /* GtkFileSystemBookmark methods */
 void
@@ -1515,7 +1509,7 @@ _gtk_file_system_gio_get_volume_for_file (GtkFileSystem *file_system,
 static void
 gtk_folder_gio_iface_init (GtkFolderIface *iface)
 {
-  iface->get_info = gtk_folder_gio_get_info;
+  iface->get_info = _gtk_folder_gio_get_info;
   iface->list_children = gtk_folder_gio_list_children;
   iface->is_finished_loading = _gtk_folder_gio_is_finished_loading;
 }
@@ -1889,19 +1883,6 @@ _gtk_folder_gio_get_info (GtkFolder  *folder,
   return g_object_ref (info);
 }
 
-static GFileInfo *  gtk_folder_gio_get_info      (GtkFolder         *folder,
-						  const GtkFilePath *path,
-						  GError           **error)
-{
-  GFile *file = g_file_new_for_commandline_arg (gtk_file_path_get_string(path));
-  GFileInfo *rv = _gtk_folder_gio_get_info (folder, file);
-  g_warning("%s path %s rv %p", __FUNCTION__, path, rv);
-  g_object_unref (file);
-  *error = NULL;
-
-  return rv;
-}
-
 static gboolean
 _gtk_folder_gio_is_finished_loading (GtkFolder *folder)
 {
@@ -2013,18 +1994,4 @@ _gtk_file_system_gio_volume_unref (GtkFileSystemVolume *volume)
       G_IS_VOLUME (volume) ||
       G_IS_DRIVE (volume))
     g_object_unref (volume);
-}
-
-static gboolean
-_gtk_file_has_native_path (GFile *file)
-{
-  char *local_file_path;
-  gboolean has_native_path;
-
-  /* Don't use g_file_is_native(), as we want to support FUSE paths if available */
-  local_file_path = g_file_get_path (file);
-  has_native_path = (local_file_path != NULL);
-  g_free (local_file_path);
-
-  return has_native_path;
 }

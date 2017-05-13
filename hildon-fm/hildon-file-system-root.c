@@ -47,14 +47,14 @@ hildon_file_system_root_volumes_changed (HildonFileSystemSpecialLocation
 
 static GCancellable *hildon_file_system_root_get_folder(HildonFileSystemSpecialLocation *location,
                                     GtkFileSystem                *filesystem,
-                                    const GtkFilePath              *path,
+				    GFile                        *file,
 				    const char *attributes,
                                     GtkFileSystemGetFolderCallback  callback,
                                     gpointer                        data);
 
 static HildonFileSystemSpecialLocation*
 hildon_file_system_root_create_child_location (HildonFileSystemSpecialLocation
-                                               *location, gchar *uri);
+					       *location, GFile *file);
 
 G_DEFINE_TYPE (HildonFileSystemRoot,
                hildon_file_system_root,
@@ -90,25 +90,27 @@ hildon_file_system_root_volumes_changed (HildonFileSystemSpecialLocation
 
 HildonFileSystemSpecialLocation*
 hildon_file_system_root_create_child_location (HildonFileSystemSpecialLocation
-                                               *location, gchar *uri)
+					       *location, GFile *file)
 {
   HildonFileSystemSpecialLocation *child = NULL;
-
+  gchar *uri = g_file_get_uri (file);
   /* XXX - Cough, a bit of hardcoding, it is better to ask GnomeVFS
            whether this is a volume or drive.
    */
+  /* FIXME */
   if (g_str_has_prefix (uri, "drive://")
-      || (g_str_has_prefix (uri, "file:///media/")
-          && strchr (uri + 14, '/') == NULL)
-      || (g_str_has_prefix (uri, "file:///media/usb/")
-          && strchr (uri + 18, '/') == NULL))
+      || (g_str_has_prefix (uri, "file:///media/") &&
+	  strchr (uri + 14, '/') == NULL)
+      || (g_str_has_prefix (uri, "file:///media/usb/") &&
+	  strchr (uri + 18, '/') == NULL))
     {
       child = g_object_new (HILDON_TYPE_FILE_SYSTEM_VOLDEV, NULL);
-      child->basepath = g_strdup (uri);
+      child->basepath = g_object_ref (file);
       child->permanent = FALSE;
       hildon_file_system_special_location_volumes_changed (child);
     }
 
+  g_free (uri);
   return child;
 }
 
@@ -144,8 +146,8 @@ static void root_file_folder_init (RootFileFolder *impl);
 static void root_file_folder_finalize (GObject *object);
 
 static GFileInfo *root_file_folder_get_info(GtkFolder  *folder,
-                                             const GtkFilePath    *path,
-                                             GError        **error);
+					    GFile      *path,
+					    GError    **error);
 static gboolean root_file_folder_list_children (GtkFolder  *folder,
                                               GSList        **children,
                                               GError        **error);
@@ -191,7 +193,7 @@ root_file_folder_finalize (GObject *object)
 
 static GFileInfo *
 root_file_folder_get_info (GtkFolder      *folder,
-                           const GtkFilePath  *path,
+			   GFile *path,
                            GError            **error)
 {
   /* FIXME */
@@ -282,11 +284,11 @@ deliver_get_folder_callback (gpointer data)
 
 static GCancellable *
 hildon_file_system_root_get_folder (HildonFileSystemSpecialLocation *location,
-                                    GtkFileSystem                *filesystem,
-                                    const GtkFilePath              *path,
-				    const char                     *attributes,
-                                    GtkFileSystemGetFolderCallback  callback,
-                                    gpointer                        data)
+				    GtkFileSystem                   *filesystem,
+				    GFile                           *file,
+				    const char                      *attributes,
+				    GtkFileSystemGetFolderCallback   callback,
+				    gpointer                         data)
 {
   GCancellable *cancellable = g_cancellable_new ();
   RootFileFolder *root_folder = g_object_new (ROOT_TYPE_FILE_FOLDER, NULL);

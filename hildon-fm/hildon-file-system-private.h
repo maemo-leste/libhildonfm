@@ -46,7 +46,7 @@ _hildon_file_system_compare_ignore_last_separator(const char *a, const char *b);
 GNode *_hildon_file_system_get_locations(void);
 
 HildonFileSystemSpecialLocation *
-_hildon_file_system_get_special_location(const gchar *path);
+_hildon_file_system_get_special_location(GFile *file);
 
 GdkPixbuf *_hildon_file_system_create_image (GtkFileSystem *fs, 
 					     GtkWidget *ref_widget,
@@ -54,19 +54,18 @@ GdkPixbuf *_hildon_file_system_create_image (GtkFileSystem *fs,
 					     HildonFileSystemSpecialLocation *location,
 					     gint size);
 
-gchar *_hildon_file_system_create_file_name(GtkFileSystem *fs, 
-  const GtkFilePath *path, HildonFileSystemSpecialLocation *location,  
-  GFileInfo *info);
+gchar *_hildon_file_system_create_file_name(GFile *path,
+  HildonFileSystemSpecialLocation *location, GFileInfo *info);
 
 gchar *_hildon_file_system_create_display_name(GtkFileSystem *fs, 
-  const GtkFilePath *path, HildonFileSystemSpecialLocation *location,  
+  GFile *file, HildonFileSystemSpecialLocation *location,
   GFileInfo *info);
 
-gchar *_hildon_file_system_path_for_location(HildonFileSystemSpecialLocation *location);
+GFile *_hildon_file_system_path_for_location(HildonFileSystemSpecialLocation *location);
 
 GtkFileSystemVolume *
-_hildon_file_system_get_volume_for_location(GtkFileSystem *fs, 
-    HildonFileSystemSpecialLocation *location);
+_hildon_file_system_get_volume_for_location(GtkFileSystem *fs,
+					    HildonFileSystemSpecialLocation *location);
 
 gchar *_hildon_file_system_search_extension(gchar *name,
 					    gboolean only_known,
@@ -79,6 +78,24 @@ GdkPixbuf *_hildon_file_system_load_icon_cached(GtkIconTheme *theme,
   const gchar *name, gint size);
 
 char *hildon_file_system_unescape_string (const char *escaped);
+
+#define DEBUG
+
+#ifdef DEBUG
+#define DEBUG_GFILE_URI(fmt, f, ...) { \
+  gchar *___uri___ = g_file_get_uri (f);  \
+  g_warning ("%s "fmt, __FUNCTION__, ___uri___, ##__VA_ARGS__);\
+  g_free (___uri___); \
+  }
+#else
+#define DEBUG_GFILE_URI(f)
+#endif
+
+#define WARN_GFILE_URI(fmt, f, ...) { \
+  gchar *___uri___ = g_file_get_uri (f);  \
+  g_warning (fmt, ___uri___, ##__VA_ARGS__);\
+  g_free (___uri___); \
+  }
 
 G_END_DECLS
 

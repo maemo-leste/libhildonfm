@@ -32,6 +32,7 @@
 #include "hildon-file-common-private.h"
 #include "hildon-file-system-local-device.h"
 #include "hildon-file-system-settings.h"
+#include "hildon-file-system-private.h"
 
 static void
 hildon_file_system_local_device_class_init (HildonFileSystemLocalDeviceClass
@@ -47,7 +48,7 @@ hildon_file_system_local_device_get_display_name (HildonFileSystemSpecialLocatio
 static GCancellable *
 hildon_file_system_local_device_get_folder (HildonFileSystemSpecialLocation *location,
 					    GtkFileSystem *fs,
-					    const GtkFilePath *path,
+					    GFile *file,
 					    const char *attributes,
 					    GtkFileSystemGetFolderCallback callack,
 					    gpointer data);
@@ -144,7 +145,7 @@ hildon_file_system_local_device_get_display_name(
       name = g_strdup (g_getenv ("OSSO_PRODUCT_NAME"));
 
     if (!name)
-      name = g_strdup ("");
+      name = g_strdup (N_("File System"));
 
     return name;
 }
@@ -152,7 +153,7 @@ hildon_file_system_local_device_get_display_name(
 static GCancellable*
 hildon_file_system_local_device_get_folder (HildonFileSystemSpecialLocation *location,
 					    GtkFileSystem *fs,
-					    const GtkFilePath *path,
+					    GFile *file,
 					    const char *attributes,
 					    GtkFileSystemGetFolderCallback callback,
 					    gpointer data)
@@ -183,16 +184,9 @@ hildon_file_system_local_device_get_folder (HildonFileSystemSpecialLocation *loc
 
   return retval;
 #else
-  /* FIXME */
-  GCancellable *rv;
-  GFile *file = g_file_new_for_uri (gtk_file_path_get_string(path));
+  DEBUG_GFILE_URI ("path %s", file);
 
-  g_warning ("%s path %s", __FUNCTION__, path);
-
-  rv = gtk_file_system_get_folder (fs, file, attributes, callback, data);
-  g_object_unref (file);
-
-  return g_object_ref (rv);
+  return gtk_file_system_get_folder (fs, file, attributes, callback, data);
 
 #endif
 }

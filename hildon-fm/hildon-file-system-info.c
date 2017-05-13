@@ -39,7 +39,7 @@ struct _HildonFileSystemInfo
   gboolean free_after_callback;
 
   GtkFileSystem *fs;
-  GtkFilePath *path;
+  GFile *file;
   GFileInfo *info;
   HildonFileSystemSpecialLocation *location;
 
@@ -47,7 +47,7 @@ struct _HildonFileSystemInfo
   GdkPixbuf *icon_cache;
   gint size;
 
-  GtkFileSystemHandle *cancellable;
+  GCancellable *cancellable;
   guint idle_handler_id;
 
   HildonFileSystemInfoCallback callback;
@@ -69,7 +69,7 @@ hildon_file_system_info_free (HildonFileSystemInfo *info)
   if (info->icon_cache)
     g_object_unref(info->icon_cache);
 
-  gtk_file_path_free(info->path);
+  g_object_unref(info->file);
   g_free(info->name_cache);
   g_object_unref(info->fs);
 
@@ -150,7 +150,9 @@ hildon_file_system_info_async_cancel (HildonFileSystemInfoHandle *handle)
     {
       /* get_info_callback takes care of the cleanup.
        */
-      gtk_file_system_cancel_operation (info->cancellable);
+      g_cancellable_cancel (info->cancellable);
+      g_object_unref (info->cancellable);
+      info->cancellable = NULL;
     }
   else if (info->idle_handler_id > 0)
     {
@@ -198,7 +200,7 @@ hildon_file_system_info_async_new (const gchar *uri,
                                    gpointer userdata)
 {
   GtkFileSystem *fs;
-  GtkFilePath *path;
+  GFile *file;
   HildonFileSystemInfo *result;
 
   g_return_val_if_fail (uri != NULL, NULL);
@@ -206,8 +208,8 @@ hildon_file_system_info_async_new (const gchar *uri,
   fs = hildon_file_system_create_backend (NULL, TRUE);
   g_return_val_if_fail (GTK_IS_FILE_SYSTEM(fs), NULL);
 
-  path = gtk_file_system_uri_to_path (fs, uri);
-  if (!path)
+  file = g_file_new_for_uri (uri);
+  if (!file)
     {
       g_object_unref(fs);
       return NULL;
@@ -216,9 +218,9 @@ hildon_file_system_info_async_new (const gchar *uri,
   result = g_slice_new0 (HildonFileSystemInfo);
   result->free_after_callback = TRUE;
   result->fs = fs;
-  result->path = path;
+  result->file = file;
   result->info = NULL;
-  result->location = _hildon_file_system_get_special_location(path);
+  result->location = _hildon_file_system_get_special_location(file);
 
   result->callback = callback;
   result->userdata = userdata;
@@ -234,7 +236,7 @@ hildon_file_system_info_async_new (const gchar *uri,
   else
     {
       result->cancellable =
-        gtk_file_system_get_info (fs, path,
+	gtk_file_system_get_info (fs, file,
 				  "*",
                                   get_info_callback,
                                   result);
@@ -260,7 +262,7 @@ hildon_file_system_info_get_display_name(HildonFileSystemInfo *info)
 
   if (info->name_cache == NULL)
     info->name_cache = _hildon_file_system_create_display_name(info->fs,
-        info->path, info->location, info->info);
+	info->file, info->location, info->info);
 
   return info->name_cache;
 }

@@ -117,18 +117,18 @@ setup_safe_folder(const gchar                   *local_path,
     HildonFileSystemModelItemType type)
 {
     HildonFileSystemSpecialLocation *location;
-    gchar *uri;
+    GFile *file;
     GNode *result = NULL;
 
     g_assert(parent != NULL);
 
-    uri = g_filename_to_uri(local_path, NULL, NULL);
+    file = g_file_new_for_path (local_path);
 
-    if (uri) {
+    if (file) {
         location = g_object_new(HILDON_TYPE_FILE_SYSTEM_SPECIAL_LOCATION, NULL);
         hildon_file_system_special_location_set_icon(location, icon);
         hildon_file_system_special_location_set_display_name(location, title);
-        location->basepath = uri;
+	location->basepath = file;
         location->sort_weight = SORT_WEIGHT_FOLDER;
         location->compatibility_type = type;
         result = g_node_new(location);
@@ -158,11 +158,11 @@ GNode *_hildon_file_system_get_locations(void)
 
         location = g_object_new (HILDON_TYPE_FILE_SYSTEM_SPECIAL_LOCATION, NULL);
 	/* give it a very wrong path to prevent it list the file system layout */
-	location->basepath = g_strdup ("file:///");
+	location->basepath = g_file_new_for_uri ("file:///");
         locations = g_node_new (location);
 
 	virtual_location = g_object_new(HILDON_TYPE_FILE_SYSTEM_ROOT, NULL);
-	virtual_location->basepath = g_strdup ("files:///");
+	virtual_location->basepath = g_file_new_for_uri ("files:///");
 
         virtual_node = g_node_new (virtual_location);
 
@@ -170,7 +170,7 @@ GNode *_hildon_file_system_get_locations(void)
 
         /* Setup local device */
         location = g_object_new(HILDON_TYPE_FILE_SYSTEM_LOCAL_DEVICE, NULL);
-        location->basepath = g_filename_to_uri(rootpath, NULL, NULL);
+	location->basepath = g_file_new_for_path(rootpath);
         rootnode = g_node_new(location);
 
 	g_node_append(locations, virtual_node);
@@ -227,7 +227,7 @@ GNode *_hildon_file_system_get_locations(void)
         env = g_getenv("UPNP_ROOT");
         if (env && env[0]) {
             location = g_object_new(HILDON_TYPE_FILE_SYSTEM_UPNP, NULL);
-            location->basepath = g_strdup(env);
+	    location->basepath = g_file_new_for_uri(env);
             g_node_append_data(/*locations*/virtual_node, location);
         }
 
@@ -235,7 +235,7 @@ GNode *_hildon_file_system_get_locations(void)
 	env = g_getenv("HILDON_FM_OBEX_ROOT");
 	if (env && env[0]) {
 	  location = g_object_new(HILDON_TYPE_FILE_SYSTEM_OBEX, NULL);
-	  location->basepath = g_strdup(env);
+	  location->basepath = g_file_new_for_uri(env);
 	  g_node_append_data(/*locations*/virtual_node, location);
 	}
 
@@ -253,8 +253,7 @@ GNode *_hildon_file_system_get_locations(void)
 }
 
 typedef struct {
-    gchar *uri;
-    gint len_uri;
+    GFile *file;
     HildonFileSystemSpecialLocation *result;
     gboolean is_child;
 } CallbackData;
@@ -262,12 +261,12 @@ typedef struct {
 static HildonFileSystemSpecialLocation *
 create_child_location (HildonFileSystemSpecialLocation *parent_location,
 		       GNode                           *parent,
-		       const gchar                     *uri)
+		       GFile                           *file)
 {
     HildonFileSystemSpecialLocation *location;
 
     location = hildon_file_system_special_location_create_child_location (
-	    parent_location, (gchar *) uri);
+	    parent_location, file);
 
     if (location) {
         g_object_ref (location);
@@ -282,48 +281,40 @@ static gboolean get_special_location_callback(GNode *node, gpointer data)
     HildonFileSystemSpecialLocation *candidate = node->data;
     CallbackData *searched = data;
 
-    if (candidate) {
+    if (candidate)
+      {
         /* Check if the searched uri exactly matches this location OR
           is under this location. It might be a dynamic device in that case */
-        gint len_cand = strlen(candidate->basepath);
 
-        if (len_cand > 1 && candidate->basepath[len_cand - 1] == G_DIR_SEPARATOR)
-          len_cand--;
+	if (g_file_equal (searched->file, candidate->basepath))
+	  {
+	    searched->result = g_object_ref(candidate);
+	    searched->is_child = FALSE;
+	  }
+	else if (g_file_has_prefix (searched->file, candidate->basepath))
+	  {
+	    searched->result = create_child_location (candidate, node, searched->file);
+	    searched->is_child = TRUE;
+	  }
 
-        if (searched->len_uri >= len_cand && g_ascii_strncasecmp(searched->uri,
-                candidate->basepath, len_cand) == 0)
-        {
-            if (searched->len_uri == len_cand) {
-                searched->result = g_object_ref(candidate);
-                searched->is_child = FALSE;
-            } else if (len_cand == 0
-                       || searched->uri[len_cand] == G_DIR_SEPARATOR) {
-		searched->result = create_child_location (candidate, node, searched->uri);
-                searched->is_child = TRUE;
-            }
-
-            return searched->result != NULL;
-        }
-    }
+	return searched->result != NULL;
+      }
 
     return FALSE;
 }
 
 HildonFileSystemSpecialLocation *
-_hildon_file_system_get_special_location(const gchar *path)
+_hildon_file_system_get_special_location(GFile *file)
 {
     CallbackData data;
     GNode *locations;
 
     locations = _hildon_file_system_get_locations();
-    data.uri = g_strdup (gtk_file_path_get_string (path));
+    data.file = file ? g_object_ref (file) : NULL;
     data.result = NULL;
 
-    if (data.uri) {
+    if (data.file) {
         /* Let's precalculate the length for the entire search */
-        data.len_uri = strlen(data.uri);
-        if (data.len_uri > 1 && data.uri[data.len_uri - 1] == G_DIR_SEPARATOR)
-          data.len_uri--;
 
         g_node_traverse(locations, G_POST_ORDER, G_TRAVERSE_ALL, -1,
             get_special_location_callback, &data);
@@ -331,11 +322,11 @@ _hildon_file_system_get_special_location(const gchar *path)
 	if (!data.result) {
 	    /* No matching node found, try to create one */
             data.result = create_child_location (locations->children->data,
-                                                 locations, data.uri);
+						 locations, data.file);
 	    data.is_child = TRUE;
         }
 
-        g_free(data.uri);
+	g_object_unref (data.file);
     }
 
     if (data.result)
@@ -499,24 +490,23 @@ _hildon_file_system_create_image (GtkFileSystem *fs,
       return NULL;
 }
 
-static const gchar *get_custom_root_name(const GtkFilePath *path)
+static const gchar *get_custom_root_name(const gchar *path)
 {
-  const gchar *s, *name;
+  const gchar *name;
   gssize len;
 
   g_assert(path != NULL);
-  s = gtk_file_path_get_string(path);
-  len = strlen(s);
+  len = strlen(path);
 
   while (TRUE)
   {
-    name = g_strrstr_len(s, len, "/");
+    name = g_strrstr_len(path, len, "/");
 
     if (!name)
-      return s;
+      return path;
     if (name[1] != 0)
       return &name[1];  /* This looks weird, but is safe */
-    len = name - s;
+    len = name - path;
   }
 }
 
@@ -578,8 +568,7 @@ translate_special_name (char *name)
 }
 
 gchar *
-_hildon_file_system_create_file_name (GtkFileSystem *fs,
-                                      const GtkFilePath *path,
+_hildon_file_system_create_file_name (GFile *file,
                                       HildonFileSystemSpecialLocation *location,
 				      GFileInfo *info)
 {
@@ -592,27 +581,33 @@ _hildon_file_system_create_file_name (GtkFileSystem *fs,
   if (name == NULL && info)
     name = g_strdup (g_file_info_get_display_name (info));
 
-  g_warning ("%s info name %s", __FUNCTION__, name);
-
   if (name == NULL)
-    name = hildon_file_system_unescape_string (get_custom_root_name (path));
+    {
+      gchar *path = g_file_get_path (file);
+      if (!path)
+	path = g_strdup("UNKNOWN");
+
+      name = hildon_file_system_unescape_string (get_custom_root_name (path));
+      g_free (path);
+    }
 
   rv = translate_special_name (name);
 
-  g_warning ("%s path %s->name %s info %p", __FUNCTION__, path, rv, info);
+  DEBUG_GFILE_URI ("path %s->name %s info %p", file, rv, info);
+
   return rv;
 }
 
 gchar *
 _hildon_file_system_create_display_name(GtkFileSystem *fs,
-  const GtkFilePath *path, HildonFileSystemSpecialLocation *location,
+  GFile *file, HildonFileSystemSpecialLocation *location,
   GFileInfo *info)
 {
   gboolean only_known, is_folder;
   const gchar *mime_type;
   gchar *str, *dot;
 
-  str = _hildon_file_system_create_file_name(fs, path, location, info);
+  str = _hildon_file_system_create_file_name(file, location, info);
 
   if (info)
   {
@@ -657,25 +652,19 @@ _hildon_file_system_create_display_name(GtkFileSystem *fs,
   return str;
 }
 
-gchar *_hildon_file_system_path_for_location(
+GFile *_hildon_file_system_path_for_location(
     HildonFileSystemSpecialLocation *location)
 {
-  GFile *file;
-  gchar *path;
-
   g_assert(HILDON_IS_FILE_SYSTEM_SPECIAL_LOCATION(location));
 
-  file = g_file_new_for_uri(location->basepath);
-  path = g_file_get_uri(file);
-  g_object_unref(file);
-
-  return path;
+  return g_object_ref (location->basepath);
 }
 
 /* You can omit either type or base */
+/* FIXME */
 GtkFileSystemVolume *
-_hildon_file_system_get_volume_for_location(GtkFileSystem *fs,
-    HildonFileSystemSpecialLocation *location)
+_hildon_file_system_get_volume_for_location(
+    GtkFileSystem *fs, HildonFileSystemSpecialLocation *location)
 {
     GSList *volumes, *iter;
     gchar *mount_path, *path;

@@ -145,7 +145,7 @@ gboolean hildon_file_system_model_search_uri(HildonFileSystemModel * model,
 #ifndef HILDON_DISABLE_DEPRECATED
 gboolean hildon_file_system_model_search_path(HildonFileSystemModel *
                                               model,
-                                              const GtkFilePath * path,
+					      const GtkFilePath * path,
                                               GtkTreeIter * iter,
                                               GtkTreeIter * start_iter,
                                               gboolean recursive);

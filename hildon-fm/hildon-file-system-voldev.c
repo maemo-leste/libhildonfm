@@ -201,8 +201,8 @@ hildon_file_system_voldev_is_visible (HildonFileSystemSpecialLocation *location,
   else
     voldev->used_over_usb = value;
 
-  g_debug("%s type: %d, used_over_usb: %d", location->basepath,
-               voldev->vol_type, voldev->used_over_usb);
+  DEBUG_GFILE_URI("%s type: %d, used_over_usb: %d", location->basepath,
+		  voldev->vol_type, voldev->used_over_usb);
 
   if (voldev->mount && !voldev->used_over_usb && !cover_open)
     visible = TRUE;
@@ -222,11 +222,12 @@ hildon_file_system_voldev_is_visible (HildonFileSystemSpecialLocation *location,
 }
 
 static GVolume *
-find_volume (const char *device)
+find_volume (GFile *file)
 {
   GVolumeMonitor *monitor;
   GList *volumes, *v;
   GVolume *volume = NULL;
+  gchar *path = g_file_get_path (file);
 
   monitor = g_volume_monitor_get ();
   volumes = g_volume_monitor_get_volumes (monitor);
@@ -237,7 +238,7 @@ find_volume (const char *device)
       gchar *id =
           g_volume_get_identifier (vol, G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE);
 
-      if (id && !strcmp (device, id))
+      if (id && !strcmp (path, id))
         {
           volume = vol;
           g_object_ref (volume);
@@ -248,6 +249,7 @@ find_volume (const char *device)
       g_free (id);
     }
 
+  g_free (path);
   g_list_foreach (volumes, (GFunc) g_object_unref, NULL);
   g_list_free (volumes);
   g_object_unref (monitor);
@@ -407,7 +409,7 @@ hildon_file_system_voldev_volumes_changed (HildonFileSystemSpecialLocation
     }
 
   if (g_str_has_prefix (location->basepath, "drive://"))
-    voldev->volume = find_volume (location->basepath + 8);
+    voldev->volume = find_volume (location->basepath);
   else
     voldev->mount = find_mount (location->basepath);
 

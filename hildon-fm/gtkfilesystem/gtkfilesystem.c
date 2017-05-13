@@ -548,16 +548,16 @@ gtk_file_system_get_folder (GtkFileSystem                  *file_system,
 
 GCancellable *
 gtk_file_system_get_info (GtkFileSystem *file_system,
-			  const GtkFilePath *path,
+			  GFile *file,
 			  const char *attributes,
 			  GtkFileSystemGetInfoCallback callback,
 			  gpointer data)
 {
   g_return_val_if_fail (GTK_IS_FILE_SYSTEM (file_system), NULL);
-  g_return_val_if_fail (path != NULL, NULL);
+  g_return_val_if_fail (file != NULL, NULL);
   g_return_val_if_fail (callback != NULL, NULL);
 
-  return GTK_FILE_SYSTEM_GET_IFACE (file_system)->get_info (file_system, path, attributes, callback, data);
+  return GTK_FILE_SYSTEM_GET_IFACE (file_system)->get_info (file_system, file, attributes, callback, data);
 }
 
 GCancellable *
@@ -955,15 +955,15 @@ gtk_file_system_filename_to_path (GtkFileSystem *file_system,
  **/
 gboolean
 gtk_file_system_path_is_local (GtkFileSystem     *file_system,
-			       const GtkFilePath *path)
+			       GFile *file)
 {
   gchar *filename;
   gboolean result;
     
   g_return_val_if_fail (GTK_IS_FILE_SYSTEM (file_system), FALSE);
-  g_return_val_if_fail (path != NULL, FALSE);
+  g_return_val_if_fail (file != NULL, FALSE);
 
-  filename = gtk_file_system_path_to_filename (file_system, path);
+  filename = g_file_get_path (file);
   result = filename != NULL;
   g_free (filename);
 
@@ -1200,14 +1200,12 @@ gtk_file_folder_list_children (GtkFolder    *folder,
 }
 
 GFileInfo *
-gtk_file_folder_get_info (GtkFolder     *folder,
-			  const GtkFilePath *path,
-			  GError           **error)
+gtk_file_folder_get_info (GtkFolder *folder,
+			  GFile *file)
 {
   g_return_val_if_fail (GTK_IS_FOLDER (folder), NULL);
-  g_return_val_if_fail (error == NULL || *error == NULL, NULL);
 
-  return GTK_FOLDER_GET_IFACE (folder)->get_info (folder, path, error);
+  return GTK_FOLDER_GET_IFACE (folder)->get_info (folder, file);
 }
 
 gboolean
