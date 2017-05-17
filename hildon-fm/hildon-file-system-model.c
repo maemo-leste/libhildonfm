@@ -379,8 +379,8 @@ static void handle_load_error(GNode *node)
      XXX - Gtk+ 2.10 doesn't have ERROR_TIMEOUT anymore.  Is
            ERROR_FAILED equivalent?
   */
-  if (g_error_matches (model_node->error, GTK_FILE_SYSTEM_ERROR,
-                       GTK_FILE_SYSTEM_ERROR_FAILED))
+  if (g_error_matches (model_node->error, G_IO_ERROR,
+		       G_IO_ERROR_TIMED_OUT))
   {
     GNode *device_node = get_device_for_node(node);
     if (device_node)
@@ -399,7 +399,7 @@ static void handle_load_error(GNode *node)
     emit_node_changed(node);
   }
   else if (g_error_matches(model_node->error,
-      GTK_FILE_SYSTEM_ERROR, GTK_FILE_SYSTEM_ERROR_NONEXISTENT))
+      GTK_FILE_CHOOSER_ERROR, GTK_FILE_CHOOSER_ERROR_NONEXISTENT))
     /* No longer present, we remove this node totally */
     hildon_file_system_model_kick_node(node, model_node->model);
   else /* Some other error, we represent this as disabled */

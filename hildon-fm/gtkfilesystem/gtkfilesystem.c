@@ -48,12 +48,6 @@ struct _GtkFileInfo
 static void gtk_file_system_base_init (gpointer g_class);
 static void gtk_file_folder_base_init (gpointer g_class);
 
-GQuark
-gtk_file_system_error_quark (void)
-{
-  return g_quark_from_static_string ("gtk-file-system-error-quark");
-}
-
 /*****************************************
  *             GtkFileInfo               *
  *****************************************/
@@ -760,12 +754,12 @@ gtk_file_system_make_path (GtkFileSystem    *file_system,
  * to enforce the interpretation as a folder name.
  *
  * If parsing fails because the syntax of @str is not understood,
- * and error of type GTK_FILE_SYSTEM_ERROR_BAD_FILENAME will
+ * and error of type GTK_FILE_CHOOSER_ERROR_BAD_FILENAME will
  * be set in @error and %FALSE returned.
  *
  * If parsing fails because a path was encountered that doesn't
  * exist on the filesystem, then an error of type
- * %GTK_FILE_SYSTEM_ERROR_NONEXISTENT will be set in @error
+ * %GTK_FILE_CHOOSER_ERROR_NONEXISTENT will be set in @error
  * and %FALSE returned. (This only applies to parsing relative paths,
  * not to interpretation of @file_part. No check is made as
  * to whether @file_part exists.)
@@ -915,7 +909,7 @@ gtk_file_system_insert_bookmark (GtkFileSystem     *file_system,
  * Removes a bookmark folder from the user's bookmarks list.  If the operation
  * succeeds, the "bookmarks_changed" signal will be emitted.  If you try to remove
  * a @path which does not exist in the bookmarks list, the operation will fail
- * and the @error will be set to GTK_FILE_SYSTEM_ERROR_NONEXISTENT.
+ * and the @error will be set to GTK_FILE_CHOOSER_ERROR_NONEXISTENT.
  * 
  * Return value: TRUE if the operation succeeds, FALSE otherwise.  In the latter
  * case, the @error value will be set.

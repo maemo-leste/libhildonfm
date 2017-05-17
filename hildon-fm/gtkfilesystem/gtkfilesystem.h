@@ -50,26 +50,6 @@ typedef enum {
   GTK_FILE_INFO_ALL               = (1 << 7) - 1
 } GtkFileInfoType;
 
-/* GError enumeration for GtkFileSystem
- */
-
-#define GTK_FILE_SYSTEM_ERROR (gtk_file_system_error_quark ())
-
-typedef enum
-{
-  GTK_FILE_SYSTEM_ERROR_NONEXISTENT,
-  GTK_FILE_SYSTEM_ERROR_NOT_FOLDER,
-  GTK_FILE_SYSTEM_ERROR_INVALID_URI,
-  GTK_FILE_SYSTEM_ERROR_BAD_FILENAME,
-  GTK_FILE_SYSTEM_ERROR_FAILED,
-  GTK_FILE_SYSTEM_ERROR_ALREADY_EXISTS
-#ifdef MAEMO_CHANGES
-  , GTK_FILE_SYSTEM_ERROR_TIMEOUT
-#endif /* MAEMO_CHANGES */
-} GtkFileSystemError;
-
-GQuark     gtk_file_system_error_quark      (void);
-
 /* Boxed-type for gtk_file_folder_get_info() results
  */
 #define GTK_TYPE_FILE_INFO (gtk_file_info_get_type ())

@@ -366,8 +366,8 @@ hildon_file_system_info_new (const gchar *uri, GError **error)
                NULL.
       */
       g_set_error (error,
-                   GTK_FILE_SYSTEM_ERROR,
-                   GTK_FILE_SYSTEM_ERROR_INVALID_URI,
+		   GTK_FILE_CHOOSER_ERROR,
+		   GTK_FILE_CHOOSER_ERROR_BAD_FILENAME,
                    "Invalid uri: %s", uri);
       return NULL;
     }

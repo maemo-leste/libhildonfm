@@ -1440,8 +1440,8 @@ static void create_folder_callback(GCancellable *cancellable,
     dialog = GTK_DIALOG(self);
 
     if (error) {
-        if (g_error_matches(error, GTK_FILE_SYSTEM_ERROR,
-			    GTK_FILE_SYSTEM_ERROR_ALREADY_EXISTS))
+	if (g_error_matches(error, GTK_FILE_CHOOSER_ERROR,
+			    GTK_FILE_CHOOSER_ERROR_ALREADY_EXISTS))
             message = HCS("ckdg_ib_folder_already_exists");
         else
             message = HCS("sfil_ni_operation_failed");
