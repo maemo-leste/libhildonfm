@@ -58,7 +58,7 @@ typedef struct _HildonFileSystemSpecialLocationClass
 struct _HildonFileSystemSpecialLocation
 {
     GObject parent_instance;
-    gpointer basepath;    /* GVolume, GDrive or GMount */
+    GFile *basepath;    /* Path as uri */
     gchar *fixed_icon;  /* Icon name as string. NULL for no fixed icon */
     gchar *fixed_title; /* Text for fixed display name as string */
     const gchar *failed_access_message; /* Default failed accessa message */
@@ -87,15 +87,15 @@ struct _HildonFileSystemSpecialLocationClass
   void (*volumes_changed) (HildonFileSystemSpecialLocation *location);
 
   GCancellable *(*get_folder)  (HildonFileSystemSpecialLocation *location,
-				GtkFileSystem                   *file_system,
-				GFile                           *file,
-				const gchar                     *attributes,
-				GtkFileSystemGetFolderCallback   callback,
-				gpointer                         data);
-
-  GtkFilePath *(*rewrite_path) (HildonFileSystemSpecialLocation *location,
 				GtkFileSystem                  *file_system,
-				const GtkFilePath              *path);
+				GFile                          *file,
+				const gchar                    *attributes,
+				GtkFileSystemGetFolderCallback  callback,
+				gpointer                        data);
+
+  GFile *(*rewrite_path) (HildonFileSystemSpecialLocation *location,
+			  GtkFileSystem                  *file_system,
+			  GFile                          *file);
 
   /* signals */
   void (*changed) (GObject *obj);
@@ -155,7 +155,8 @@ gboolean hildon_file_system_special_location_failed_access (HildonFileSystemSpec
    BASEPATH of LOCATION is guaranteed to be a prefix of URI.
 */
 HildonFileSystemSpecialLocation *
-hildon_file_system_special_location_create_child_location (HildonFileSystemSpecialLocation *location, GFile *uri);
+hildon_file_system_special_location_create_child_location (HildonFileSystemSpecialLocation *location,
+							   GFile *file);
 
 #ifndef HILDON_DISABLE_DEPRECATED
 void
@@ -163,7 +164,7 @@ hildon_file_system_special_location_volumes_changed (HildonFileSystemSpecialLoca
 
 GCancellable *hildon_file_system_special_location_get_folder(HildonFileSystemSpecialLocation *location,
 						GtkFileSystem                  *file_system,
-						GFile *file,
+						GFile                          *path,
 						const char *attributes,
 						GtkFileSystemGetFolderCallback  callback,
 						gpointer                        data);
@@ -180,9 +181,9 @@ void hildon_file_system_special_location_set_display_name (HildonFileSystemSpeci
 void hildon_file_system_special_location_set_icon (HildonFileSystemSpecialLocation *location, const gchar *icon_name);
 
 #ifndef HILDON_DISABLE_DEPRECATED
-GFile *hildon_file_system_special_location_rewrite_path(HildonFileSystemSpecialLocation *location,
-							       GtkFileSystem                  *file_system,
-							       GFile *file);
+GFile *hildon_file_system_special_location_rewrite_path (HildonFileSystemSpecialLocation *location,
+							 GtkFileSystem                  *file_system,
+							 GFile                          *file);
 #endif
 
 G_END_DECLS

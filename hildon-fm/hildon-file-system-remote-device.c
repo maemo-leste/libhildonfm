@@ -121,7 +121,8 @@ flightmode_changed (GObject *settings, GParamSpec *param, gpointer data)
 
     g_object_get (settings, "flight-mode", &device->accessible, NULL);
     device->accessible = !device->accessible;
-    if (was_accessible && !device->accessible && !g_ascii_strcasecmp(HILDON_FILE_SYSTEM_SPECIAL_LOCATION(device)->basepath, "obex://")) {
+    if (was_accessible && !device->accessible &&
+	g_file_has_uri_scheme(HILDON_FILE_SYSTEM_SPECIAL_LOCATION(device)->basepath, "obex")) {
             //we want a Bluetooth folder be accessible in flight mode but not any of its children
             device->accessible = TRUE;
     }

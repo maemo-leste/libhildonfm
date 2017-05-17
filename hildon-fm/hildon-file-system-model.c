@@ -264,6 +264,11 @@ handle_finished_node (GNode *node)
     {
       HildonFileSystemModelNode *model_node = child_node->data;
 
+      DEBUG_GFILE_URI("!!!!!!!!!!!!! TRYING %s present_flag %d location %p permanent %d linking %d",
+		      model_node->file, model_node->present_flag,
+		      model_node->location, model_node->location ? model_node->location->permanent : 0,
+		      model_node->linking);
+
       /* We do not want to ever kick permanent special locations. */
       
       if (model_node->present_flag
@@ -478,7 +483,6 @@ node_needs_reload (HildonFileSystemModel *model, GNode *node,
               && (removable || model_node->error)));
 }
 
-
 static GNode *get_node(HildonFileSystemModelPrivate * priv,
                        GtkTreeIter * iter)
 {
@@ -613,7 +617,7 @@ static GdkPixbuf
 static gboolean
 is_drive (HildonFileSystemModelNode *m)
 {
-  return g_file_has_uri_scheme (m->file, "drive://");
+  return g_file_has_uri_scheme (m->file, "drive");
 }
 
 static gboolean
@@ -1693,11 +1697,15 @@ hildon_file_system_model_search_path_internal (GNode *parent_node,
 
     /* First consider the parent itself.
      */
+
+    DEBUG_GFILE_URI("file %s", file);
     if (model_node)
       {
-
 	if (g_file_equal (file, model_node->file))
-          return parent_node;
+	  {
+	    DEBUG_GFILE_URI("FOUND %s", model_node->file);
+	  return parent_node;
+	  }
       }
 
     for (node = g_node_first_child(parent_node); node;
@@ -1706,7 +1714,10 @@ hildon_file_system_model_search_path_internal (GNode *parent_node,
         model_node = node->data;
 
 	if (g_file_equal (file, model_node->file))
+	  {
+	    DEBUG_GFILE_URI("FOUND %s", model_node->file);
 	  return node;
+	  }
 
         if (recursively) {
             /* Allways peek into devices, since they can include different
@@ -1752,6 +1763,7 @@ unlink_file_folder(GNode *node)
 
   if (model_node->cancellable)
     {
+      DEBUG_GFILE_URI("!!!!!! CANCEL %s %p", model_node->file, model_node->cancellable);
       g_cancellable_cancel (model_node->cancellable);
       g_object_unref (model_node->cancellable);
       model_node->cancellable = NULL;
@@ -1808,6 +1820,11 @@ get_folder_callback (GCancellable *cancellable,
   GNode *node;
   g_object_unref (cancellable);
 
+  node = handle_data->node;
+  model_node = (HildonFileSystemModelNode *) node->data;
+
+  g_warning("%s folder %p model_node->cancellable %p cancellable %p cancelled %d ", __FUNCTION__, folder, model_node->cancellable, cancellable, cancelled);
+
   /* When the operation has been cancelled, handle_data->node is no
      longer valid.
    */
@@ -1818,12 +1835,13 @@ get_folder_callback (GCancellable *cancellable,
       return;
     }
 
-  node = handle_data->node;
-  model_node = (HildonFileSystemModelNode *) node->data;
+
   model = model_node->model;
 
-  DEBUG_GFILE_URI ("%s %p", model_node->file, folder);
+  DEBUG_GFILE_URI ("LINKING FALSE %s %p", model_node->file, folder);
 
+  if (model_node->cancellable)
+    g_object_unref(model_node->cancellable);
   model_node->cancellable = NULL;
   model_node->folder = folder ? g_object_ref(folder) : NULL;
   model_node->error = error? g_error_copy (error) : NULL;
@@ -1943,8 +1961,7 @@ link_file_folder (GNode *node, GFile *file)
 
   model_node->load_time = time(NULL);
   model_node->linking = TRUE;
-
-  DEBUG_GFILE_URI("%s", file);
+  DEBUG_GFILE_URI ("LINKING TRUE %s", model_node->file);
 
   if (!model_node->file)
     model_node->file = g_object_ref(file);
@@ -1972,11 +1989,11 @@ link_file_folder (GNode *node, GFile *file)
   if (model_node->location)
     {
       model_node->cancellable =
-        hildon_file_system_special_location_get_folder
-          (model_node->location,
-           model->priv->filesystem,
-	   file, "*",
-           get_folder_callback, handle_data);
+	  hildon_file_system_special_location_get_folder(
+	    model_node->location,
+	    model->priv->filesystem,
+	    file, "*",
+	    get_folder_callback, handle_data);
     }
   else
     {
@@ -1988,6 +2005,8 @@ link_file_folder (GNode *node, GFile *file)
 
   if (model_node->cancellable == NULL)
     {
+      DEBUG_GFILE_URI ("LINKING FALSE %s", model_node->file);
+
       model_node->linking = FALSE;
       free_handle_data (handle_data);
       return FALSE;
@@ -2127,7 +2146,7 @@ static void real_volumes_changed(GtkFileSystem *fs, gpointer data)
 
     g_node_traverse(priv->roots,
             G_PRE_ORDER, G_TRAVERSE_ALL, -1,
-            notify_volumes_changed, fs);
+	    notify_volumes_changed, fs);
 }
 
 static GNode *
@@ -2178,11 +2197,11 @@ hildon_file_system_model_add_node (GtkTreeModel * model,
          after we first time use it. This is *not good*, because it
          places "garbage list" info processing queue and rest of
          the model believes that model is loading. See bug #14040. */
-        g_signal_handlers_block_by_func(parent_folder,
-          hildon_file_system_model_files_added, model);
+	g_signal_handlers_block_by_func(parent_folder,
+	  hildon_file_system_model_files_added, model);
 	file_info = gtk_file_folder_get_info(parent_folder, file);
-        g_signal_handlers_unblock_by_func(parent_folder,
-          hildon_file_system_model_files_added, model);
+	g_signal_handlers_unblock_by_func(parent_folder,
+	  hildon_file_system_model_files_added, model);
 
         /* If file is created and then renamed it can happen that file
          * with this name no longer exists. */
@@ -2210,7 +2229,7 @@ hildon_file_system_model_add_node (GtkTreeModel * model,
 	    if (model_node->info)
 	      g_object_unref (model_node->info);
 	    model_node->info = file_info;
-	    gtk_file_path_free (real_file);
+	    g_object_unref (real_file);
             return node;
         }
     }
@@ -2859,7 +2878,7 @@ create_model_node_for_location(HildonFileSystemModel *self,
         model_node->location = g_object_ref(location);
 
         /* Let the location to initialize it's state */
-        hildon_file_system_special_location_volumes_changed(location);
+	hildon_file_system_special_location_volumes_changed(location);
 
     } else {
 	DEBUG_GFILE_URI("BASE LOCATION: %s FAILED => SKIPPING",

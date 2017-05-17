@@ -283,7 +283,7 @@ hildon_file_system_special_location_failed_access (
 
 HildonFileSystemSpecialLocation*
 hildon_file_system_special_location_create_child_location (
-		HildonFileSystemSpecialLocation *location, GFile *uri)
+		HildonFileSystemSpecialLocation *location, GFile *file)
 {
     HildonFileSystemSpecialLocationClass *klass;
 
@@ -293,7 +293,7 @@ hildon_file_system_special_location_create_child_location (
     klass = HILDON_FILE_SYSTEM_SPECIAL_LOCATION_GET_CLASS (location);
 
     if (klass->create_child_location)
-        return klass->create_child_location (location, uri);
+	return klass->create_child_location (location, file);
 
     return NULL;
 }
@@ -309,7 +309,7 @@ hildon_file_system_special_location_volumes_changed (
     klass = HILDON_FILE_SYSTEM_SPECIAL_LOCATION_GET_CLASS (location);
 
     if (klass->volumes_changed)
-        return klass->volumes_changed (location);
+	return klass->volumes_changed (location);
 }
 
 GCancellable *
@@ -337,17 +337,12 @@ hildon_file_system_special_location_get_folder
                                 data);
     else
       {
-	/* FIXME */
-	GCancellable *rv;
+	return gtk_file_system_get_folder (file_system,
+					   file,
+					   attributes,
+					   callback,
+					   data);
 
-	rv = gtk_file_system_get_folder (file_system,
-					 file,
-					 attributes,
-					 callback,
-					 data);
-	g_object_unref (file);
-
-	return rv;
       }
 }
 

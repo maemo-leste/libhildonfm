@@ -43,7 +43,7 @@ hildon_file_system_root_init (HildonFileSystemRoot *device);
 
 static void
 hildon_file_system_root_volumes_changed (HildonFileSystemSpecialLocation
-                                        *location, GtkFileSystem *fs);
+					*location);
 
 static GCancellable *hildon_file_system_root_get_folder(HildonFileSystemSpecialLocation *location,
                                     GtkFileSystem                *filesystem,
@@ -83,7 +83,7 @@ hildon_file_system_root_init (HildonFileSystemRoot *device)
 
 static void
 hildon_file_system_root_volumes_changed (HildonFileSystemSpecialLocation
-                                        *location, GtkFileSystem *fs)
+					*location)
 {
   g_signal_emit_by_name (location, "rescan");
 }
@@ -146,8 +146,7 @@ static void root_file_folder_init (RootFileFolder *impl);
 static void root_file_folder_finalize (GObject *object);
 
 static GFileInfo *root_file_folder_get_info(GtkFolder  *folder,
-					    GFile      *path,
-					    GError    **error);
+					    GFile      *file);
 static gboolean root_file_folder_list_children (GtkFolder  *folder,
                                               GSList        **children,
                                               GError        **error);
@@ -192,17 +191,15 @@ root_file_folder_finalize (GObject *object)
 }
 
 static GFileInfo *
-root_file_folder_get_info (GtkFolder      *folder,
-			   GFile *path,
-                           GError            **error)
+root_file_folder_get_info (GtkFolder *folder,
+			   GFile     *file)
 {
-  /* FIXME */
   GFileInfo *info = g_file_info_new ();
-  gchar *basename = g_path_get_basename (gtk_file_path_get_string (path));
+  gchar *basename = g_file_get_basename (file);
 
   /* XXX - maybe provide more detail...
    */
-  g_warning ("%s path %s basename %s", __FUNCTION__, path, basename);
+  DEBUG_GFILE_URI ("path %s basename %s", file, basename);
   g_file_info_set_display_name (info, basename);
   g_free (basename);
   g_file_info_set_file_type (info, G_FILE_TYPE_DIRECTORY);
@@ -216,43 +213,54 @@ root_file_folder_list_children (GtkFolder  *folder,
                                 GError        **error)
 {
   RootFileFolder *root_folder = ROOT_FILE_FOLDER (folder);
+  GSList *volumes = gtk_file_system_list_volumes (root_folder->filesystem);
+  GSList *l;
 
-  GVolumeMonitor *monitor;
-  GList *mounts, *m, *volumes, *v;
+  *error = NULL;
 
-  monitor = g_volume_monitor_get ();
-  *children = NULL;
-  mounts = g_volume_monitor_get_mounts (monitor);
+  g_warning ("root_file_folder_list_children");
 
-  for (m = mounts; m; m = m->next)
+  for (l = volumes; l; l = l->next)
     {
-      GMount *mount = m->data;
-      GFile *root = g_mount_get_root (mount);
+      if (G_IS_MOUNT (l->data))
+	*children = g_slist_append (*children, g_mount_get_root (l->data));
+      else
+	{
+	  char *id, *uri;
 
-      *children = g_slist_append (*children, root);
+	  if (G_IS_VOLUME (l->data))
+	    {
+	      GMount *mount = g_volume_get_mount (l->data);
+
+	      /* Do not add mounted volumes, we already have them as GMount */
+	      if (mount)
+		{
+		  g_object_unref (mount);
+		  continue;
+		}
+
+	      id = g_volume_get_identifier (
+		     l->data, G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE);
+	    }
+	  else
+	    {
+	      g_assert (G_IS_DRIVE (l->data));
+
+	      id = g_drive_get_identifier (
+		     l->data, G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE);
+	    }
+
+	  uri = g_strdup_printf ("drive://%s", id);
+	  g_free (id);
+	  *children = g_slist_append (*children, g_file_new_for_uri (uri));
+	  g_free (uri);
+	}
+
+      DEBUG_GFILE_URI ("!!!!!!!!!!!!!!!!!!!!!!ADD %s", g_slist_last(*children)->data);
+      g_object_unref (l->data);
     }
 
-  g_list_foreach (mounts, (GFunc) g_object_unref, NULL);
-  g_list_free (mounts);
-
-#if 0
-  /* FIXME: do we really need to duplicate mounts with volumes? */
-  volumes = g_volume_monitor_get_volumes (monitor);
-
-  for (v = volumes; v; v = v->next)
-    {
-      GVolume *volume = v->data;
-
-      char *id = g_volume_get_identifier (volume,
-					  G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE);
-      *children = g_slist_append (*children, g_file_new_for_uri (id));
-      g_free (id);
-    }
-
-  g_list_foreach (volumes, (GFunc) g_object_unref, NULL);
-  g_list_free (volumes);
-#endif
-  g_object_unref (monitor);
+  g_slist_free (volumes);
 
   return TRUE;
 }
@@ -298,11 +306,13 @@ hildon_file_system_root_get_folder (HildonFileSystemSpecialLocation *location,
   root_folder->root = HILDON_FILE_SYSTEM_ROOT (location);
   g_object_ref (location);
 
-  clos->cancellable = cancellable;
+  clos->cancellable = g_object_ref (cancellable);
   clos->root_folder = root_folder;
   clos->callback = callback;
   clos->data = data;
 
   g_idle_add (deliver_get_folder_callback, clos);
+  g_warning("%s %p", __FUNCTION__, cancellable);
+
   return cancellable;
 }

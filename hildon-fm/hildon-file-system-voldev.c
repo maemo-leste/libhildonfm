@@ -49,12 +49,22 @@ hildon_file_system_voldev_init (HildonFileSystemVoldev *device);
 
 static void
 hildon_file_system_voldev_volumes_changed (HildonFileSystemSpecialLocation
-                                           *location, GtkFileSystem *fs);
+					   *location);
 
 static char *
 hildon_file_system_voldev_get_extra_info (HildonFileSystemSpecialLocation
 					  *location);
-static void init_vol_type (const char *path,
+static GCancellable *
+hildon_file_system_voldev_get_folder (HildonFileSystemSpecialLocation *location,
+				      GtkFileSystem                   *filesystem,
+				      GFile                           *file,
+				      const char                      *attributes,
+				      GtkFileSystemGetFolderCallback   callback,
+				      gpointer                         data);
+static gboolean
+hildon_file_system_voldev_is_available (HildonFileSystemSpecialLocation *location);
+
+static void init_vol_type (GFile *file,
                            HildonFileSystemVoldev *voldev);
 
 G_DEFINE_TYPE (HildonFileSystemVoldev,
@@ -115,6 +125,8 @@ hildon_file_system_voldev_class_init (HildonFileSystemVoldevClass *klass)
     location->is_visible = hildon_file_system_voldev_is_visible;
     location->volumes_changed = hildon_file_system_voldev_volumes_changed;
     location->get_extra_info = hildon_file_system_voldev_get_extra_info;
+    location->get_folder = hildon_file_system_voldev_get_folder;
+    location->is_available = hildon_file_system_voldev_is_available;
 
     klass->gconf = gconf_client_get_default ();
     gconf_client_add_dir (klass->gconf, GCONF_PATH,
@@ -176,21 +188,25 @@ hildon_file_system_voldev_is_visible (HildonFileSystemSpecialLocation *location,
   if (!voldev->vol_type_valid)
     init_vol_type (location->basepath, voldev);
 
-  if (voldev->vol_type == INT_CARD) {
-    value = gconf_client_get_bool (klass->gconf,
-                                   USED_OVER_USB_INTERNAL_KEY, &error);
-    corrupted = gconf_client_get_bool (klass->gconf,
-				       CORRUPTED_INTERNAL_MMC_KEY, &error);
-    cover_open = gconf_client_get_bool (klass->gconf,
-				        OPEN_INTERNAL_MMC_COVER_KEY, &error);
-  } else if (voldev->vol_type == EXT_CARD) {
-    value = gconf_client_get_bool (klass->gconf,
-                                   USED_OVER_USB_KEY, &error);
-    corrupted = gconf_client_get_bool (klass->gconf,
-				       CORRUPTED_MMC_KEY, &error);
-    cover_open = gconf_client_get_bool (klass->gconf,
-				        OPEN_MMC_COVER_KEY, &error);
-  } else
+  if (voldev->vol_type == INT_CARD)
+    {
+      value = gconf_client_get_bool (klass->gconf,
+				     USED_OVER_USB_INTERNAL_KEY, &error);
+      corrupted = gconf_client_get_bool (klass->gconf,
+					 CORRUPTED_INTERNAL_MMC_KEY, &error);
+      cover_open = gconf_client_get_bool (klass->gconf,
+					  OPEN_INTERNAL_MMC_COVER_KEY, &error);
+    }
+  else if (voldev->vol_type == EXT_CARD)
+    {
+      value = gconf_client_get_bool (klass->gconf,
+				     USED_OVER_USB_KEY, &error);
+      corrupted = gconf_client_get_bool (klass->gconf,
+					 CORRUPTED_MMC_KEY, &error);
+      cover_open = gconf_client_get_bool (klass->gconf,
+					  OPEN_MMC_COVER_KEY, &error);
+    }
+  else
     value = corrupted = cover_open = FALSE; /* USB_STORAGE */
 
   if (error)
@@ -206,13 +222,16 @@ hildon_file_system_voldev_is_visible (HildonFileSystemSpecialLocation *location,
 
   if (voldev->mount && !voldev->used_over_usb && !cover_open)
     visible = TRUE;
-  else if (voldev->volume && voldev->vol_type == USB_STORAGE)
-    visible = FALSE; /* USB drives are never visible */ /* fmg - WHY? */
-  else if (voldev->volume && !voldev->used_over_usb && !cover_open)
+  else if (voldev->volume &&
+	   ((!voldev->used_over_usb && !cover_open) ||
+	    voldev->vol_type == USB_STORAGE))
   {
     GMount *mount = g_volume_get_mount (voldev->volume);
 
-    visible = (g_volume_can_mount (voldev->volume) && !mount && corrupted);
+    if (voldev->vol_type == USB_STORAGE)
+      visible =  !mount && g_volume_can_mount (voldev->volume);
+    else
+      visible = !mount && g_volume_can_mount (voldev->volume) && corrupted;
 
     if (mount)
       g_object_unref (mount);
@@ -227,7 +246,7 @@ find_volume (GFile *file)
   GVolumeMonitor *monitor;
   GList *volumes, *v;
   GVolume *volume = NULL;
-  gchar *path = g_file_get_path (file);
+  gchar *path = g_file_get_uri (file);
 
   monitor = g_volume_monitor_get ();
   volumes = g_volume_monitor_get_volumes (monitor);
@@ -237,16 +256,19 @@ find_volume (GFile *file)
       GVolume *vol = v->data;
       gchar *id =
           g_volume_get_identifier (vol, G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE);
+      gchar *uri = g_strdup_printf ("drive://%s", id);
 
-      if (id && !strcmp (path, id))
+      g_free (id);
+
+      if (!strcmp (path, uri))
         {
           volume = vol;
           g_object_ref (volume);
-          g_free (id);
+	  g_free (uri);
           break;
         }
 
-      g_free (id);
+      g_free (uri);
     }
 
   g_free (path);
@@ -258,14 +280,9 @@ find_volume (GFile *file)
 }
 
 GMount *
-find_mount (const char *uri)
+find_mount (GFile *file)
 {
-  GFile *file = g_file_new_for_uri (uri);
-  GMount *mount = g_file_find_enclosing_mount (file, NULL, NULL);
-
-  g_object_unref(file);
-
-  return mount;
+  return g_file_find_enclosing_mount (file, NULL, NULL);
 }
 
 static void
@@ -316,33 +333,37 @@ beautify_mmc_name (char *name, gboolean internal)
   return name;
 }
 
-static void init_vol_type (const char *path,
+static void init_vol_type (GFile *file,
                            HildonFileSystemVoldev *voldev)
 {
   HildonFileSystemVoldevClass *klass;
   gchar *value;
   gboolean drive;
+  gchar *uri;
 
   if (voldev->vol_type_valid)
     /* already initialised */
     return;
 
-  if (path == NULL)
+  if (file == NULL)
     {
-      g_warning ("path == NULL");
+      g_warning ("file == NULL");
       return;
     }
 
+  uri = g_file_get_uri (file);
   klass = HILDON_FILE_SYSTEM_VOLDEV_GET_CLASS (voldev);
 
-  if (g_str_has_prefix (path, "drive:///dev/sd") ||
-      g_str_has_prefix (path, "file:///media/usb/"))
+  if (g_str_has_prefix (uri, "drive:///dev/sd") ||
+      g_str_has_prefix (uri, "drive:///dev/sr") ||
+      g_str_has_prefix (uri, "drive:///dev/fd") ||
+      g_str_has_prefix (uri, "file:///media/usb/"))
     {
       voldev->vol_type = USB_STORAGE;
       voldev->vol_type_valid = TRUE;
       return;
     }
-  else if (g_str_has_prefix (path, "drive://"))
+  else if (g_str_has_prefix (uri, "drive://"))
     {
       drive = TRUE;
       value = gconf_client_get_string (klass->gconf,
@@ -362,11 +383,11 @@ static void init_vol_type (const char *path,
       if (drive)
         {
           snprintf (buf, 100, "drive://%s", value);
-          if (g_str_has_prefix (path, buf))
+	  if (g_str_has_prefix (uri, buf))
             voldev->vol_type = EXT_CARD;
           else
           {
-            if(g_str_has_prefix (path, "drive:///media/mmc"))
+	    if(g_str_has_prefix (uri, "drive:///media/mmc"))
               voldev->vol_type = EXT_CARD;
             else
               voldev->vol_type = INT_CARD;
@@ -375,11 +396,11 @@ static void init_vol_type (const char *path,
       else
         {
           snprintf (buf, 100, "file://%s", value);
-          if (strncmp (buf, path, 100) == 0)
+	  if (strncmp (buf, uri, 100) == 0)
             voldev->vol_type = EXT_CARD;
           else
           {
-            if( g_str_has_prefix (path, "file:///media/mmc"))
+	    if( g_str_has_prefix (uri, "file:///media/mmc"))
               voldev->vol_type = EXT_CARD;
             else
               voldev->vol_type = INT_CARD;
@@ -389,13 +410,18 @@ static void init_vol_type (const char *path,
       voldev->vol_type_valid = TRUE;
       g_free (value);
     }
+
+  g_free (uri);
 }
 
 static void
 hildon_file_system_voldev_volumes_changed (HildonFileSystemSpecialLocation
-                                           *location, GtkFileSystem *fs)
+					   *location)
 {
   HildonFileSystemVoldev *voldev = HILDON_FILE_SYSTEM_VOLDEV (location);
+  gchar *uri = g_file_get_uri (location->basepath);
+
+  location->permanent=FALSE;
 
   if (voldev->mount)
     {
@@ -408,10 +434,12 @@ hildon_file_system_voldev_volumes_changed (HildonFileSystemSpecialLocation
       voldev->volume = NULL;
     }
 
-  if (g_str_has_prefix (location->basepath, "drive://"))
+  if (g_str_has_prefix (uri, "drive://"))
     voldev->volume = find_volume (location->basepath);
   else
     voldev->mount = find_mount (location->basepath);
+
+  g_free (uri);
 
   if (!voldev->vol_type_valid)
     init_vol_type (location->basepath, voldev);
@@ -423,8 +451,21 @@ hildon_file_system_voldev_volumes_changed (HildonFileSystemSpecialLocation
       g_free (location->fixed_title);
       g_free (location->fixed_icon);
       location->fixed_title = g_mount_get_name (voldev->mount);
-      location->fixed_icon = g_icon_to_string (icon);
-      g_object_unref (icon);
+      location->fixed_icon = NULL;
+
+      if (icon)
+	{
+	  if (G_IS_THEMED_ICON (icon))
+	    {
+	      location->fixed_icon =
+		  g_strdup(g_themed_icon_get_names (G_THEMED_ICON (icon))[0]);
+	    }
+	  else
+	    location->fixed_icon = g_icon_to_string (icon);
+	  g_object_unref (icon);
+	}
+
+      location->permanent=TRUE;
     }
   else if (voldev->volume)
     {
@@ -432,9 +473,22 @@ hildon_file_system_voldev_volumes_changed (HildonFileSystemSpecialLocation
 
       g_free (location->fixed_title);
       g_free (location->fixed_icon);
+      location->fixed_icon = NULL;
       location->fixed_title = g_volume_get_name (voldev->volume);
-      location->fixed_icon = g_icon_to_string (icon);
-      g_object_unref (icon);
+
+      if (icon)
+	{
+	  if (G_IS_THEMED_ICON (icon))
+	    {
+	      location->fixed_icon =
+		  g_strdup(g_themed_icon_get_names (G_THEMED_ICON (icon))[0]);
+	    }
+	  else
+	    location->fixed_icon = g_icon_to_string (icon);
+	  g_object_unref (icon);
+	}
+
+      location->permanent=TRUE;
     }
 
   /* XXX - GnomeVFS should provide the right icons and display names.
@@ -480,6 +534,7 @@ hildon_file_system_voldev_get_extra_info (HildonFileSystemSpecialLocation
 
   if (voldev->mount) {
     GVolume *v = g_mount_get_volume (voldev->mount);
+
     if (v) {
       rv = g_volume_get_identifier (v, G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE);
       g_object_unref (v);
@@ -493,3 +548,202 @@ hildon_file_system_voldev_get_extra_info (HildonFileSystemSpecialLocation
   return rv;
 }
 
+#define VOLDEV_TYPE_FILE_FOLDER             (voldev_file_folder_get_type ())
+#define VOLDEV_FILE_FOLDER(obj)             (G_TYPE_CHECK_INSTANCE_CAST ((obj), VOLDEV_TYPE_FILE_FOLDER, VoldevFileFolder))
+#define VOLDEV_IS_FILE_FOLDER(obj)          (G_TYPE_CHECK_INSTANCE_TYPE ((obj), VOLDEV_TYPE_FILE_FOLDER))
+#define VOLDEV_FILE_FOLDER_CLASS(klass)     (G_TYPE_CHECK_CLASS_CAST ((klass), VOLDEV_TYPE_FILE_FOLDER, VoldevFileFolderClass))
+#define VOLDEV_IS_FILE_FOLDER_CLASS(klass)  (G_TYPE_CHECK_CLASS_TYPE ((klass), VOLDEV_TYPE_FILE_FOLDER))
+#define VOLDEV_FILE_FOLDER_GET_CLASS(obj)   (G_TYPE_INSTANCE_GET_CLASS ((obj), VOLDEV_TYPE_FILE_FOLDER, VoldevFileFolderClass))
+
+typedef struct _VoldevFileFolder      VoldevFileFolder;
+typedef struct _VoldevFileFolderClass VoldevFileFolderClass;
+
+struct _VoldevFileFolderClass
+{
+  GObjectClass parent_class;
+};
+
+struct _VoldevFileFolder
+{
+  GObject parent_instance;
+
+  GtkFileSystem *filesystem;
+  HildonFileSystemVoldev *voldev;
+};
+
+static GType voldev_file_folder_get_type (void);
+static void voldev_file_folder_iface_init (GtkFolderIface *iface);
+static void voldev_file_folder_init (VoldevFileFolder *impl);
+static void voldev_file_folder_finalize (GObject *object);
+
+static GFileInfo *voldev_file_folder_get_info(GtkFolder  *folder,
+					    GFile      *file);
+static gboolean voldev_file_folder_list_children (GtkFolder  *folder,
+					      GSList        **children,
+					      GError        **error);
+static gboolean voldev_file_folder_is_finished_loading (GtkFolder *folder);
+
+G_DEFINE_TYPE_WITH_CODE (VoldevFileFolder, voldev_file_folder, G_TYPE_OBJECT,
+			 G_IMPLEMENT_INTERFACE (GTK_TYPE_FOLDER,
+						voldev_file_folder_iface_init))
+
+static void
+voldev_file_folder_class_init (VoldevFileFolderClass *class)
+{
+  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
+
+  gobject_class->finalize = voldev_file_folder_finalize;
+}
+
+static void
+voldev_file_folder_iface_init (GtkFolderIface *iface)
+{
+  iface->get_info = voldev_file_folder_get_info;
+  iface->list_children = voldev_file_folder_list_children;
+  iface->is_finished_loading = voldev_file_folder_is_finished_loading;
+}
+
+static void
+voldev_file_folder_init (VoldevFileFolder *folder)
+{
+  folder->filesystem = NULL;
+  folder->voldev = NULL;
+}
+
+static void
+voldev_file_folder_finalize (GObject *object)
+{
+  VoldevFileFolder *folder = VOLDEV_FILE_FOLDER (object);
+
+  if (folder->voldev)
+    g_object_unref (folder->voldev);
+
+  G_OBJECT_CLASS (voldev_file_folder_parent_class)->finalize (object);
+}
+
+static GFileInfo *
+voldev_file_folder_get_info (GtkFolder *folder,
+			     GFile     *file)
+{
+  GFileInfo *info = g_file_info_new ();
+  gchar *basename = g_file_get_basename (file);
+
+  /* XXX - maybe provide more detail...
+   */
+  DEBUG_GFILE_URI ("path %s basename %s", file, basename);
+  g_file_info_set_display_name (info, basename);
+  g_free (basename);
+  g_file_info_set_file_type (info, G_FILE_TYPE_DIRECTORY);
+
+  return info;
+}
+
+static gboolean
+voldev_file_folder_list_children (GtkFolder  *folder,
+				  GSList        **children,
+				  GError        **error)
+{
+  *children = NULL;
+  *error = NULL;
+
+  return TRUE;
+}
+
+static gboolean
+voldev_file_folder_is_finished_loading (GtkFolder *folder)
+{
+  VoldevFileFolder *voldev_folder = VOLDEV_FILE_FOLDER(folder);
+  HildonFileSystemSpecialLocation *location =
+      HILDON_FILE_SYSTEM_SPECIAL_LOCATION (voldev_folder->voldev);
+
+  if (!g_file_has_uri_scheme(location->basepath, "drive"))
+    return gtk_file_folder_is_finished_loading(folder);
+  else
+    return TRUE;
+}
+
+struct get_folder_clos {
+  GCancellable *cancellable;
+  VoldevFileFolder *voldev_folder;
+  GtkFileSystemGetFolderCallback callback;
+  gpointer data;
+};
+
+static gboolean
+deliver_get_folder_callback (gpointer data)
+{
+  struct get_folder_clos *clos = (struct get_folder_clos *)data;
+  GDK_THREADS_ENTER ();
+  clos->callback (clos->cancellable, GTK_FOLDER (clos->voldev_folder),
+		  NULL, clos->data);
+  GDK_THREADS_LEAVE ();
+  g_object_unref (clos->voldev_folder);
+  g_free (clos);
+  return FALSE;
+}
+
+static GCancellable *
+hildon_file_system_voldev_get_folder (HildonFileSystemSpecialLocation *location,
+				      GtkFileSystem                   *filesystem,
+				      GFile                           *file,
+				      const char                      *attributes,
+				      GtkFileSystemGetFolderCallback   callback,
+				      gpointer                         data)
+{
+  if (g_file_has_uri_scheme (file, "drive"))
+    {
+      HildonFileSystemVoldev *voldev = HILDON_FILE_SYSTEM_VOLDEV (location);
+
+      if (voldev->volume)
+	{
+	  GCancellable *cancellable = g_cancellable_new ();
+	  VoldevFileFolder *voldev_folder =
+	      g_object_new (VOLDEV_TYPE_FILE_FOLDER, NULL);
+	  struct get_folder_clos *clos = g_new (struct get_folder_clos, 1);
+
+	  voldev_folder->filesystem = filesystem;
+	  voldev_folder->voldev = HILDON_FILE_SYSTEM_VOLDEV (location);
+	  g_object_ref (location);
+
+	  clos->cancellable = g_object_ref (cancellable);
+	  clos->voldev_folder = voldev_folder;
+	  clos->callback = callback;
+	  clos->data = data;
+
+	  g_idle_add (deliver_get_folder_callback, clos);
+
+	  return cancellable;
+	}
+
+      return NULL;
+    }
+  else
+    {
+      return gtk_file_system_get_folder (filesystem,
+					 file,
+					 attributes,
+					 callback,
+					 data);
+    }
+}
+
+static gboolean
+hildon_file_system_voldev_is_available (HildonFileSystemSpecialLocation *location)
+{
+  HildonFileSystemVoldev *voldev = HILDON_FILE_SYSTEM_VOLDEV (location);
+
+  if (voldev->volume)
+    {
+      GMount *mount = g_volume_get_mount (voldev->volume);
+
+      if (mount)
+	{
+	  g_object_unref (mount);
+	  return TRUE;
+	}
+    }
+  else if (voldev->mount)
+    return TRUE;
+
+  return FALSE;
+}

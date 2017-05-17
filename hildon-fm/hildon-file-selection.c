@@ -328,7 +328,7 @@ static GtkWidget *get_current_view(HildonFileSelectionPrivate * priv)
 }
 
 /* If there is no content AND loading is ready we switch to
-    information view. Otherwise we show curretly asked view */
+    information view. Otherwise we show currently asked view */
 static gint get_view_to_be_displayed(HildonFileSelectionPrivate *priv)
 {
   GtkTreeModel *model, *child_model;
@@ -363,7 +363,9 @@ static gint get_view_to_be_displayed(HildonFileSelectionPrivate *priv)
 			  HILDON_FILE_SYSTEM_MODEL_COLUMN_IS_DRIVE, &is_drive,
 			  HILDON_FILE_SYSTEM_MODEL_COLUMN_URI, &uri,
 			  -1);
-      if (is_drive){
+      if (is_drive)
+	{
+	  /* FIXME */
 	if(g_ascii_strcasecmp(uri, "drive:///dev/mmcblk0p3") == 0)  // to be improved, somehow hard coded
 	  result = 4;
 	else

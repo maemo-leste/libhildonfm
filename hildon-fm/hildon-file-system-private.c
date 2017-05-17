@@ -456,8 +456,10 @@ GdkPixbuf *_hildon_file_system_load_icon_cached(GtkIconTheme *theme,
   if (!pixbuf)
   {
     g_debug("Cache miss, loading %s at %d pix", name, size);
-    pixbuf = gtk_icon_theme_load_icon(theme, name, size, 0, NULL);
-    if (!pixbuf) return NULL;
+    pixbuf = gtk_icon_theme_load_icon(theme, name, size,
+				      GTK_ICON_LOOKUP_GENERIC_FALLBACK, NULL);
+    if (!pixbuf)
+      return NULL;
 
     _hildon_file_system_insert_icon(theme, name, size, pixbuf);
   }

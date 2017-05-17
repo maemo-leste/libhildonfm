@@ -67,7 +67,7 @@ struct _HildonFileSystemVoldevClass
 
 GType hildon_file_system_voldev_get_type (void) G_GNUC_CONST;
 
-GMount *find_mount (const char *uri);
+GMount *find_mount (GFile *file);
 
 gboolean
 hildon_file_system_voldev_is_visible (HildonFileSystemSpecialLocation *location,

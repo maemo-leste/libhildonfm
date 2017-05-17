@@ -53,14 +53,6 @@
 
 #define FILES_PER_QUERY 100
 
-/* The pointers we return for a GtkFileSystemVolume are opaque tokens; they are
- * really pointers to GDrive, GVolume or GMount objects.  We need an extra
- * token for the fake "File System" volume.  So, we'll return a pointer to
- * this particular string.
- */
-static const gchar *root_volume_token = N_("File System");
-#define IS_ROOT_VOLUME(volume) ((gpointer) (volume) == (gpointer) root_volume_token)
-
 enum {
   PROP_0,
   PROP_FILE,
@@ -843,11 +835,6 @@ _gtk_file_system_gio_list_volumes (GtkFileSystemGio *file_system)
 
   list = g_slist_copy (priv->volumes);
 
-#ifndef G_OS_WIN32
-  /* Prepend root volume */
-  list = g_slist_prepend (list, (gpointer) root_volume_token);
-#endif
-
   return list;
 }
 
@@ -1088,6 +1075,7 @@ _gtk_file_system_gio_get_folder (GtkFileSystem                  *file_system,
 
   async_data->callback = callback;
   async_data->data = data;
+  g_warning("%s %p", __FUNCTION__, cancellable);
 
   g_file_enumerate_children_async (file,
 				   attributes,
@@ -1498,9 +1486,6 @@ _gtk_file_system_gio_get_volume_for_file (GtkFileSystem *file_system,
 
   mount = g_file_find_enclosing_mount (file, NULL, NULL);
 
-  if (!mount && g_file_is_native (file))
-    return (GtkFileSystemVolume *) root_volume_token;
-
   return (GtkFileSystemVolume *) mount;
 }
 
@@ -1743,7 +1728,7 @@ static void
 gtk_folder_gio_finalize (GObject *object)
 {
   GtkFolderGioPrivate *priv;
-
+  g_warning("%s", __FUNCTION__);
   priv = GTK_FOLDER_GIO_GET_PRIVATE (object);
 
   g_hash_table_unref (priv->children);
@@ -1899,8 +1884,6 @@ _gtk_file_system_gio_volume_get_display_name (GtkFileSystemVolume *volume)
 {
   DEBUG ("volume_get_display_name");
 
-  if (IS_ROOT_VOLUME (volume))
-    return g_strdup (_(root_volume_token));
   if (G_IS_DRIVE (volume))
     return g_drive_get_name (G_DRIVE (volume));
   else if (G_IS_MOUNT (volume))
@@ -1917,9 +1900,6 @@ _gtk_file_system_gio_volume_is_mounted (GtkFileSystemVolume *volume)
   gboolean mounted;
 
   DEBUG ("volume_is_mounted");
-
-  if (IS_ROOT_VOLUME (volume))
-    return TRUE;
 
   mounted = FALSE;
 
@@ -1948,9 +1928,6 @@ _gtk_file_system_gio_volume_get_root (GtkFileSystemVolume *volume)
 
   DEBUG ("volume_get_base");
 
-  if (IS_ROOT_VOLUME (volume))
-    return g_file_new_for_uri ("file:///");
-
   if (G_IS_MOUNT (volume))
     file = g_mount_get_root (G_MOUNT (volume));
   else if (G_IS_VOLUME (volume))
@@ -1972,9 +1949,6 @@ _gtk_file_system_gio_volume_get_root (GtkFileSystemVolume *volume)
 GtkFileSystemVolume *
 _gtk_file_system_gio_volume_ref (GtkFileSystemVolume *volume)
 {
-  if (IS_ROOT_VOLUME (volume))
-    return volume;
-
   if (G_IS_MOUNT (volume)  ||
       G_IS_VOLUME (volume) ||
       G_IS_DRIVE (volume))
@@ -1986,12 +1960,98 @@ _gtk_file_system_gio_volume_ref (GtkFileSystemVolume *volume)
 void
 _gtk_file_system_gio_volume_unref (GtkFileSystemVolume *volume)
 {
-  /* Root volume doesn't need to be freed */
-  if (IS_ROOT_VOLUME (volume))
-    return;
-
   if (G_IS_MOUNT (volume)  ||
       G_IS_VOLUME (volume) ||
       G_IS_DRIVE (volume))
     g_object_unref (volume);
+}
+
+/* GFileInfo helper functions */
+static GdkPixbuf *
+get_pixbuf_from_gicon (GIcon      *icon,
+		       GtkWidget  *widget,
+		       gint        icon_size,
+		       GError    **error)
+{
+  GdkScreen *screen;
+  GtkIconTheme *icon_theme;
+  GtkIconInfo *icon_info;
+  GdkPixbuf *pixbuf;
+
+  screen = gtk_widget_get_screen (GTK_WIDGET (widget));
+  icon_theme = gtk_icon_theme_get_for_screen (screen);
+
+  icon_info = gtk_icon_theme_lookup_by_gicon (icon_theme,
+					      icon,
+					      icon_size,
+					      GTK_ICON_LOOKUP_USE_BUILTIN);
+
+  if (!icon_info)
+    return NULL;
+
+  pixbuf = gtk_icon_info_load_icon (icon_info, error);
+  gtk_icon_info_free (icon_info);
+
+  return pixbuf;
+}
+
+GdkPixbuf *
+gtk_file_info_render_icon (GFileInfo *info,
+			   GtkWidget *widget,
+			   gint       icon_size)
+{
+  GIcon *icon;
+  GdkPixbuf *pixbuf = NULL;
+  const gchar *thumbnail_path;
+
+  thumbnail_path = g_file_info_get_attribute_byte_string (info, G_FILE_ATTRIBUTE_THUMBNAIL_PATH);
+
+  if (thumbnail_path)
+    pixbuf = gdk_pixbuf_new_from_file_at_size (thumbnail_path,
+					       icon_size, icon_size,
+					       NULL);
+
+  if (!pixbuf)
+    {
+      icon = g_file_info_get_icon (info);
+
+      if (icon)
+	pixbuf = get_pixbuf_from_gicon (icon, widget, icon_size, NULL);
+
+      if (!pixbuf)
+	{
+	  /* Use general fallback for all files without icon */
+	  icon = g_themed_icon_new ("text-x-generic");
+	  pixbuf = get_pixbuf_from_gicon (icon, widget, icon_size, NULL);
+	  g_object_unref (icon);
+	}
+    }
+
+  return pixbuf;
+}
+
+GdkPixbuf *
+_gtk_file_system_gio_volume_render_icon (GtkFileSystemVolume  *volume,
+					 GtkWidget            *widget,
+					 gint                  icon_size,
+					 GError              **error)
+{
+  GIcon *icon = NULL;
+  GdkPixbuf *pixbuf;
+
+  if (G_IS_DRIVE (volume))
+    icon = g_drive_get_icon (G_DRIVE (volume));
+  else if (G_IS_VOLUME (volume))
+    icon = g_volume_get_icon (G_VOLUME (volume));
+  else if (G_IS_MOUNT (volume))
+    icon = g_mount_get_icon (G_MOUNT (volume));
+
+  if (!icon)
+    return NULL;
+
+  pixbuf = get_pixbuf_from_gicon (icon, widget, icon_size, error);
+
+  g_object_unref (icon);
+
+  return pixbuf;
 }
