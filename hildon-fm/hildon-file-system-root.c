@@ -286,7 +286,9 @@ deliver_get_folder_callback (gpointer data)
   clos->callback (clos->cancellable, GTK_FOLDER (clos->root_folder),
                   NULL, clos->data);
   GDK_THREADS_LEAVE ();
+  g_object_unref (clos->root_folder);
   g_free (clos);
+
   return FALSE;
 }
 
@@ -312,7 +314,6 @@ hildon_file_system_root_get_folder (HildonFileSystemSpecialLocation *location,
   clos->data = data;
 
   g_idle_add (deliver_get_folder_callback, clos);
-  g_warning("%s %p", __FUNCTION__, cancellable);
 
   return cancellable;
 }
