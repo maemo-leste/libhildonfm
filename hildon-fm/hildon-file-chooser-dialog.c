@@ -932,9 +932,9 @@ static GSList *hildon_file_chooser_dialog_get_files(GtkFileChooser *
     if (priv->action == GTK_FILE_CHOOSER_ACTION_OPEN)
     {
         GSList *files = _hildon_file_selection_get_selected_files(priv->filetree);
-        gchar *filepath = g_slist_nth_data(files, 0);
-        file = filepath ? g_file_new_for_uri(filepath) : NULL;
-        g_free(filepath);
+	GFile *file = g_object_ref(g_slist_nth_data(files, 0));
+
+	g_slist_foreach (files, (GFunc) g_object_unref, NULL);
         g_slist_free(files);
         return g_slist_append(NULL, file);
     }
