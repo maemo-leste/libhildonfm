@@ -601,9 +601,9 @@ _hildon_file_system_create_file_name (GFile *file,
 }
 
 gchar *
-_hildon_file_system_create_display_name(GtkFileSystem *fs,
-  GFile *file, HildonFileSystemSpecialLocation *location,
-  GFileInfo *info)
+_hildon_file_system_create_display_name(GFile *file,
+					HildonFileSystemSpecialLocation *location,
+					GFileInfo *info)
 {
   gboolean only_known, is_folder;
   const gchar *mime_type;

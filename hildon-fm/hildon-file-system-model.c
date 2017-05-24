@@ -935,7 +935,7 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
 
     switch (column) {
     case HILDON_FILE_SYSTEM_MODEL_COLUMN_GTK_PATH_INTERNAL:
-	g_value_set_boxed(value, file);
+	g_value_set_object(value, file);
         break;
     case HILDON_FILE_SYSTEM_MODEL_COLUMN_LOCAL_PATH:
 	g_value_take_string (value, g_file_get_path(file));
@@ -954,8 +954,7 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
         if (!model_node->title_cache)
 	  {
 	    model_node->title_cache = 
-	      _hildon_file_system_create_display_name (fs,
-						       file,
+	      _hildon_file_system_create_display_name (file,
 						       model_node->location,
 						       info);
 
@@ -1306,7 +1305,7 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
         {
           if (!model_node->title_cache)
             model_node->title_cache = _hildon_file_system_create_display_name(
-		fs, file, model_node->location, info);
+		file, model_node->location, info);
           g_value_take_string(value,
                 g_strdup_printf(model_node->location->failed_access_message,
                 model_node->title_cache));
@@ -3020,7 +3019,7 @@ hildon_file_system_model_constructor(GType type,
 					   contains real ones */
       g_debug("Alternative root = '%s'", priv->alternative_root_dir);
 
-      file =g_file_new_for_commandline_arg (priv->alternative_root_dir);
+      file = g_file_new_for_commandline_arg (priv->alternative_root_dir);
 
       priv->first_root_scan_completed = TRUE;
 

@@ -32,7 +32,7 @@ hildon_file_selection_set_current_folder (HildonFileSelection *self,
   return _hildon_file_selection_set_current_folder_path (self, folder, error);
 }
 
-GtkFilePath *
+GFile *
 hildon_file_selection_get_current_folder (HildonFileSelection *self)
 {
   return _hildon_file_selection_get_current_folder_path (self);

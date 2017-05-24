@@ -173,6 +173,10 @@ G_DEFINE_TYPE_WITH_CODE (GtkFileSystemGio, _gtk_file_system_gio, G_TYPE_OBJECT,
 
 GtkFileSystemGio * _gtk_file_system_gio_new          (void);
 
+static gboolean _gtk_file_system_gio_get_parent(GtkFileSystem     *file_system,
+						const GtkFilePath *path,
+						GtkFilePath      **parent,
+						GError           **error);
 static GtkFilePath * _gtk_file_system_gio_uri_to_path (GtkFileSystem *file_system,
 						       const gchar    *uri);
 static gchar *  _gtk_file_system_gio_path_to_filename (GtkFileSystem     *file_system,
@@ -287,7 +291,7 @@ gtk_file_system_gio_iface_init (GtkFileSystemIface *iface)
 //  iface->volume_mount = _gtk_file_system_gio_volume_mount;
   iface->volume_get_display_name = _gtk_file_system_gio_volume_get_display_name;
 //  iface->volume_get_icon_name = _gtk_file_system_gio_volume_get_icon_name;
-//  iface->get_parent = _gtk_file_system_gio_get_parent;
+  iface->get_parent = _gtk_file_system_gio_get_parent;
 //  iface->make_path = _gtk_file_system_gio_make_path;
   iface->parse = _gtk_file_system_gio_parse;
   iface->path_to_uri = _gtk_file_system_gio_path_to_uri;
@@ -309,9 +313,35 @@ gtk_file_system_gio_iface_init (GtkFileSystemIface *iface)
   iface->volume_get_is_mounted = 1;
   iface->volume_mount = 1;
   iface->volume_get_icon_name = 1;
-  iface->get_parent = 1;
   iface->make_path = 1;
   iface->filename_to_path = 1;
+}
+static gboolean
+_gtk_file_system_gio_get_parent(GtkFileSystem     *file_system,
+				const GtkFilePath *path,
+				GtkFilePath      **parent,
+				GError           **error)
+{
+  GFile *file, *parent_file;
+
+  file = g_file_new_for_commandline_arg(gtk_file_path_get_string(path));
+  parent_file = g_file_get_parent (file);
+  g_object_unref (file);
+
+  if (!parent_file)
+    {
+      g_set_error (error,
+		   GTK_FILE_CHOOSER_ERROR,
+		   GTK_FILE_CHOOSER_ERROR_NONEXISTENT,
+		   "Could not get parent file");
+      *parent = NULL;
+      return FALSE;
+    }
+
+  *parent = gtk_file_path_new_steal (g_file_get_uri (parent_file));
+  g_object_unref (parent_file);
+
+  return TRUE;
 }
 
 static GtkFilePath *
@@ -805,7 +835,7 @@ _gtk_file_system_gio_init (GtkFileSystemGio *file_system)
     g_signal_connect (priv->bookmarks_monitor, "changed",
 		      G_CALLBACK (bookmarks_file_changed), file_system);
 
-  priv->bookmarks_file = g_object_ref (bookmarks_file);
+  priv->bookmarks_file = bookmarks_file;
 }
 
 /* GtkFileSystemGio public methods */

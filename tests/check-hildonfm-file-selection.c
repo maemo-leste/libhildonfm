@@ -53,6 +53,17 @@ static HildonFileSystemModel *model = NULL;
 static HildonFileSelection *fs = NULL;
 static HildonFileSelection *fs_edit = NULL;
 
+static gchar* get_current_folder_path(HildonFileSelection *_fs)
+{
+  gchar *rv;
+  GFile *file = _hildon_file_selection_get_current_folder_path (_fs);
+
+  rv = g_file_get_uri (file);
+  g_object_unref (file);
+
+  return rv;
+}
+
 static void
 fx_setup_default_hildonfm_file_selection ()
 {
@@ -252,17 +263,22 @@ START_TEST (test_file_selection_current_folder_uri)
     GtkTreeIter iter;
     gboolean ret;
     GError **error = NULL;
-    char *start = (char *)_hildon_file_selection_get_current_folder_path (fs);
+    char *start = get_current_folder_path (fs);
     char *end = "/hildonfmtests";
     char* sub = "/folder2";
     char *folder = NULL;
     char *aux;
+    GFile *file;
 
     folder = g_strconcat (start, end, NULL);
 
-    /* When at 'root' as now this is suposed to return NULL */
+    /* When at 'root' as now this is suposed to return MYDOCSDIR */
+    file = g_file_new_for_commandline_arg(g_getenv ("MYDOCSDIR"));
+    aux = g_file_get_uri(file);
+    g_object_unref (file);
     uri = hildon_file_selection_get_current_folder_uri (fs);
-    g_assert_cmpstr (uri, ==, NULL);
+    g_assert_cmpstr (uri, ==, aux);
+    g_free (aux);
 
     ret = hildon_file_selection_set_current_folder_uri (fs, folder, error);
     if (!ret)
@@ -309,7 +325,7 @@ START_TEST (test_file_selection_select_uri)
     /* Test 1: Test if selecting a uri for file selection works */
     gboolean ret;
     GError **error = NULL;
-    char *start = (char *)_hildon_file_selection_get_current_folder_path (fs);
+    char *start = get_current_folder_path (fs);
     char *end = "/hildonfmtests";
     char *sub = "/folder2";
     char *folder = NULL;
@@ -385,7 +401,7 @@ START_TEST (test_file_selection_select_uri_nonexistent)
        subfolders */
     gboolean ret;
     GError **error = NULL;
-    char *start = (char *)_hildon_file_selection_get_current_folder_path (fs);
+    char *start = get_current_folder_path (fs);
     char *end = "/hildonfmtests";
     char *sub = "/folder4";
     char *aux = "/folder1";
@@ -471,7 +487,7 @@ START_TEST (test_file_selection_unselect_uri)
 {
     gboolean ret;
     GError **error = NULL;
-    char *start = (char *)_hildon_file_selection_get_current_folder_path (fs);
+    char *start = get_current_folder_path (fs);
     char *end = "/hildonfmtests";
     char* sub = "/folder2";
     char *folder = NULL;
@@ -497,7 +513,7 @@ END_TEST
  */
 START_TEST (test_file_selection_unselect_uri_not_selected)
 {
-    char *start = (char *)_hildon_file_selection_get_current_folder_path (fs);
+    char *start = get_current_folder_path (fs);
     char *end = "/hildonfmtests";
     char* sub = "/folder2";
     char *folder = NULL;
@@ -530,7 +546,7 @@ START_TEST (test_file_selection_select_uri_and_current_folder_uri)
     gboolean ret;
     GError **error = NULL;
     char* orig = hildon_file_selection_get_current_folder_uri (fs);
-    char* start = (char *)_hildon_file_selection_get_current_folder_path (fs);
+    char *start = get_current_folder_path (fs);
     char *end = "/hildonfmtests";
     char *sub = "/folder3";
     char *subsub = "/subfolder";
@@ -538,8 +554,13 @@ START_TEST (test_file_selection_select_uri_and_current_folder_uri)
     char *folder = NULL;
     char *subfolder = NULL;
     char *aux;
+    GFile *file;
 
-    g_assert (orig == NULL);
+    file = g_file_new_for_commandline_arg(g_getenv ("MYDOCSDIR"));
+    aux = g_file_get_uri(file);
+    g_object_unref (file);
+
+    g_assert_cmpstr (orig, ==, aux);
 
     test_folder = g_strconcat (start, end, NULL);
     folder = g_strconcat (start, end, sub, NULL);
@@ -621,7 +642,7 @@ START_TEST (test_file_selection_select_all_something_selected)
 {
     gboolean ret;
     GError **error = NULL;
-    char* start = (char *)_hildon_file_selection_get_current_folder_path (fs);
+    char *start = get_current_folder_path (fs);
     char *end = "/hildonfmtests";
     char *sub = "/folder1";
     char *folder = NULL;
@@ -656,7 +677,7 @@ static void test_file_selection_select_all_something_selected_edit (void)
 {
     gboolean ret;
     GError **error = NULL;
-    char* start = (char *)_hildon_file_selection_get_current_folder_path (fs_edit);
+    char* start = get_current_folder_path (fs_edit);
     char *end = "/hildonfmtests";
     char *sub = "/folder1";
     char *folder = NULL;
@@ -692,7 +713,7 @@ START_TEST (test_file_selection_select_all_nothing_selected)
     gboolean ret;
     GError **error = NULL;
     GtkTreeIter iter;
-    char* start = (char *)_hildon_file_selection_get_current_folder_path (fs);
+    char* start = get_current_folder_path (fs);
     char *end = "/hildonfmtests";
     char *folder = NULL;
     char *aux;
@@ -735,7 +756,7 @@ START_TEST (test_file_selection_select_all_nothing_selected_edit)
     gboolean ret;
     GError **error = NULL;
     GtkTreeIter iter;
-    char* start = (char *)_hildon_file_selection_get_current_folder_path (fs_edit);
+    char* start = get_current_folder_path (fs_edit);
     char *end = "/hildonfmtests";
     char *folder = NULL;
     char *aux;
@@ -776,7 +797,7 @@ START_TEST (test_file_selection_unselect_all_multiple)
 {
     gboolean ret;
     GError **error = NULL;
-    char* start = (char *)_hildon_file_selection_get_current_folder_path (fs);
+    char* start = get_current_folder_path (fs);
     char *end = "/hildonfmtests";
     char *sub = "/folder1";
     char *folder = NULL;
@@ -811,7 +832,7 @@ START_TEST (test_file_selection_unselect_all_multiple_edit)
 {
     gboolean ret;
     GError **error = NULL;
-    char* start = (char *)_hildon_file_selection_get_current_folder_path (fs_edit);
+    char* start = get_current_folder_path (fs_edit);
     char *end = "/hildonfmtests";
     char *sub = "/folder1";
     char *folder = NULL;
@@ -845,7 +866,7 @@ START_TEST (test_file_selection_unselect_all_single)
 {
     gboolean ret;
     GError **error = NULL;
-    char* start = (char *)_hildon_file_selection_get_current_folder_path (fs);
+    char* start = get_current_folder_path (fs);
     char *end = "/hildonfmtests";
     char *sub = "/folder1";
     char *folder = NULL;
@@ -901,7 +922,7 @@ START_TEST (test_file_selection_clear_multi_selection_multiple)
 {
     gboolean ret;
     GError **error = NULL;
-    char* start = (char *)_hildon_file_selection_get_current_folder_path (fs);
+    char* start = get_current_folder_path (fs);
     char *end = "/hildonfmtests";
     char *sub = "/folder1";
     char *folder = NULL;
@@ -937,7 +958,7 @@ static void test_file_selection_clear_multi_selection_multiple_edit (void)
 {
     gboolean ret;
     GError **error = NULL;
-    char* start = (char *)_hildon_file_selection_get_current_folder_path (fs_edit);
+    char* start = get_current_folder_path (fs_edit);
     char *end = "/hildonfmtests";
     char *sub = "/folder1";
     char *folder = NULL;
@@ -973,7 +994,7 @@ START_TEST (test_file_selection_clear_multi_selection_single)
 {
     gboolean ret;
     GError **error = NULL;
-    char* start = (char *)_hildon_file_selection_get_current_folder_path (fs);
+    char* start = get_current_folder_path (fs);
     char *end = "/hildonfmtests";
     char *sub = "/folder1";
     char *folder = NULL;
@@ -1033,11 +1054,11 @@ START_TEST (test_file_selection_current_folder_path)
 {
     /* Test 1: Test if setting and getting current folder's path works */
     gchar *uri, *uri2;
-    GtkFilePath *path, *path2;
+    GtkFilePath *path;
     GtkFileSystem *gtk_file_system = _hildon_file_system_model_get_file_system(model);
     gboolean ret;
     GError **error = NULL;
-    char *start = (char *)_hildon_file_selection_get_current_folder_path (fs);
+    char *start = get_current_folder_path (fs);
     char *end = "/hildonfmtests";
     char* sub = "/folder2";
     char *folder = NULL;
@@ -1052,8 +1073,7 @@ START_TEST (test_file_selection_current_folder_path)
     uri = hildon_file_selection_get_current_folder_uri (fs);
     g_assert_cmpstr (uri, ==, folder);
 
-    path2 = _hildon_file_selection_get_current_folder_path (fs);
-    uri2 = gtk_file_system_path_to_uri (gtk_file_system, path2);
+    uri2 = get_current_folder_path (fs);
     fail_if (strcmp (uri, uri2) != 0,
              "Path comparison failed at set & get");
 
@@ -1071,8 +1091,7 @@ START_TEST (test_file_selection_current_folder_path)
     fail_if (strcmp (uri, folder) != 0,
              "Changing current folder's path succeeded but wrong path set");
 
-    path2 = _hildon_file_selection_get_current_folder_path (fs);
-    uri2 = gtk_file_system_path_to_uri (gtk_file_system, path2);
+    uri2 = get_current_folder_path (fs);
     fail_if (strcmp (uri, uri2) != 0,
              "Path comparison failed when changing folder");
 
@@ -1091,7 +1110,7 @@ START_TEST (test_file_selection_select_path)
     /* Test 1: Test if selecting a path works*/
     gboolean ret;
     GError **error = NULL;
-    char* start = (char *)_hildon_file_selection_get_current_folder_path (fs);
+    char* start = get_current_folder_path (fs);
     char *end = "/hildonfmtests";
     char *sub = "/folder1";
     char *folder = NULL;
@@ -1166,7 +1185,7 @@ START_TEST (test_file_selection_select_path_nonexistent)
     GError **error = NULL;
     GtkFilePath *path;
     GtkFileSystem *gtk_file_system = _hildon_file_system_model_get_file_system(model);
-    char *start = (char *)_hildon_file_selection_get_current_folder_path (fs);
+    char *start = get_current_folder_path (fs);
     char *end = "/hildonfmtests";
     char *sub = "/folder4";
     char *aux = "/folder1";
@@ -1250,7 +1269,7 @@ START_TEST (test_file_selection_unselect_path)
     GError **error = NULL;
     GtkFilePath *path;
     GtkFileSystem *gtk_file_system = _hildon_file_system_model_get_file_system (model);
-    char *start = (char *)_hildon_file_selection_get_current_folder_path (fs);
+    char *start = get_current_folder_path (fs);
     char *end = "/hildonfmtests";
     char* sub = "/folder2";
     char *folder = NULL;
@@ -1275,7 +1294,7 @@ END_TEST
  */
 START_TEST (test_file_selection_unselect_path_not_selected)
 {
-    char *start = (char *)_hildon_file_selection_get_current_folder_path (fs);
+    char *start = get_current_folder_path (fs);
     char *end = "/hildonfmtests";
     char* sub = "/folder2";
     char *folder = NULL;
@@ -1309,10 +1328,10 @@ START_TEST (test_file_selection_select_path_and_current_folder_path)
     /* Test 1: Test if making a new path selection changes current folder */
     gboolean ret;
     GError **error = NULL;
-    GtkFilePath *path, *path2;
+    GtkFilePath *path;
     GtkFileSystem *gtk_file_system = _hildon_file_system_model_get_file_system (model);
     char* orig = hildon_file_selection_get_current_folder_uri (fs);
-    char* start = (char *)_hildon_file_selection_get_current_folder_path (fs);
+    char* start = get_current_folder_path (fs);
     char *end = "/hildonfmtests";
     char *sub = "/folder3";
     char *subsub = "/subfolder";
@@ -1320,8 +1339,12 @@ START_TEST (test_file_selection_select_path_and_current_folder_path)
     char *folder = NULL;
     char *subfolder = NULL;
     char *aux = NULL;
+    GFile *file = g_file_new_for_commandline_arg(g_getenv ("MYDOCSDIR"));
 
-    g_assert (!orig);
+    aux = g_file_get_uri(file);
+    g_object_unref (file);
+    g_assert_cmpstr (orig, ==, aux);
+    g_free (aux);
 
     test_folder = g_strconcat (start, end, NULL);
     folder = g_strconcat (start, end, sub, NULL);
@@ -1330,9 +1353,7 @@ START_TEST (test_file_selection_select_path_and_current_folder_path)
     path = gtk_file_system_uri_to_path (gtk_file_system, folder);
     ret = _hildon_file_selection_select_path (fs, path, error);
     fail_if (!ret, "Selecting uri of the subfolder failed at select uri");
-    path2 = _hildon_file_selection_get_current_folder_path (fs);
-    g_assert (path2);
-    aux = gtk_file_system_path_to_uri(gtk_file_system, path2);
+    aux = get_current_folder_path (fs);
     fail_if (strcmp(test_folder, aux) != 0,
              "Selecting a uri didn't change the current folder properly");
 
@@ -1340,10 +1361,9 @@ START_TEST (test_file_selection_select_path_and_current_folder_path)
     path = gtk_file_system_uri_to_path (gtk_file_system, subfolder);
     ret = _hildon_file_selection_select_path (fs, path, error);
     fail_if (!ret, "Selecting uri of the subfolder failed at select uri");
-    path2 = _hildon_file_selection_get_current_folder_path (fs);
-    aux = gtk_file_system_path_to_uri(gtk_file_system, path2);
+    aux = get_current_folder_path (fs);
     fail_if (!aux ,
-             "(char *)_hildon_file_selection_get_current_folder_path returned NULL");
+	     "get_current_folder_path returned NULL");
     fail_if (strcmp(folder, aux) != 0,
              "Selecting a uri didn't change the current folder properly");
 
@@ -1364,7 +1384,7 @@ START_TEST(test_file_selection_get_selected_files)
     gboolean ret;
     GError **error = NULL;
     GtkTreeIter iter;
-    char* start = (char *)_hildon_file_selection_get_current_folder_path (fs);
+    char* start = get_current_folder_path (fs);
     char *end = "/hildonfmtests";
     char *sub = "/folder1";
     char *folder = NULL;
@@ -1408,7 +1428,7 @@ static void test_file_selection_get_selected_files_edit (void)
     gboolean ret;
     GError **error = NULL;
     GtkTreeIter iter;
-    char* start = (char *)_hildon_file_selection_get_current_folder_path (fs_edit);
+    char* start = get_current_folder_path (fs_edit);
     char *end = "/hildonfmtests";
     char *sub = "/folder1";
     char *folder = NULL;

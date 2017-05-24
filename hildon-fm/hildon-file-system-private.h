@@ -57,9 +57,8 @@ GdkPixbuf *_hildon_file_system_create_image (GtkFileSystem *fs,
 gchar *_hildon_file_system_create_file_name(GFile *path,
   HildonFileSystemSpecialLocation *location, GFileInfo *info);
 
-gchar *_hildon_file_system_create_display_name(GtkFileSystem *fs, 
-  GFile *file, HildonFileSystemSpecialLocation *location,
-  GFileInfo *info);
+gchar *_hildon_file_system_create_display_name(GFile *file,
+  HildonFileSystemSpecialLocation *location, GFileInfo *info);
 
 GFile *_hildon_file_system_path_for_location(HildonFileSystemSpecialLocation *location);
 

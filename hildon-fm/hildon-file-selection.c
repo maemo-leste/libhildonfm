@@ -3676,26 +3676,22 @@ hildon_file_selection_get_current_folder_uri (HildonFileSelection *self)
   return NULL;
 }
 
-GtkFilePath *
+GFile *
 _hildon_file_selection_get_current_folder_path (HildonFileSelection *self)
 {
   GtkTreeIter iter;
-  HildonFileSystemModel *model =
-    HILDON_FILE_SYSTEM_MODEL(self->priv->main_model);
 
   if (self->priv->cursor_goal_uri)
-    return (gtk_file_system_uri_to_path
-	    (_hildon_file_system_model_get_file_system(model),
-	     self->priv->cursor_goal_uri));
+    return g_file_new_for_uri (self->priv->cursor_goal_uri);
  
   if (hildon_file_selection_get_current_folder_iter(self, &iter)) {
-    GtkFilePath *path;
+    GFile *file;
 
     gtk_tree_model_get(self->priv->main_model, &iter,
                        HILDON_FILE_SYSTEM_MODEL_COLUMN_GTK_PATH_INTERNAL,
-                       &path,
+		       &file,
                        -1);
-    return path;    /* This is already a copy */
+    return file;    /* This is already a copy */
   }
 
   return NULL;

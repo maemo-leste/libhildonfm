@@ -79,8 +79,7 @@ gboolean
 _hildon_file_selection_set_current_folder_path (HildonFileSelection *self,
 						const GtkFilePath *folder,
 						GError ** error);
-GtkFilePath *
-_hildon_file_selection_get_current_folder_path (HildonFileSelection *self);
+GFile *_hildon_file_selection_get_current_folder_path(HildonFileSelection *self);
 
 GSList *_hildon_file_selection_get_selected_files (HildonFileSelection
 						   *self);

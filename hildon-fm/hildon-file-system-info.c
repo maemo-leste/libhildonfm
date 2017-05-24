@@ -261,8 +261,9 @@ hildon_file_system_info_get_display_name(HildonFileSystemInfo *info)
   g_return_val_if_fail(info != NULL, NULL);
 
   if (info->name_cache == NULL)
-    info->name_cache = _hildon_file_system_create_display_name(info->fs,
-	info->file, info->location, info->info);
+    info->name_cache = _hildon_file_system_create_display_name(info->file,
+							       info->location,
+							       info->info);
 
   return info->name_cache;
 }

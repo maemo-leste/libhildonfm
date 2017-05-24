@@ -42,7 +42,7 @@ gboolean hildon_file_selection_set_current_folder (HildonFileSelection *self,
 						   GError **error);
 #endif
 
-GtkFilePath * hildon_file_selection_get_current_folder (HildonFileSelection *self);
+GFile * hildon_file_selection_get_current_folder (HildonFileSelection *self);
 
 #ifndef HILDON_DISABLE_DEPRECATED
 gboolean hildon_file_selection_select_path (HildonFileSelection *self,
