@@ -4716,7 +4716,7 @@ hildon_file_selection_row_deleted (GtkTreeModel *model,
 	   */
 	  GtkTreePath *p = gtk_tree_path_copy (path);
 
-	  if (gtk_tree_path_up (p))
+	  if (gtk_tree_path_up (p) && gtk_tree_path_get_depth(p))
 	    {
 	      GtkTreeIter iter;
 	      gboolean use_idle = TRUE;
