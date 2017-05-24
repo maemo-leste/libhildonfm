@@ -79,7 +79,7 @@ GdkPixbuf *_hildon_file_system_load_icon_cached(GtkIconTheme *theme,
 
 char *hildon_file_system_unescape_string (const char *escaped);
 
-#define DEBUG
+/*#define DEBUG */
 
 #ifdef DEBUG
 #define DEBUG_GFILE_URI(fmt, f, ...) { \
@@ -88,7 +88,7 @@ char *hildon_file_system_unescape_string (const char *escaped);
   g_free (___uri___); \
   }
 #else
-#define DEBUG_GFILE_URI(f)
+#define DEBUG_GFILE_URI(f, ...)
 #endif
 
 #define WARN_GFILE_URI(fmt, f, ...) { \

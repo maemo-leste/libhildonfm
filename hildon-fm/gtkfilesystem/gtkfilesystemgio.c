@@ -30,9 +30,9 @@
 #include <gtk/gtkicontheme.h>
 #include <gtk/gtkprivate.h>
 
-#define DEBUG_MODE
+/* #define DEBUG_MODE */
 #ifdef DEBUG_MODE
-#define DEBUG(x) g_warning (x);
+#define DEBUG(x) g_debug (x);
 #else
 #define DEBUG(x)
 #endif
@@ -322,8 +322,6 @@ _gtk_file_system_gio_uri_to_path (GtkFileSystem *file_system,
   gchar *path = g_file_get_uri(file);
   g_object_unref (file);
 
-  g_warning ("%s uri %s -> %s", __FUNCTION__,  uri, path);
-
   return gtk_file_path_new_steal(path);
 }
 
@@ -336,8 +334,6 @@ _gtk_file_system_gio_path_to_filename (GtkFileSystem     *file_system,
   gchar *filename = g_file_get_path(file);
   g_object_unref (file);
 
-  g_warning ("%s path %s -> %s", __FUNCTION__,  path, filename);
-
   return filename;
 }
 
@@ -346,7 +342,6 @@ _gtk_file_system_gio_path_to_uri (GtkFileSystem     *file_system,
 				  const GtkFilePath *path)
 {
   gchar *rv = g_strdup (gtk_file_path_get_string (path));
-  g_warning ("%s path %s -> %s", __FUNCTION__,  path, rv);
 
   return rv;
 }
@@ -1075,7 +1070,6 @@ _gtk_file_system_gio_get_folder (GtkFileSystem                  *file_system,
 
   async_data->callback = callback;
   async_data->data = data;
-  g_warning("%s %p", __FUNCTION__, cancellable);
 
   g_file_enumerate_children_async (file,
 				   attributes,
@@ -1728,7 +1722,7 @@ static void
 gtk_folder_gio_finalize (GObject *object)
 {
   GtkFolderGioPrivate *priv;
-  g_warning("%s", __FUNCTION__);
+
   priv = GTK_FOLDER_GIO_GET_PRIVATE (object);
 
   g_hash_table_unref (priv->children);

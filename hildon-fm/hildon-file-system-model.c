@@ -60,8 +60,6 @@
 #include "hildon-file-details-dialog.h"
 
 /*#define DEBUG*/
-#undef g_debug
-#define g_debug g_warning
 
 /*  Reload contents of removable devices after this amount of seconds */
 #define RELOAD_THRESHOLD 30
@@ -263,12 +261,6 @@ handle_finished_node (GNode *node)
   while (child_node)
     {
       HildonFileSystemModelNode *model_node = child_node->data;
-
-      DEBUG_GFILE_URI("!!!!!!!!!!!!! TRYING %s present_flag %d location %p permanent %d linking %d",
-		      model_node->file, model_node->present_flag,
-		      model_node->location, model_node->location ? model_node->location->permanent : 0,
-		      model_node->linking);
-
       /* We do not want to ever kick permanent special locations. */
       
       if (model_node->present_flag
@@ -1822,8 +1814,6 @@ get_folder_callback (GCancellable *cancellable,
   node = handle_data->node;
   model_node = (HildonFileSystemModelNode *) node->data;
 
-  g_warning("%s folder %p model_node->cancellable %p cancellable %p cancelled %d ", __FUNCTION__, folder, model_node->cancellable, cancellable, cancelled);
-
   /* When the operation has been cancelled, handle_data->node is no
      longer valid.
    */
@@ -1843,7 +1833,7 @@ get_folder_callback (GCancellable *cancellable,
     g_object_unref(model_node->cancellable);
   model_node->cancellable = NULL;
   model_node->folder = folder ? g_object_ref(folder) : NULL;
-  model_node->error = error? g_error_copy (error) : NULL;
+  model_node->error = error ? g_error_copy (error) : NULL;
   model_node->linking = FALSE;
 
   if (folder == NULL)
@@ -1856,7 +1846,7 @@ get_folder_callback (GCancellable *cancellable,
     }
 
   DEBUG_GFILE_URI ("LINK DONE %s %s model_node %p folder %p\n",
-       model_node->file, error? error->message : "(success)",
+       model_node->file, error ? error->message : "(success)",
 	   model_node, folder);
 
   if (folder)

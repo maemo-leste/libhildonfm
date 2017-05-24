@@ -218,8 +218,6 @@ root_file_folder_list_children (GtkFolder  *folder,
 
   *error = NULL;
 
-  g_warning ("root_file_folder_list_children");
-
   for (l = volumes; l; l = l->next)
     {
       if (G_IS_MOUNT (l->data))
