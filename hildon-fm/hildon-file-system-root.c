@@ -286,6 +286,7 @@ deliver_get_folder_callback (gpointer data)
   clos->callback (clos->cancellable, GTK_FOLDER (clos->root_folder),
                   NULL, clos->data);
   GDK_THREADS_LEAVE ();
+  g_object_unref (clos->cancellable);
   g_object_unref (clos->root_folder);
   g_free (clos);
 

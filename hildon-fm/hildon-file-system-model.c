@@ -1818,7 +1818,6 @@ get_folder_callback (GCancellable *cancellable,
   HildonFileSystemModel *model;
   HandleData *handle_data = (HandleData *) data;
   GNode *node;
-  g_object_unref (cancellable);
 
   node = handle_data->node;
   model_node = (HildonFileSystemModelNode *) node->data;

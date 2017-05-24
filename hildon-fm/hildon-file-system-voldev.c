@@ -677,6 +677,7 @@ deliver_get_folder_callback (gpointer data)
   clos->callback (clos->cancellable, GTK_FOLDER (clos->voldev_folder),
 		  NULL, clos->data);
   GDK_THREADS_LEAVE ();
+  g_object_unref (clos->cancellable);
   g_object_unref (clos->voldev_folder);
   g_free (clos);
   return FALSE;
