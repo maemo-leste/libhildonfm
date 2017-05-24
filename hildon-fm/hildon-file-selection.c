@@ -186,7 +186,6 @@ struct _HildonFileSelectionPrivate {
     guint banner_close_timeout_id;
     guint content_pane_changed_id;
     guint delayed_select_id;
-    guint cursor_idle_id;
     guint pane_pos;
     gboolean update_banner;
     gboolean content_pane_last_used;
@@ -234,6 +233,9 @@ struct _HildonFileSelectionPrivate {
 
     gboolean show_localdevice;
     GVolumeMonitor *monitor;
+
+    guint cursor_idle_id;
+    gpointer cursor_idle_data;
 };
 
 #if 0
@@ -4607,11 +4609,32 @@ set_cursor_when_idle (HildonFileSelection *self,
 		      GtkTreeView *view, GtkTreePath *path,
                       gboolean stubbornly)
 {
-  struct idle_cursor_data *c = g_new (struct idle_cursor_data, 1);
+  struct idle_cursor_data *c;
+  GtkTreePath *p = gtk_tree_path_copy (path);
+
+  if (self->priv->cursor_idle_id)
+    {
+      c = self->priv->cursor_idle_data;
+      /*
+	If we already have idle set and path is a parent of what we already have
+	and we stubbornly set the cursor, then the path points to a folder that
+	is being deleted, so set the cursor to the *parent* of path.
+       */
+      if (stubbornly && gtk_tree_path_is_descendant (c->path, p))
+	gtk_tree_path_up (p);
+
+      g_source_remove (self->priv->cursor_idle_id);
+      gtk_tree_path_free (c->path);
+      g_free (c);
+    }
+
+  c = g_new (struct idle_cursor_data, 1);
   c->self = self;
   c->view = GTK_TREE_VIEW (view);
-  c->path = gtk_tree_path_copy (path);
+  c->path = p;
   c->stubbornly = stubbornly;
+
+  self->priv->cursor_idle_data = c;
   self->priv->cursor_idle_id = g_idle_add (set_cursor_idle_handler, c);
 }
 
@@ -4687,8 +4710,48 @@ hildon_file_selection_row_deleted (GtkTreeModel *model,
           gtk_tree_path_free (cursor_path);
           return;
         }
-      gtk_tree_path_free (cursor_path);
 
+      if (cursor_path &&
+	  (gtk_tree_path_compare (path, cursor_path) == 0 ||
+	   gtk_tree_path_is_descendant (cursor_path, path)))
+	{
+	  /* We are deleting a row that is parent of the current cursor,
+	     set the cursor to the deleted row's parent;
+	   */
+	  GtkTreePath *p = gtk_tree_path_copy (path);
+
+	  if (gtk_tree_path_up (p))
+	    {
+	      GtkTreeIter iter;
+	      gboolean use_idle = TRUE;
+	      GtkTreePath *root = gtk_tree_path_new_first();
+
+	      if (gtk_tree_path_compare (p, root) == 0 &&
+		  gtk_tree_model_get_iter(model, &iter, path))
+		{
+		  gtk_tree_model_get(model, &iter,
+				     HILDON_FILE_SYSTEM_MODEL_COLUMN_IS_FOLDER,
+				     &use_idle, -1);
+		  use_idle = (use_idle == FALSE);
+		}
+
+	      gtk_tree_path_free (root);
+
+	      /* XXX - A mount is removed, we have to set the cursor here, not
+		 in an idle func as there model is no longer available
+	       */
+	      if (use_idle)
+		set_cursor_when_idle (self, view, p, TRUE);
+	      else
+		hildon_file_selection_set_cursor_stubbornly (self, view, p);
+	    }
+
+	  gtk_tree_path_free (p);
+	  gtk_tree_path_free (cursor_path);
+	  return;
+	}
+
+      gtk_tree_path_free (cursor_path);
       set_cursor_when_idle (self, view, path, TRUE);
     }
 }
