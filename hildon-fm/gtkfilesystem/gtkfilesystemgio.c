@@ -173,6 +173,10 @@ G_DEFINE_TYPE_WITH_CODE (GtkFileSystemGio, _gtk_file_system_gio, G_TYPE_OBJECT,
 
 GtkFileSystemGio * _gtk_file_system_gio_new          (void);
 
+static GtkFilePath *_gtk_file_system_gio_make_path (GtkFileSystem    *file_system,
+						    const GtkFilePath *base_path,
+						    const gchar       *display_name,
+						    GError           **error);
 static gboolean _gtk_file_system_gio_get_parent(GtkFileSystem     *file_system,
 						const GtkFilePath *path,
 						GtkFilePath      **parent,
@@ -292,12 +296,12 @@ gtk_file_system_gio_iface_init (GtkFileSystemIface *iface)
   iface->volume_get_display_name = _gtk_file_system_gio_volume_get_display_name;
 //  iface->volume_get_icon_name = _gtk_file_system_gio_volume_get_icon_name;
   iface->get_parent = _gtk_file_system_gio_get_parent;
-//  iface->make_path = _gtk_file_system_gio_make_path;
+  iface->make_path = _gtk_file_system_gio_make_path;
   iface->parse = _gtk_file_system_gio_parse;
   iface->path_to_uri = _gtk_file_system_gio_path_to_uri;
   iface->path_to_filename = _gtk_file_system_gio_path_to_filename;
   iface->uri_to_path = _gtk_file_system_gio_uri_to_path;
-//  iface->filename_to_path = _gtk_file_system_gio_filename_to_path;
+  iface->filename_to_path = _gtk_file_system_gio_uri_to_path;
   iface->insert_bookmark = _gtk_file_system_gio_insert_bookmark;
   iface->remove_bookmark = _gtk_file_system_gio_remove_bookmark;
   iface->list_bookmarks = _gtk_file_system_gio_list_bookmarks;
@@ -313,9 +317,23 @@ gtk_file_system_gio_iface_init (GtkFileSystemIface *iface)
   iface->volume_get_is_mounted = 1;
   iface->volume_mount = 1;
   iface->volume_get_icon_name = 1;
-  iface->make_path = 1;
-  iface->filename_to_path = 1;
 }
+
+static GtkFilePath *
+_gtk_file_system_gio_make_path (GtkFileSystem    *file_system,
+				const GtkFilePath *base_path,
+				const gchar       *display_name,
+				GError           **error)
+{
+  const gchar *basename = gtk_file_path_get_string (base_path);
+  gchar *uri = g_build_path("", basename, display_name, NULL);
+
+  if (error)
+    *error = NULL;
+
+  return gtk_file_path_new_steal (uri);
+}
+
 static gboolean
 _gtk_file_system_gio_get_parent(GtkFileSystem     *file_system,
 				const GtkFilePath *path,

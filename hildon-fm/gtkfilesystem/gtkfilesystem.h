@@ -159,7 +159,7 @@ struct _GtkFileSystemIface
 						const GtkFilePath *path);
 
   GCancellable        * (*get_folder)  (GtkFileSystem                  *file_system,
-					const GFile                    *file,
+					GFile                          *file,
 					const gchar                    *attributes,
 					GtkFileSystemGetFolderCallback  callback,
 					gpointer                        data);

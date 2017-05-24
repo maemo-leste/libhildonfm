@@ -60,6 +60,17 @@ static HildonFileSystemModel *model = NULL;
 static HildonFileSelection *fs = NULL;
 static GtkWidget *fdd = NULL;
 
+static gchar* get_current_folder_path(HildonFileSelection *_fs)
+{
+  gchar *rv;
+  GFile *file = _hildon_file_selection_get_current_folder_path (_fs);
+
+  rv = g_file_get_uri (file);
+  g_object_unref (file);
+
+  return rv;
+}
+
 static void
 fx_setup_default_hildonfm_file_details_dialog ()
 {
@@ -101,7 +112,7 @@ START_TEST (test_file_details_dialog_file_iter)
     gboolean ret;
     GtkTreeIter iter;
     GtkTreeIter iter2;
-    char *start = (char *)_hildon_file_selection_get_current_folder_path (fs);
+    char *start = get_current_folder_path (fs);
     char *end = "/hildonfmtests";
     char *sub = "/file1.txt";
     char *folder = NULL;
@@ -148,7 +159,7 @@ START_TEST (test_file_details_dialog_file_iter_folder)
 {
     gboolean ret;
     GtkTreeIter iter, iter2;
-    char *start = (char *)_hildon_file_selection_get_current_folder_path (fs);
+    char *start = get_current_folder_path (fs);
     char *end = "/hildonfmtests";
     char *sub = "/folder1";
     char *folder = NULL;

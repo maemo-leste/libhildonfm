@@ -71,9 +71,9 @@ fx_teardown_default_hildonfm_file_system_private ()
 
 typedef struct {
     GtkFilePath *path;
-    GtkFileInfo *info;
-    GtkFileFolder *folder;
-    GtkFileSystemHandle *get_folder_handle;
+    GFileInfo *info;
+    GtkFolder *folder;
+    GCancellable *get_folder_handle;
     gint pending_adds;
     GdkPixbuf *icon_cache;
     GdkPixbuf *icon_cache_expanded;
@@ -269,8 +269,7 @@ END_TEST
  */
 START_TEST (test_file_system_get_locations)
 {
-    GtkFileSystem *system = _hildon_file_system_model_get_file_system (model);
-    GNode *node = _hildon_file_system_get_locations (system);
+    GNode *node = _hildon_file_system_get_locations ();
 
     fail_if (!node, "Getting special locations GNode failed");
     fail_if (!G_NODE_IS_ROOT(node), "Improper GNode returned");
@@ -282,36 +281,38 @@ END_TEST
  */
 START_TEST (test_file_system_get_special_location)
 {
-    GtkFilePath *path = _hildon_file_selection_get_current_folder_path (fs);
-    GtkFileSystem *system = _hildon_file_system_model_get_file_system (model);
+    GFile *file = _hildon_file_selection_get_current_folder_path (fs);
     HildonFileSystemSpecialLocation *location;
 
-    location = _hildon_file_system_get_special_location (system, path);
-    /* fail_if (!HILDON_IS_FILE_SYSTEM_SPECIAL_LOCATION (location),
-             "Getting a HildonFileSystemSpecialLocation failed"); */
+    location = _hildon_file_system_get_special_location (file);
+    fail_if (!HILDON_IS_FILE_SYSTEM_SPECIAL_LOCATION (location),
+	     "Getting a HildonFileSystemSpecialLocation failed");
 }
 END_TEST
 
 /**
- * Purpose: Check if getting the GtkFilePath from a
+ * Purpose: Check if getting the GFile from a
  * HildonFileSystemSpecialLocation works
  */
 START_TEST (test_file_system_path_for_location)
 {
-    char *start = (gchar*)_hildon_file_selection_get_current_folder_path (fs);
-    GtkFileSystem *system = _hildon_file_system_model_get_file_system (model);
-    GtkFilePath *path = gtk_file_system_uri_to_path (system, start), *path2;
+    GFile *file = _hildon_file_selection_get_current_folder_path (fs);
+    gchar *start = g_file_get_uri(file);
     HildonFileSystemSpecialLocation *location;
-    char *result;
+    gchar *result;
 
-    location = _hildon_file_system_get_special_location (system, path);
+    g_object_unref (file);
+
+    location = _hildon_file_system_get_special_location (file);
     fail_if (!HILDON_IS_FILE_SYSTEM_SPECIAL_LOCATION (location),
              "Getting a HildonFileSystemSpecialLocation failed");
 
-    path2 = _hildon_file_system_path_for_location (location);
-    result = gtk_file_system_path_to_uri (system, path);
-    //printf("'%s'|'%s'\n", start, result);
-    fail_if (strcmp (start, result), "Getting the GtkFilePath failed");
+    file = _hildon_file_system_path_for_location (location);
+    result = g_file_get_uri(file);
+    g_object_unref (file);
+
+    printf("'%s'|'%s'\n", start, result);
+    fail_if (strcmp (start, result), "Getting the GFile failed");
 
     free (start);
 }
@@ -325,11 +326,11 @@ START_TEST (test_file_system_get_volume_for_location)
 {
     char *start = "file:///";
     GtkFileSystem *system = _hildon_file_system_model_get_file_system (model);
-    GtkFilePath *path = gtk_file_system_uri_to_path (system, start);
+    GFile *path = g_file_new_for_uri (start);
     GtkFileSystemVolume *volume = NULL;
     HildonFileSystemSpecialLocation *location;
 
-    location = _hildon_file_system_get_special_location (system, path);
+    location = _hildon_file_system_get_special_location (path);
     fail_if (!HILDON_IS_FILE_SYSTEM_SPECIAL_LOCATION (location),
              "Getting a HildonFileSystemSpecialLocation failed");
 
@@ -345,19 +346,21 @@ START_TEST (test_file_system_create_file_name)
 {
     gboolean ret;
     GtkTreeIter iter;
-    char *start = (gchar*)_hildon_file_selection_get_current_folder_path (fs);
+    GFile *file = _hildon_file_selection_get_current_folder_path (fs);
+    char *start = g_file_get_uri(file);
     char *end = "/.images";//This can be replaced with any other special locat.
     char *folder = NULL;
     char *result = NULL;
-    GtkFileSystem *system = _hildon_file_system_model_get_file_system (model);
-    GtkFilePath *path;
+    GFile *path;
     GNode *node;
     HildonFileSystemModelNode *model_node;
-    GtkFileInfo *info;
+    GFileInfo *info;
     HildonFileSystemSpecialLocation *location;
 
+    g_object_unref (file);
+
     folder = g_strconcat (start, end, NULL);
-    path = gtk_file_system_uri_to_path (system, folder);
+    path = g_file_new_for_uri (folder);
 
     ret = hildon_file_system_model_load_uri (model, folder, &iter);
     fail_if (!ret, "Loading a uri to hildon file system model failed");
@@ -369,23 +372,24 @@ START_TEST (test_file_system_create_file_name)
     info = model_node->info;
     fail_if (info == NULL, "Getting a GtkFileInfo failed");
 
-    location = _hildon_file_system_get_special_location (system, path);
+    location = _hildon_file_system_get_special_location (path);
     fail_if (!HILDON_IS_FILE_SYSTEM_SPECIAL_LOCATION (location),
              "Getting HildonFileSystemSpecialLocation failed");
 
-    result = _hildon_file_system_create_file_name (system, path, location,
-                                                   info);
-    //printf("%s\n", result);
+    result = _hildon_file_system_create_file_name (path, location, info);
+    printf("%s\n", result);
 
     free (folder);
     folder = g_strconcat ("sfil_li_folder_", end + 2, NULL);
-    //printf("%s\n", folder);
+    printf("%s\n", folder);
 
     fail_if (strcmp (folder, result),
              "Creating a file name with all arguments failed");
 
-    free (folder);
-    free (start);
+    g_object_unref (file);
+
+    g_free (folder);
+    g_free (start);
 }
 
 END_TEST
@@ -396,17 +400,17 @@ END_TEST
 START_TEST (test_file_system_create_file_name_without_info)
 {
     char *start = "file:///";
-    GtkFileSystem *system = _hildon_file_system_model_get_file_system (model);
-    GtkFilePath *path = gtk_file_system_uri_to_path (system, start);
+    GFile *path = g_file_new_for_uri (start);
     HildonFileSystemSpecialLocation *location;
     char *result;
 
-    location = _hildon_file_system_get_special_location (system, path);
+    location = _hildon_file_system_get_special_location (path);
     fail_if (!HILDON_IS_FILE_SYSTEM_SPECIAL_LOCATION (location),
              "Getting a HildonFileSystemSpecialLocation failed");
 
-    result = _hildon_file_system_create_file_name (system, path, location,
-                                                   NULL);
+    result = _hildon_file_system_create_file_name (path, location,
+						 NULL);
+
     fail_if (strcmp (start + 7, result),
              "Creating a file name without info failed");
 }
@@ -423,14 +427,13 @@ START_TEST (test_file_system_create_file_name_without_location)
     char *end = "/hildonfmtests";
     char *folder = NULL;
     char *result = NULL;
-    GtkFileSystem *system = _hildon_file_system_model_get_file_system (model);
-    GtkFilePath *path;
+    GFile *path;
     GNode *node;
     HildonFileSystemModelNode *model_node;
-    GtkFileInfo *info;
+    GFileInfo *info;
 
     folder = g_strconcat (start, end, NULL);
-    path = gtk_file_system_uri_to_path (system, folder);
+    path = g_file_new_for_uri(folder);
 
     ret = hildon_file_system_model_load_uri (model, folder, &iter);
     fail_if (!ret, "Loading a uri to hildon file system model failed");
@@ -442,8 +445,8 @@ START_TEST (test_file_system_create_file_name_without_location)
     info = model_node->info;
     fail_if (info == NULL, "Getting a GtkFileInfo failed");
 
-    result = _hildon_file_system_create_file_name (system, path, NULL, info);
-    //printf("%s\n", result);
+    result = _hildon_file_system_create_file_name (path, NULL, info);
+    printf("%s\n", result);
 
     fail_if (strcmp (++end, result),
              "Creating a file name without location failed");
@@ -460,18 +463,20 @@ END_TEST
  */
 START_TEST (test_file_system_create_file_name_without_info_and_location)
 {
-    char *start = (gchar*)_hildon_file_selection_get_current_folder_path (fs);
-    GtkFileSystem *system = _hildon_file_system_model_get_file_system (model);
-    GtkFilePath *path = gtk_file_system_uri_to_path (system, start);
+    GFile *file = _hildon_file_selection_get_current_folder_path (fs);
+    char *start = g_file_get_uri (file);
+    GFile *path = g_file_new_for_uri (start);
     size_t length = strlen (start) - strlen ("MyDocs");
     char *result;
 
-    result = _hildon_file_system_create_file_name (system, path, NULL, NULL);
-    //printf ("%s\n", result);
+    g_object_unref (file);
+    result = _hildon_file_system_create_file_name (path, NULL, NULL);
+    g_object_unref (path);
+    printf ("%s\n", result);
     fail_if (strcmp (start + length, result),
              "Creating a file name without info and location failed");
-    free (result);
-    free (start);
+    g_free (result);
+    g_free (start);
 }
 END_TEST
 
@@ -484,19 +489,21 @@ START_TEST (test_file_system_create_display_name_folder)
 {
     gboolean ret;
     GtkTreeIter iter;
-    char *start = (gchar*)_hildon_file_selection_get_current_folder_path (fs);
+    GFile *file = _hildon_file_selection_get_current_folder_path (fs);
+    char *start = g_file_get_uri(file);
     char *end = "/hildonfmtests";
     char *folder = NULL;
     char *result = NULL;
-    GtkFileSystem *system = _hildon_file_system_model_get_file_system (model);
-    GtkFilePath *path;
+    GFile *path;
     GNode *node;
     HildonFileSystemModelNode *model_node;
-    GtkFileInfo *info;
+    GFileInfo *info;
     HildonFileSystemSpecialLocation *location;
 
+    g_object_unref (file);
+
     folder = g_strconcat (start, end, NULL);
-    path = gtk_file_system_uri_to_path (system, folder);
+    path = g_file_new_for_uri (folder);
 
     ret = hildon_file_system_model_load_uri (model, folder, &iter);
     fail_if (!ret, "Loading a uri to hildon file system model failed");
@@ -508,13 +515,16 @@ START_TEST (test_file_system_create_display_name_folder)
     info = model_node->info;
     fail_if(info == NULL, "Getting a GtkFileInfo failed");
 
-    location = _hildon_file_system_get_special_location (system, path);
+    location = _hildon_file_system_get_special_location (path);
     fail_if (HILDON_IS_FILE_SYSTEM_SPECIAL_LOCATION (location),
              "Getting HildonFileSystemSpecialLocation succeeded unexpectedly");
 
-    result = _hildon_file_system_create_display_name (system, path, location,
+    result = _hildon_file_system_create_display_name (path, location,
                                                       info);
-    //printf("%s\n", result);
+
+    g_object_unref (path);
+
+    printf("%s\n", result);
     fail_if (strcmp (end + 1, result),
              "Creating a display name for a file failed");
 
@@ -533,20 +543,22 @@ START_TEST (test_file_system_create_display_name_file)
 {
     gboolean ret;
     GtkTreeIter iter;
-    char *start = (gchar*)_hildon_file_selection_get_current_folder_path (fs);
+    GFile *file = _hildon_file_selection_get_current_folder_path (fs);
+    char *start = g_file_get_uri (file);
     char *end = "/hildonfmtests";
     char *sub = "/file1.txt";
     char *folder = NULL;
     char *result = NULL;
-    GtkFileSystem *system = _hildon_file_system_model_get_file_system (model);
-    GtkFilePath *path;
+    GFile *path;
     GNode *node;
     HildonFileSystemModelNode *model_node;
-    GtkFileInfo *info;
+    GFileInfo *info;
     HildonFileSystemSpecialLocation *location;
 
+    g_object_unref (file);
+
     folder = g_strconcat (start, end, sub, NULL);
-    path = gtk_file_system_uri_to_path (system, folder);
+    path = g_file_new_for_uri (folder);
 
     ret = hildon_file_system_model_load_uri (model, folder, &iter);
     fail_if (!ret, "Loading a uri to hildon file system model failed");
@@ -558,15 +570,16 @@ START_TEST (test_file_system_create_display_name_file)
     info = model_node->info;
     fail_if (info == NULL, "Getting a GtkFileInfo failed");
 
-    location = _hildon_file_system_get_special_location (system, path);
+    location = _hildon_file_system_get_special_location (path);
     fail_if (HILDON_IS_FILE_SYSTEM_SPECIAL_LOCATION (location),
              "Getting HildonFileSystemSpecialLocation succeeded unexpectedly");
 
-    result = _hildon_file_system_create_display_name (system, path, location,
+    result = _hildon_file_system_create_display_name (path, location,
                                                       info);
 
     /* g_assert_cmpstr (sub + 1, ==, result); */
 
+    g_object_unref (path);
     free (folder);
     free (start);
 }

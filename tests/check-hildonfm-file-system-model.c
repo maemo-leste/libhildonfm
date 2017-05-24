@@ -60,6 +60,17 @@ enum
   GTK_FILE_SYSTEM_MEMORY_COLUMN_IS_FOLDER
 };
 
+static gchar* get_current_folder_path(HildonFileSelection *_fs)
+{
+  gchar *rv;
+  GFile *file = _hildon_file_selection_get_current_folder_path (_fs);
+
+  rv = g_file_get_uri (file);
+  g_object_unref (file);
+
+  return rv;
+}
+
 /**
  * hildon_uri_to_gtk_tree_iter:
  * @file_system: a #GtkFileSystem
@@ -218,7 +229,7 @@ START_TEST (test_file_system_model_load_local_path)
     GtkTreeIter iter, iter2;
     GtkFilePath *path;
     GtkFileSystem *gtk_file_system = _hildon_file_system_model_get_file_system (model);
-    char *start = (char *)_hildon_file_selection_get_current_folder_path (fs);
+    char *start = get_current_folder_path (fs);
     char *end = "/hildonfmtests";
     char *sub = "/file1.txt";
     char *folder = NULL;
@@ -272,7 +283,7 @@ START_TEST (test_file_system_model_load_uri)
 {
     gboolean ret;
     GtkTreeIter iter, iter2;
-    char *start = (char *)_hildon_file_selection_get_current_folder_path (fs);
+    char *start = get_current_folder_path (fs);
     char *end = "/hildonfmtests";
     char *sub = "/file1.txt";
     char *folder = NULL;
@@ -322,7 +333,7 @@ START_TEST (test_file_system_model_load_path)
     GtkTreeIter iter, iter2;
     GtkFilePath *path;
     GtkFileSystem *gtk_file_system = _hildon_file_system_model_get_file_system (model);
-    char *start = (char *)_hildon_file_selection_get_current_folder_path (fs);
+    char *start = get_current_folder_path (fs);
     char *end = "/hildonfmtests";
     char *sub = "/file1.txt";
     char *folder = NULL;
@@ -376,7 +387,7 @@ START_TEST (test_file_system_model_search_uri_not_loaded)
 {
     gboolean ret, rec;
     GtkTreeIter iter;
-    char *start = (char *)_hildon_file_selection_get_current_folder_path (fs);
+    char *start = get_current_folder_path (fs);
     char *end = "/hildonfmtests";
     char *sub = "/file1.txt";
     char *folder = NULL;
@@ -398,7 +409,7 @@ START_TEST (test_file_system_model_search_local_path)
     GtkTreeIter iter, iter2;
     GtkFilePath *path;
     GtkFileSystem *gtk_file_system = _hildon_file_system_model_get_file_system (model);
-    char *start = (char *)_hildon_file_selection_get_current_folder_path (fs);
+    char *start = get_current_folder_path (fs);
     char *end = "/hildonfmtests";
     char *sub = "/file1.txt";
     char *folder = NULL;
@@ -454,7 +465,7 @@ START_TEST (test_file_system_model_search_uri)
 {
     gboolean ret, rec;
     GtkTreeIter iter, iter2;
-    char *start = (char *)_hildon_file_selection_get_current_folder_path (fs);
+    char *start = get_current_folder_path (fs);
     char *end = "/hildonfmtests";
     char *sub = "/file1.txt";
     char *folder = NULL;
@@ -506,7 +517,7 @@ START_TEST (test_file_system_model_search_path)
     GtkTreeIter iter, iter2;
     GtkFilePath *path;
     GtkFileSystem *gtk_file_system = _hildon_file_system_model_get_file_system (model);
-    char *start = (char *)_hildon_file_selection_get_current_folder_path (fs);
+    char *start = get_current_folder_path (fs);
     char *end = "/hildonfmtests";
     char *sub = "/file1.txt";
     char *folder = NULL;
@@ -559,7 +570,7 @@ START_TEST (test_file_system_model_new_item)
 {
     gboolean ret;
     GtkTreeIter iter;
-    char *start = (char *)_hildon_file_selection_get_current_folder_path (fs);
+    char *start = get_current_folder_path (fs);
     char *end = "/hildonfmtests";
     char *sub = "/folder1";
     char *stub = "file";
@@ -601,7 +612,7 @@ START_TEST (test_file_system_model_new_item_stub_exists)
        name when the default file name is unavailable */
     gboolean ret;
     GtkTreeIter iter;
-    char *start = (char *)_hildon_file_selection_get_current_folder_path (fs);
+    char *start = get_current_folder_path (fs);
     char *end = "/hildonfmtests";
     char *sub = "/file1.txt";
     char *stub = "file1";
@@ -659,7 +670,7 @@ START_TEST (test_file_system_model_new_item_not_loaded)
 {
     gboolean ret;
     GtkTreeIter iter;
-    char *start = (char *)_hildon_file_selection_get_current_folder_path (fs);
+    char *start = get_current_folder_path (fs);
     char *end = "/hildonfmtests";
     char *stub = "file1";
     char *ext = ".txt";
@@ -684,7 +695,7 @@ END_TEST
 START_TEST (test_file_system_model_autoname_uri)
 {
     GError **error = NULL;
-    char *start = (char *)_hildon_file_selection_get_current_folder_path (fs);
+    char *start = get_current_folder_path (fs);
     char *end = "/hildonfmtests";
     char *sub = "/file.txt";
     char *folder = NULL;
@@ -713,7 +724,7 @@ START_TEST (test_file_system_model_autoname_uri_stub_exists)
     /* Test 1: Test if the first alternative name will be offered as new file
        name when the default file name is unavailable */
     GError **error = NULL;
-    char *start = (char *)_hildon_file_selection_get_current_folder_path (fs);
+    char *start = get_current_folder_path (fs);
     char *end = "/hildonfmtests";
     char *sub = "/file1.txt";
     char *sub2 = "/file2.txt";
@@ -778,7 +789,7 @@ END_TEST
 START_TEST (test_file_system_model_autoname_uri_nonexistent_folder)
 {
     GError **error = NULL;
-    char *start = (char *)_hildon_file_selection_get_current_folder_path (fs);
+    char *start = get_current_folder_path (fs);
     char *end = "/hilttontests";
     char *sub = "/file1.txt";
     char *folder = NULL;
