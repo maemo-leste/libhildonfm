@@ -910,7 +910,8 @@ static void hildon_file_chooser_dialog_unselect_all(GtkFileChooser *
 static GSList *hildon_file_chooser_dialog_get_files(GtkFileChooser *
                                                     chooser)
 {
-    GtkFilePath *file_path, *base_path;
+    GtkFilePath *file_path;
+    gchar *base_path;
     GtkFileSystem *backend;
     gchar *name, *name_without_dot_prefix;
     GFile *file;
@@ -931,7 +932,8 @@ static GSList *hildon_file_chooser_dialog_get_files(GtkFileChooser *
 
     if (priv->action == GTK_FILE_CHOOSER_ACTION_OPEN)
     {
-        GSList *files = _hildon_file_selection_get_selected_files(priv->filetree);
+	GSList *files =
+	    _hildon_file_selection_get_selected_files(priv->filetree);
 	GFile *file = g_object_ref(g_slist_nth_data(files, 0));
 
 	g_slist_foreach (files, (GFunc) g_object_unref, NULL);
@@ -948,17 +950,18 @@ static GSList *hildon_file_chooser_dialog_get_files(GtkFileChooser *
     g_debug("Inputted name: [%s]", name_without_dot_prefix);
 
     backend = _hildon_file_system_model_get_file_system(priv->model);
-    base_path =
-            _hildon_file_selection_get_current_folder_path (priv->filetree);
-    file_path =
-            gtk_file_system_make_path(backend, base_path,
-            name_without_dot_prefix, NULL);
-
-    gtk_file_path_free(base_path);
-    g_free(name);
+    file = _hildon_file_selection_get_current_folder_path (priv->filetree);
+    base_path = g_file_get_uri (file);
+    g_object_unref (file);
+    file_path = gtk_file_system_make_path(backend,
+					  gtk_file_path_new_steal (base_path),
+					  name_without_dot_prefix, NULL);
+    g_free (base_path);
+    g_free (name);
 
     file = g_file_new_for_commandline_arg (gtk_file_path_get_string(file_path));
-    g_free(file_path);
+    gtk_file_path_free(file_path);
+
     return g_slist_append(NULL, file);
 }
 #else
@@ -1350,10 +1353,8 @@ static GString *check_illegal_characters(const gchar * name)
 static void sync_current_folders(HildonFileChooserDialog * source,
                                  HildonFileChooserDialog * target)
 {
-    HildonFileSelection *fs;
     gchar *uri;
 
-    fs = HILDON_FILE_SELECTION(source->priv->filetree);
     /*if (hildon_file_selection_get_active_pane(fs) ==
         HILDON_FILE_SELECTION_PANE_CONTENT)
       uri = gtk_file_chooser_get_uri(GTK_FILE_CHOOSER(source));
