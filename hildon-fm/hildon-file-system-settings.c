@@ -511,7 +511,7 @@ static void mode_received(DBusPendingCall *call, void *user_data)
 
   if (dbus_set_error_from_message(&error, message))
   {
-    g_warning ("%s: %s: %s", G_STRFUNC, error.name, error.message);
+    //g_warning ("%s: %s: %s", G_STRFUNC, error.name, error.message);
     dbus_error_free(&error);
   }
   else

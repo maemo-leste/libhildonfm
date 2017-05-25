@@ -60,7 +60,7 @@ END_TEST
 
 START_TEST (test_file_system_voldev_find_volume)
 {
-    gchar *uri = "file:///";
+    GFile *file = g_file_new_for_commandline_arg (g_getenv ("MYDOCSDIR"));
     GMount *mount = NULL;
     HildonFileSystemModel *model = NULL;
     HildonFileSelection *fs = NULL;
@@ -73,13 +73,13 @@ START_TEST (test_file_system_voldev_find_volume)
     fail_if (!HILDON_IS_FILE_SELECTION (fs),
              "File selection creation failed");
 
-    mount = find_mount (uri);
+    mount = find_mount (file);
     /*
     if (volume == NULL)
         printf ("NULL!!!\n");
     */
     fail_if (!mount,
-             "Locating a GMount with 'file:///' as uri failed");
+	     "Locating a GMount with 'g_getenv (\"MYDOCSDIR\")' as file failed");
 }
 END_TEST
 

@@ -768,7 +768,7 @@ gtk_file_system_make_path (GtkFileSystem    *file_system,
  **/
 gboolean
 gtk_file_system_parse (GtkFileSystem     *file_system,
-		       const GtkFilePath *base_path,
+		       GFile *base_path,
 		       const gchar       *str,
 		       GtkFilePath      **folder,
 		       gchar            **file_part,

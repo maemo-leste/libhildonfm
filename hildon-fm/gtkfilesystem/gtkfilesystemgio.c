@@ -188,10 +188,10 @@ static gchar *  _gtk_file_system_gio_path_to_filename (GtkFileSystem     *file_s
 static gchar *  _gtk_file_system_gio_path_to_uri    (GtkFileSystem     *file_system,
 						     const GtkFilePath *path);
 
-GSList *        _gtk_file_system_gio_list_volumes   (GtkFileSystemGio *file_system);
-GSList *        _gtk_file_system_gio_list_bookmarks (GtkFileSystemGio *file_system);
+GSList *        _gtk_file_system_gio_list_volumes   (GtkFileSystem *file_system);
+GSList *        _gtk_file_system_gio_list_bookmarks (GtkFileSystem *file_system);
 
-gboolean        _gtk_file_system_gio_parse          (GtkFileSystemGio     *file_system,
+gboolean        _gtk_file_system_gio_parse          (GtkFileSystem     *file_system,
 						     GFile             *base_file,
 						     const gchar       *str,
 						     GFile            **folder,
@@ -248,7 +248,7 @@ static gboolean     _gtk_folder_gio_is_finished_loading (GtkFolder *folder);
 
 
 /* GtkFileSystemVolume methods */
-gchar *               _gtk_file_system_gio_volume_get_display_name (GtkFileSystemVolume *volume);
+gchar *               _gtk_file_system_gio_volume_get_display_name (GtkFileSystem *file_system, GtkFileSystemVolume *volume);
 gboolean              _gtk_file_system_gio_volume_is_mounted       (GtkFileSystemVolume *volume);
 GFile *               _gtk_file_system_gio_volume_get_root         (GtkFileSystemVolume *volume);
 GdkPixbuf *           _gtk_file_system_gio_volume_render_icon      (GtkFileSystemVolume  *volume,
@@ -864,7 +864,7 @@ gtk_file_system_gio_new (void)
 }
 
 GSList *
-_gtk_file_system_gio_list_volumes (GtkFileSystemGio *file_system)
+_gtk_file_system_gio_list_volumes (GtkFileSystem *file_system)
 {
   GtkFileSystemGioPrivate *priv;
   GSList *list;
@@ -882,7 +882,7 @@ _gtk_file_system_gio_list_volumes (GtkFileSystemGio *file_system)
 }
 
 GSList *
-_gtk_file_system_gio_list_bookmarks (GtkFileSystemGio *file_system)
+_gtk_file_system_gio_list_bookmarks (GtkFileSystem *file_system)
 {
   GtkFileSystemGioPrivate *priv;
   GSList *bookmarks, *files = NULL;
@@ -929,7 +929,7 @@ has_uri_scheme (const char *str)
 }
 
 gboolean
-_gtk_file_system_gio_parse (GtkFileSystemGio     *file_system,
+_gtk_file_system_gio_parse (GtkFileSystem *file_system,
 			    GFile             *base_file,
 			    const gchar       *str,
 			    GFile            **folder,
@@ -1922,7 +1922,8 @@ _gtk_folder_gio_is_finished_loading (GtkFolder *folder)
 
 /* GtkFileSystemVolume public methods */
 gchar *
-_gtk_file_system_gio_volume_get_display_name (GtkFileSystemVolume *volume)
+_gtk_file_system_gio_volume_get_display_name (GtkFileSystem        *file_system,
+					      GtkFileSystemVolume *volume)
 {
   DEBUG ("volume_get_display_name");
 

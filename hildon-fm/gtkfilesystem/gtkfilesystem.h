@@ -204,7 +204,7 @@ struct _GtkFileSystemIface
 				     const gchar       *display_name,
 				     GError           **error);
   gboolean      (*parse)            (GtkFileSystem     *file_system,
-				     const GtkFilePath *base_path,
+				     GFile             *base_path,
 				     const gchar       *str,
 				     GtkFilePath      **folder,
 				     gchar            **file_part,
@@ -295,7 +295,7 @@ GtkFilePath *     gtk_file_system_make_path      (GtkFileSystem     *file_system
 						  const gchar       *display_name,
 						  GError           **error);
 gboolean          gtk_file_system_parse          (GtkFileSystem     *file_system,
-						  const GtkFilePath *base_path,
+						  GFile             *base_path,
 						  const gchar       *str,
 						  GtkFilePath      **folder,
 						  gchar            **file_part,
