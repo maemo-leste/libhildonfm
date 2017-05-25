@@ -18,7 +18,7 @@ EXTRA_DIST =
 
 libhildonfm_la_LIBADD = $(GTK_LIBS) $(HILDON_LIBS) $(GCONF_LIBS) $(HILDON_THUMBNAIL_LIBS) \
 	$(GWCONNECT_LIBS) $(DBUSGLIB_LIBS) $(LIBOSSOMIME_LIBS) $(GIO_LIBS) $(TRACKER_LIBS) \
-	$(GCONF_LIBS) gtkfilesystem/xdgmime/libxdgmime.la
+	$(GCONF_LIBS)
 
 libhildonfm_la_LDFLAGS = -version-info 2:0:0
 libhildonfm_la_SOURCES =			\
