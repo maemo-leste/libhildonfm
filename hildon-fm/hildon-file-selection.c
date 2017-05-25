@@ -4383,14 +4383,13 @@ gboolean hildon_file_selection_get_current_folder_iter(HildonFileSelection
  *
  * This function always returns a list of one file or NULL.
  */
-GSList *_hildon_file_selection_get_selected_files(HildonFileSelection
-                                                       * self)
+GSList *_hildon_file_selection_get_selected_files(HildonFileSelection* self)
 {
     GtkWidget *view;
     GtkTreeIter iter;
     GtkTreeModel *model;
     gboolean folder;
-    GtkFilePath *file_path;
+    GFile *file;
 
     g_return_val_if_fail(HILDON_IS_FILE_SELECTION(self), NULL);
 
@@ -4406,8 +4405,8 @@ GSList *_hildon_file_selection_get_selected_files(HildonFileSelection
                 if (!folder) {
                     gtk_tree_model_get(model, &iter,
                                        HILDON_FILE_SYSTEM_MODEL_COLUMN_GTK_PATH_INTERNAL,
-                                       &file_path, -1);
-                    return g_slist_append(NULL, file_path);
+				       &file, -1);
+		    return g_slist_append(NULL, file);
                 }
             }
         }
