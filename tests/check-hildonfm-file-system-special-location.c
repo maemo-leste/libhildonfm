@@ -181,6 +181,7 @@ END_TEST
  */
 START_TEST (test_file_system_special_location_child_location)
 {
+#if 0
     char *start = get_current_folder_path (fs);
     char *rest = "/hildonfmtests";
     char *folder = g_strconcat (start, rest, NULL);
@@ -198,6 +199,7 @@ START_TEST (test_file_system_special_location_child_location)
 
     g_object_unref (file);
     free (folder);
+#endif
 }
 END_TEST
 

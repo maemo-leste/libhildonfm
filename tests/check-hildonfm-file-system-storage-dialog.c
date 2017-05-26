@@ -50,6 +50,17 @@ static GtkWindow *fssd_window = NULL;
 static GtkWidget *fssd = NULL;
 static gchar *start = NULL;
 
+static gchar* get_current_folder_path(HildonFileSelection *_fs)
+{
+  gchar *rv;
+  GFile *file = _hildon_file_selection_get_current_folder_path (_fs);
+
+  rv = g_file_get_uri (file);
+  g_object_unref (file);
+
+  return rv;
+}
+
 static void
 fx_setup_hildonfm_file_system_storage_dialog ()
 {
@@ -61,7 +72,9 @@ fx_setup_hildonfm_file_system_storage_dialog ()
     fail_if (!HILDON_IS_FILE_SELECTION (fs),
              "File selection creation failed");
 
-    start = (gchar *)_hildon_file_selection_get_current_folder_path (fs);
+    hildon_file_selection_set_current_folder_uri(fs, g_getenv("MYDOCSDIR"), NULL);
+
+    start = get_current_folder_path (fs);
 
     fssd_window = GTK_WINDOW (hildon_window_new ());
     fail_if (!HILDON_IS_WINDOW (fssd_window),

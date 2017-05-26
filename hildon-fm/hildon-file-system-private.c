@@ -663,41 +663,12 @@ GFile *_hildon_file_system_path_for_location(
 }
 
 /* You can omit either type or base */
-/* FIXME */
 GtkFileSystemVolume *
 _hildon_file_system_get_volume_for_location(
     GtkFileSystem *fs, HildonFileSystemSpecialLocation *location)
 {
-    GSList *volumes, *iter;
-    gchar *mount_path, *path;
-    GtkFileSystemVolume *vol, *result = NULL;
-    const char *path_a, *path_b;
-
-    /* We cannot just use get_volume_for_path, because it won't
-        work work with URIs other than file:// */
-    volumes = gtk_file_system_list_volumes(fs);
-    mount_path = _hildon_file_system_path_for_location(location);
-    path_a = gtk_file_path_get_string(mount_path);
-
-    for (iter = volumes; iter; iter = g_slist_next(iter))
-      if ((vol = iter->data) != NULL)   /* Hmmm, it seems to be possible that this list contains NULL items!! */
-      {
-        path = gtk_file_system_volume_get_base_path(fs, vol);
-        path_b = gtk_file_path_get_string(path);
-
-        if (!result &&
-           _hildon_file_system_compare_ignore_last_separator(path_a, path_b))
-          result = vol;
-        else
-          gtk_file_system_volume_free(fs, vol);
-
-        gtk_file_path_free(path);
-      }
-
-    g_free(mount_path);
-    g_slist_free(volumes);
-
-    return result;
+    return (GtkFileSystemVolume *)g_file_find_enclosing_mount (
+	  _hildon_file_system_path_for_location(location), NULL, NULL);
 }
 
 GtkFileSystem *hildon_file_system_create_backend(const gchar *name, gboolean use_fallback)

@@ -48,6 +48,17 @@
 static HildonFileSystemModel *model = NULL;
 static HildonFileSelection *fs = NULL;
 
+static gchar* get_current_folder_path(HildonFileSelection *_fs)
+{
+  gchar *rv;
+  GFile *file = _hildon_file_selection_get_current_folder_path (_fs);
+
+  rv = g_file_get_uri (file);
+  g_object_unref (file);
+
+  return rv;
+}
+
 static void
 fx_setup_default_hildonfm_file_system_private ()
 {
@@ -70,10 +81,10 @@ fx_teardown_default_hildonfm_file_system_private ()
 }
 
 typedef struct {
-    GtkFilePath *path;
+    GFile *file;
     GFileInfo *info;
     GtkFolder *folder;
-    GCancellable *get_folder_handle;
+    GCancellable *cancellable;
     gint pending_adds;
     GdkPixbuf *icon_cache;
     GdkPixbuf *icon_cache_expanded;
@@ -83,15 +94,19 @@ typedef struct {
     gchar *title_cache;
     gchar *key_cache;
     HildonFileSystemModel *model;
-    HildonThumbnailFactoryHandle thumbnail_handle;
+    HildonThumbnailRequest* thumbnail_request;
     time_t load_time;
     guint present_flag : 1;
     guint available : 1; /* Set by code */
     guint accessed : 1;  /* Replaces old gateway_accessed from model */
     guint linking : 1; /* whether it's being linked */
     GError *error;      /* Set if cannot get children */
-    gchar *thumb_title, *thumb_author;
+    gchar *thumb_title, *thumb_author, *thumb_album;
     HildonFileSystemSpecialLocation *location;
+    /* HildonFileSelection uses display_text and display_attrs in its
+     * cellrenderer. */
+    gchar *display_text;
+    PangoAttrList *display_attrs;
 } HildonFileSystemModelNode;
 
 /* -------------------- Test cases -------------------- */
@@ -324,13 +339,13 @@ END_TEST
  */
 START_TEST (test_file_system_get_volume_for_location)
 {
-    char *start = "file:///";
+    const char *start = g_getenv("MYDOCSDIR");
     GtkFileSystem *system = _hildon_file_system_model_get_file_system (model);
-    GFile *path = g_file_new_for_uri (start);
+    GFile *file = g_file_new_for_commandline_arg (start);
     GtkFileSystemVolume *volume = NULL;
     HildonFileSystemSpecialLocation *location;
 
-    location = _hildon_file_system_get_special_location (path);
+    location = _hildon_file_system_get_special_location (file);
     fail_if (!HILDON_IS_FILE_SYSTEM_SPECIAL_LOCATION (location),
              "Getting a HildonFileSystemSpecialLocation failed");
 
@@ -423,7 +438,7 @@ START_TEST (test_file_system_create_file_name_without_location)
 {
     gboolean ret;
     GtkTreeIter iter;
-    char *start = (gchar*)_hildon_file_selection_get_current_folder_path (fs);
+    char *start = get_current_folder_path (fs);
     char *end = "/hildonfmtests";
     char *folder = NULL;
     char *result = NULL;

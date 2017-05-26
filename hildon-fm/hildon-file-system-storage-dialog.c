@@ -511,6 +511,7 @@ file_system_storage_dialog_stats_collect (GtkWidget   *widget,
       if (!g_file_info_get_content_type (info)) {
         priv->other_size += g_file_info_get_size (info);
         g_object_unref (child);
+	info = g_file_enumerator_next_file (enumerator, NULL, &error);
         continue;
       }
 
@@ -1393,7 +1394,7 @@ hildon_file_system_storage_dialog_set_uri (GtkWidget   *widget,
 {
   HildonFileSystemStorageDialogPriv *priv;
   GFile *file;
-  GError *error;
+  GError *error = NULL;
 
   g_return_if_fail (HILDON_IS_FILE_SYSTEM_STORAGE_DIALOG (widget));
   g_return_if_fail (uri_str != NULL && uri_str[0] != '\0');

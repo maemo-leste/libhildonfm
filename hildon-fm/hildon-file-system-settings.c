@@ -1085,7 +1085,7 @@ gboolean _hildon_file_system_settings_ready(HildonFileSystemSettings *self)
 }
 
 GKeyFile *
-hildon_file_system_open_user_settings ()
+hildon_file_system_open_user_settings (void)
 {
   GError *error = NULL;
   gchar *file = g_strdup_printf ("%s/.osso/hildon-fm", g_get_home_dir ());

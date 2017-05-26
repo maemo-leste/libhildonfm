@@ -326,7 +326,7 @@ _gtk_file_system_gio_make_path (GtkFileSystem    *file_system,
 				GError           **error)
 {
   const gchar *basename = gtk_file_path_get_string (base_path);
-  gchar *uri = g_build_path("", basename, display_name, NULL);
+  gchar *uri = g_build_path("/", basename, display_name, NULL);
 
   if (error)
     *error = NULL;
