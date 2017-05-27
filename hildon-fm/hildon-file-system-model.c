@@ -1974,8 +1974,10 @@ link_file_folder (GNode *node, GFile *file)
   child_node = g_node_first_child(node);
   while (child_node)
     {
-      HildonFileSystemModelNode *model_node = child_node->data;
-      model_node->present_flag = FALSE;
+      HildonFileSystemModelNode *n = child_node->data;
+
+      DEBUG_GFILE_URI("%s node %p present_flag = FALSE", n->file, n);
+      n->present_flag = FALSE;
       child_node = g_node_next_sibling(child_node);
     }
 
