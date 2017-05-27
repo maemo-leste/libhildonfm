@@ -94,16 +94,32 @@ hildon_file_system_root_create_child_location (HildonFileSystemSpecialLocation
 {
   HildonFileSystemSpecialLocation *child = NULL;
   gchar *uri = g_file_get_uri (file);
-  /* XXX - Cough, a bit of hardcoding, it is better to ask GnomeVFS
-           whether this is a volume or drive.
-   */
-  /* FIXME */
-  if (g_str_has_prefix (uri, "drive://")
-      || (g_str_has_prefix (uri, "file:///media/") &&
-	  strchr (uri + 14, '/') == NULL)
-      || (g_str_has_prefix (uri, "file:///media/usb/") &&
-	  strchr (uri + 18, '/') == NULL))
+  gboolean is_volume = FALSE;
+
+  if (g_file_has_uri_scheme (file, "drive"))
+    is_volume = TRUE;
+
+  if (!is_volume)
     {
+      GMount *mount = g_file_find_enclosing_mount (file, NULL, NULL);
+
+      if (mount)
+	{
+	  GFile *root = g_mount_get_root (mount);
+
+	  if (root)
+	    {
+	      is_volume = g_file_equal (file, root);
+	      g_object_unref (root);
+	    }
+
+	  g_object_unref (mount);
+	}
+    }
+
+  if (is_volume)
+    {
+      DEBUG_GFILE_URI("NEW VOLDEV %s", file);
       child = g_object_new (HILDON_TYPE_FILE_SYSTEM_VOLDEV, NULL);
       child->basepath = g_object_ref (file);
       child->permanent = FALSE;
@@ -111,6 +127,7 @@ hildon_file_system_root_create_child_location (HildonFileSystemSpecialLocation
     }
 
   g_free (uri);
+
   return child;
 }
 
