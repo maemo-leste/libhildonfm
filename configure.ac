@@ -98,7 +98,6 @@ AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE", [gettext package name])
 AC_CONFIG_FILES([Makefile
 		 hildon-fm/Makefile
 		 hildon-fm/gtkfilesystem/Makefile
-		 hildon-fm/gtkfilesystem/xdgmime/Makefile
 		 data/user-dirs.defaults
  	         doc/Makefile
 		 tests/Makefile
