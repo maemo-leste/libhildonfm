@@ -254,8 +254,7 @@ root_file_folder_list_children (GtkFolder  *folder,
 	  g_free (uri);
 	}
 
-      DEBUG_GFILE_URI ("!!!!!!!!!!!!!!!!!!!!!!ADD %s", g_slist_last(*children)->data);
-      g_object_unref (l->data);
+      DEBUG_GFILE_URI ("ADD %s", g_slist_last(*children)->data);
     }
 
   g_slist_free (volumes);
