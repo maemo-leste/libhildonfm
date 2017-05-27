@@ -262,7 +262,12 @@ handle_finished_node (GNode *node)
     {
       HildonFileSystemModelNode *model_node = child_node->data;
       /* We do not want to ever kick permanent special locations. */
-      
+#if 0 /* for debug */
+      g_warning ("!!!!!!!!! %s %p %d %p %d %d", g_file_get_uri (model_node->file),model_node,
+		 model_node->present_flag, model_node->location,
+		 model_node->location ? model_node->location->permanent:0,
+		 model_node->linking);
+#endif
       if (model_node->present_flag
 	  || (model_node->location  && model_node->location->permanent)||
 	  model_node->linking)
@@ -1522,7 +1527,7 @@ delay_files_added (GtkFolder * monitor,
   if (node)
     {
       dfa_clos *c = g_new0 (dfa_clos, 1);
-      
+
       g_object_ref (monitor);
       paths = g_slist_copy_deep (paths, (GCopyFunc) g_object_ref, NULL);
       g_object_ref (data);
@@ -1573,37 +1578,42 @@ static void hildon_file_system_model_files_added(GtkFolder * monitor,
 
 	i = 0;
 	while (paths && i < MAX_BATCH)
-            {
-                if (model_node->location)
-		  {
-		    real_file =
-			hildon_file_system_special_location_rewrite_path (
-			  model_node->location, CAST_GET_PRIVATE(model)->filesystem, paths->data);
-		  }
-                else
-		  real_file = g_object_ref(paths->data);
-              
-                //search whether this node already exists
-		if (hildon_file_system_model_search_path_internal (node, real_file, FALSE) &&
-		    !g_str_has_prefix (gtk_file_path_get_string(real_file), "upnpav://") &&
-		    !g_str_has_prefix (gtk_file_path_get_string(real_file), "file:///media/"))
-		  {
-                    //node already exists no need to add
-                    all_new = FALSE;
-		  }
-		else
-		  {
-                    hildon_file_system_model_add_node (model,
-                                                       node,
-                                                       monitor,
-						       paths->data,
-						       TRUE);
-		  }
+	  {
+	    GNode *n;
 
-		g_object_unref (real_file);
-                paths = paths->next;
-                i++;
-            }
+	    if (model_node->location)
+	      {
+		real_file =
+		    hildon_file_system_special_location_rewrite_path (
+		      model_node->location, CAST_GET_PRIVATE(model)->filesystem, paths->data);
+	      }
+	    else
+	      real_file = g_object_ref(paths->data);
+
+	    //search whether this node already exists
+	    if ((n = hildon_file_system_model_search_path_internal (node, real_file, FALSE)) &&
+		!g_str_has_prefix (gtk_file_path_get_string(real_file), "upnpav://") &&
+		!g_str_has_prefix (gtk_file_path_get_string(real_file), "file:///media/"))
+	      {
+		//node already exists no need to add
+		HildonFileSystemModelNode *mn = n->data;
+		DEBUG_GFILE_URI("%s %p setting present_flag to TRUE", real_file, mn);
+		mn->present_flag = TRUE;
+		all_new = FALSE;
+	      }
+	    else
+	      {
+		hildon_file_system_model_add_node (model,
+						   node,
+						   monitor,
+						   paths->data,
+						   TRUE);
+	      }
+
+	    g_object_unref (real_file);
+	    paths = paths->next;
+	    i++;
+	  }
 
 	emit_node_changed (node);
 
@@ -1688,14 +1698,13 @@ hildon_file_system_model_search_path_internal (GNode *parent_node,
 
     /* First consider the parent itself.
      */
-
-    DEBUG_GFILE_URI("file %s", file);
     if (model_node)
       {
 	if (g_file_equal (file, model_node->file))
 	  {
-	    DEBUG_GFILE_URI("FOUND %s", model_node->file);
-	  return parent_node;
+	    DEBUG_GFILE_URI("EQUAL FOUND %s model_node %p", model_node->file,
+			    model_node);
+	    return parent_node;
 	  }
       }
 
@@ -1706,8 +1715,9 @@ hildon_file_system_model_search_path_internal (GNode *parent_node,
 
 	if (g_file_equal (file, model_node->file))
 	  {
-	    DEBUG_GFILE_URI("FOUND %s", model_node->file);
-	  return node;
+	    DEBUG_GFILE_URI("CHILD FOUND %s model_node %p", model_node->file,
+			    model_node);
+	    return node;
 	  }
 
         if (recursively) {
@@ -1751,6 +1761,8 @@ unlink_file_folder(GNode *node)
 {
   HildonFileSystemModelNode *model_node = node->data;
   g_assert(model_node != NULL);
+
+  DEBUG_GFILE_URI("file %s model_node %p folder %p", model_node->file, model_node, model_node->folder);
 
   if (model_node->cancellable)
     {
@@ -1818,15 +1830,13 @@ get_folder_callback (GCancellable *cancellable,
    */
   if (cancelled)
     {
-      g_debug ("LINK CANCELLED\n");
+      DEBUG_GFILE_URI ("LINK CANCELLED %s model_node %p\n", model_node->file, model_node);
       free_handle_data (handle_data);
       return;
     }
 
 
   model = model_node->model;
-
-  DEBUG_GFILE_URI ("LINKING FALSE %s %p", model_node->file, folder);
 
   if (model_node->cancellable)
     g_object_unref(model_node->cancellable);
@@ -1937,6 +1947,9 @@ link_file_folder (GNode *node, GFile *file)
   model_node = node->data;
   g_assert(model_node != NULL);
 
+  DEBUG_GFILE_URI ("check %s model_node %p folder %p cancellable %p",
+		   model_node->file, model_node, model_node->folder, model_node->cancellable);
+
   /* Folder already exists or we have already asked for it.
    */
   if (model_node->folder || model_node->cancellable)
@@ -1949,7 +1962,6 @@ link_file_folder (GNode *node, GFile *file)
 
   model_node->load_time = time(NULL);
   model_node->linking = TRUE;
-  DEBUG_GFILE_URI ("LINKING TRUE %s", model_node->file);
 
   if (!model_node->file)
     model_node->file = g_object_ref(file);
@@ -1993,8 +2005,6 @@ link_file_folder (GNode *node, GFile *file)
 
   if (model_node->cancellable == NULL)
     {
-      DEBUG_GFILE_URI ("LINKING FALSE %s", model_node->file);
-
       model_node->linking = FALSE;
       free_handle_data (handle_data);
       return FALSE;

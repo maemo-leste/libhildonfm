@@ -464,8 +464,6 @@ hildon_file_system_voldev_volumes_changed (HildonFileSystemSpecialLocation
 	    location->fixed_icon = g_icon_to_string (icon);
 	  g_object_unref (icon);
 	}
-
-      location->permanent=TRUE;
     }
   else if (voldev->volume)
     {
@@ -487,8 +485,6 @@ hildon_file_system_voldev_volumes_changed (HildonFileSystemSpecialLocation
 	    location->fixed_icon = g_icon_to_string (icon);
 	  g_object_unref (icon);
 	}
-
-      location->permanent=TRUE;
     }
 
   /* XXX - GnomeVFS should provide the right icons and display names.
