@@ -241,10 +241,11 @@ hildon_file_details_dialog_response(GtkDialog *dialog, gint response_id)
 static void
 hildon_file_details_dialog_map(GtkWidget *widget)
 {
+/*
   HildonFileDetailsDialogPrivate *priv;
 
   priv = HILDON_FILE_DETAILS_DIALOG(widget)->priv;
-
+*/
   /* Map the GtkWidget */
   GTK_WIDGET_CLASS(file_details_dialog_parent_class)->map(widget);
 }
@@ -622,7 +623,6 @@ void hildon_file_details_dialog_set_file_iter(HildonFileDetailsDialog *self, Gtk
   GtkTreePath *path, *path_old;
   GtkTreeIter temp_iter, parent_iter;
   gchar *name, *mime, *uri, *size_string, *desc;
-  const gchar *fmt;
   gint64 time_stamp, size;
   struct tm *time_struct;
   time_t time_val;
@@ -690,7 +690,6 @@ void hildon_file_details_dialog_set_file_iter(HildonFileDetailsDialog *self, Gtk
       /* If format is passed directly to strftime, gcc complains about
 	 that some locales use only 2 digit year numbers. Using
 	 a temporary disable this warning (from strftime man page) */
-      fmt = "%x";
       strftime(buffer, sizeof(buffer), dgettext("hildon-libs", "wdgt_va_date"),
     		  time_struct);
       hildon_caption_set_value (HILDON_CAPTION (self->priv->file_date), buffer);

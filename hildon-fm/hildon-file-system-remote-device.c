@@ -94,11 +94,12 @@ hildon_file_system_remote_device_init (HildonFileSystemRemoteDevice *device)
 static void
 hildon_file_system_remote_device_finalize (GObject *obj)
 {
-    HildonFileSystemSpecialLocation *location;
     HildonFileSystemRemoteDevice *device;
     HildonFileSystemSettings *fs_settings;
-
-    location = HILDON_FILE_SYSTEM_SPECIAL_LOCATION (obj);
+/*
+    HildonFileSystemSpecialLocation *location =
+	HILDON_FILE_SYSTEM_SPECIAL_LOCATION (obj);
+*/
     device = HILDON_FILE_SYSTEM_REMOTE_DEVICE (obj);
     fs_settings = _hildon_file_system_settings_get_instance ();
 
