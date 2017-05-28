@@ -206,7 +206,7 @@ struct _GtkFileSystemIface
   gboolean      (*parse)            (GtkFileSystem     *file_system,
 				     GFile             *base_path,
 				     const gchar       *str,
-				     GtkFilePath      **folder,
+				     GFile            **folder,
 				     gchar            **file_part,
 				     GError           **error);
   gchar *      (*path_to_uri)      (GtkFileSystem      *file_system,
@@ -221,11 +221,11 @@ struct _GtkFileSystemIface
   /* Bookmarks 
    */
   gboolean       (*insert_bookmark)        (GtkFileSystem     *file_system,
-					    const GtkFilePath *path,
+					    GFile             *file,
 					    gint               position,
 					    GError           **error);
   gboolean       (*remove_bookmark)        (GtkFileSystem     *file_system,
-					    const GtkFilePath *path,
+					    GFile             *file,
 					    GError           **error);
   GSList *       (*list_bookmarks)         (GtkFileSystem     *file_system);
 
@@ -237,9 +237,9 @@ struct _GtkFileSystemIface
   /* Bookmark labels 
    */
   gchar *        (*get_bookmark_label)     (GtkFileSystem     *file_system,
-					    const GtkFilePath *path);
+					    GFile             *filename_to_path);
   void           (*set_bookmark_label)     (GtkFileSystem     *file_system,
-					    const GtkFilePath *path,
+					    GFile             *file,
 					    const gchar       *label);
 };
 
@@ -297,7 +297,7 @@ GtkFilePath *     gtk_file_system_make_path      (GtkFileSystem     *file_system
 gboolean          gtk_file_system_parse          (GtkFileSystem     *file_system,
 						  GFile             *base_path,
 						  const gchar       *str,
-						  GtkFilePath      **folder,
+						  GFile            **folder,
 						  gchar            **file_part,
 						  GError           **error);
 
@@ -314,18 +314,18 @@ gboolean     gtk_file_system_path_is_local    (GtkFileSystem     *filesystem,
 					       GFile *file);
 
 gboolean gtk_file_system_insert_bookmark (GtkFileSystem     *file_system,
-					  const GtkFilePath *path,
+					  GFile             *file,
 					  gint               position,
 					  GError           **error);
 gboolean gtk_file_system_remove_bookmark (GtkFileSystem     *file_system,
-					  const GtkFilePath *path,
+					  GFile             *file,
 					  GError           **error);
 GSList  *gtk_file_system_list_bookmarks  (GtkFileSystem     *file_system);
 
 gchar   *gtk_file_system_get_bookmark_label (GtkFileSystem     *file_system,
-					     const GtkFilePath *path);
+					     GFile             *file);
 void     gtk_file_system_set_bookmark_label (GtkFileSystem     *file_system,
-					     const GtkFilePath *path,
+					     GFile             *file,
 					     const gchar       *label);
 
 /*

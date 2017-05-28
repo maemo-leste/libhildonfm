@@ -52,12 +52,11 @@ static void
 hildon_file_system_obex_finalize (GObject *obj);
 static void
 hildon_file_system_obex_init (HildonFileSystemObex *device);
-GtkFilePath *
-hildon_file_system_obex_rewrite_path (HildonFileSystemSpecialLocation *location,
-				      GtkFileSystem *filesystem,
-				      const GtkFilePath *path);
+GFile *hildon_file_system_obex_rewrite_path(HildonFileSystemSpecialLocation *location,
+					    GtkFileSystem *filesystem,
+					    GFile *file);
 HildonFileSystemSpecialLocation*
-hildon_file_system_obex_create_child_location (HildonFileSystemSpecialLocation *location, gchar *uri);
+hildon_file_system_obex_create_child_location (HildonFileSystemSpecialLocation *location, GFile *file);
 
 static gboolean
 hildon_file_system_obex_is_visible (HildonFileSystemSpecialLocation *location,
@@ -145,10 +144,10 @@ hildon_file_system_obex_finalize (GObject *obj)
     G_OBJECT_CLASS (hildon_file_system_obex_parent_class)->finalize (obj);
 }
 
-GtkFilePath *
+GFile *
 hildon_file_system_obex_rewrite_path (HildonFileSystemSpecialLocation *location,
 				      GtkFileSystem *filesystem,
-				      const GtkFilePath *path)
+				      GFile *file)
 {
   /* XXX - the 'right' thing would be to follow the symlinks below
            "obex:///" explicitly, but we would have to special case
@@ -157,28 +156,33 @@ hildon_file_system_obex_rewrite_path (HildonFileSystemSpecialLocation *location,
            the URIs...
   */
 
-  GtkFilePath *new_path;
-  const char *str = gtk_file_path_get_string (path);
+  GFile *new_path;
 
-  if (g_str_has_prefix (str, "obex:///"))
+  if (g_file_has_uri_scheme (file, "obex"))
     {
+      gchar *str = g_file_get_uri (file);
       char *new_str = hildon_file_system_unescape_string (str);
+
+      g_free (str);
       strcpy (new_str + 7, new_str + 8);
-      new_path = gtk_file_path_new_steal (new_str);
+      new_path = g_file_new_for_uri (new_str);
     }
   else
-    new_path = gtk_file_path_copy (path);
+    new_path = g_file_dup (file);
 
   return new_path;
 }
 
 HildonFileSystemSpecialLocation*
-hildon_file_system_obex_create_child_location (HildonFileSystemSpecialLocation *location, gchar *uri)
+hildon_file_system_obex_create_child_location (HildonFileSystemSpecialLocation *location,
+					       GFile *file)
 {
     HildonFileSystemSpecialLocation *child = NULL;
     gchar *skipped, *found, *name;
+    gchar *uri = g_file_get_uri (file);
+    gchar *base_uri = g_file_get_uri (location->basepath);
 
-    skipped = uri + strlen (location->basepath) + 1;
+    skipped = uri + strlen (base_uri) + 1;
 
     found = strchr (skipped, G_DIR_SEPARATOR);
 
@@ -204,10 +208,13 @@ hildon_file_system_obex_create_child_location (HildonFileSystemSpecialLocation *
             g_free (name);
         }
 
-        child->basepath = g_strdup (uri);
+	child->basepath = g_file_new_for_uri (uri);
         child->failed_access_message = _("sfil_ib_cannot_connect_device");
         child->permanent = FALSE;
     }
+
+    g_free (uri);
+    g_free (base_uri);
 
     return child;
 }

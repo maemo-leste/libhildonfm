@@ -307,16 +307,6 @@ gtk_file_system_gio_iface_init (GtkFileSystemIface *iface)
   iface->list_bookmarks = _gtk_file_system_gio_list_bookmarks;
   iface->get_bookmark_label = _gtk_file_system_gio_get_bookmark_label;
   iface->set_bookmark_label = _gtk_file_system_gio_set_bookmark_label;
-
-
-  iface->get_volume_for_path = 1;
-  iface->create_folder = 1;
-  iface->cancel_operation = 1;
-  iface->volume_free = 1;
-  iface->volume_get_base_path = 1;
-  iface->volume_get_is_mounted = 1;
-  iface->volume_mount = 1;
-  iface->volume_get_icon_name = 1;
 }
 
 static GtkFilePath *

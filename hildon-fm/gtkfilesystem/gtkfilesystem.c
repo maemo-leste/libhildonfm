@@ -27,8 +27,6 @@
 
 #define I_(foo) (foo)
 #define P_(foo) (foo)
-#define _(foo) (foo)
-
 
 struct _GtkFileInfo
 {
@@ -276,20 +274,6 @@ gtk_file_info_get_icon_name (const GtkFileInfo *info)
   
   return info->icon_name;
 }
-
-#ifdef MAEMO_CHANGES
-void
-gtk_file_info_set_icon_pixbuf (GtkFileInfo *info,
-			       GdkPixbuf *icon_pixbuf)
-{
-  g_return_if_fail (info != NULL);
-
-  g_object_ref (icon_pixbuf);
-  if (info->icon_pixbuf)
-    g_object_unref (info->icon_pixbuf);
-  info->icon_pixbuf = icon_pixbuf;
-}
-#endif
 
 gboolean
 _gtk_file_info_consider_as_directory (GFileInfo *info)
@@ -770,11 +754,11 @@ gboolean
 gtk_file_system_parse (GtkFileSystem     *file_system,
 		       GFile *base_path,
 		       const gchar       *str,
-		       GtkFilePath      **folder,
+		       GFile            **folder,
 		       gchar            **file_part,
 		       GError           **error)
 {
-  GtkFilePath *tmp_folder = NULL;
+  GFile *tmp_folder = NULL;
   gchar *tmp_file_part = NULL;
   gboolean result;
 
@@ -791,7 +775,7 @@ gtk_file_system_parse (GtkFileSystem     *file_system,
   if (folder)
     *folder = tmp_folder;
   else
-    gtk_file_path_free (tmp_folder);
+    g_object_unref (tmp_folder);
 
   if (file_part)
     *file_part = tmp_file_part;
@@ -890,14 +874,14 @@ gtk_file_system_path_is_local (GtkFileSystem     *file_system,
  **/
 gboolean
 gtk_file_system_insert_bookmark (GtkFileSystem     *file_system,
-				 const GtkFilePath *path,
+				 GFile             *file,
 				 gint               position,
 				 GError           **error)
 {
   g_return_val_if_fail (GTK_IS_FILE_SYSTEM (file_system), FALSE);
-  g_return_val_if_fail (path != NULL, FALSE);
+  g_return_val_if_fail (file != NULL, FALSE);
 
-  return GTK_FILE_SYSTEM_GET_IFACE (file_system)->insert_bookmark (file_system, path, position, error);
+  return GTK_FILE_SYSTEM_GET_IFACE (file_system)->insert_bookmark (file_system, file, position, error);
 }
 
 /**
@@ -916,13 +900,13 @@ gtk_file_system_insert_bookmark (GtkFileSystem     *file_system,
  **/
 gboolean
 gtk_file_system_remove_bookmark (GtkFileSystem     *file_system,
-				 const GtkFilePath *path,
+				 GFile             *file,
 				 GError           **error)
 {
   g_return_val_if_fail (GTK_IS_FILE_SYSTEM (file_system), FALSE);
-  g_return_val_if_fail (path != NULL, FALSE);
+  g_return_val_if_fail (file != NULL, FALSE);
 
-  return GTK_FILE_SYSTEM_GET_IFACE (file_system)->remove_bookmark (file_system, path, error);
+  return GTK_FILE_SYSTEM_GET_IFACE (file_system)->remove_bookmark (file_system, file, error);
 }
 
 /**
@@ -957,16 +941,16 @@ gtk_file_system_list_bookmarks (GtkFileSystem *file_system)
  */
 gchar *
 gtk_file_system_get_bookmark_label (GtkFileSystem     *file_system,
-				    const GtkFilePath *path)
+				    GFile             *file)
 {
   GtkFileSystemIface *iface;
 
   g_return_val_if_fail (GTK_IS_FILE_SYSTEM (file_system), NULL);
-  g_return_val_if_fail (path != NULL, NULL);
+  g_return_val_if_fail (file != NULL, NULL);
 
   iface = GTK_FILE_SYSTEM_GET_IFACE (file_system);
   if (iface->get_bookmark_label)
-    return iface->get_bookmark_label (file_system, path);
+    return iface->get_bookmark_label (file_system, file);
 
   return NULL;
 }
@@ -984,17 +968,17 @@ gtk_file_system_get_bookmark_label (GtkFileSystem     *file_system,
  */
 void
 gtk_file_system_set_bookmark_label (GtkFileSystem     *file_system,
-				    const GtkFilePath *path,
+				    GFile             *file,
 				    const gchar       *label)
 {
   GtkFileSystemIface *iface;
 
   g_return_if_fail (GTK_IS_FILE_SYSTEM (file_system));
-  g_return_if_fail (path != NULL);
+  g_return_if_fail (file != NULL);
 
   iface = GTK_FILE_SYSTEM_GET_IFACE (file_system);
   if (iface->set_bookmark_label)
-    iface->set_bookmark_label (file_system, path, label);
+    iface->set_bookmark_label (file_system, file, label);
 }
 
 /*****************************************
