@@ -4717,18 +4717,11 @@ hildon_file_selection_row_deleted (GtkTreeModel *model,
 
 	  if (gtk_tree_path_up (p) && gtk_tree_path_get_depth(p))
 	    {
-	      GtkTreeIter iter;
 	      gboolean use_idle = TRUE;
 	      GtkTreePath *root = gtk_tree_path_new_first();
 
-	      if (gtk_tree_path_compare (p, root) == 0 &&
-		  gtk_tree_model_get_iter(model, &iter, path))
-		{
-		  gtk_tree_model_get(model, &iter,
-				     HILDON_FILE_SYSTEM_MODEL_COLUMN_IS_FOLDER,
-				     &use_idle, -1);
-		  use_idle = (use_idle == FALSE);
-		}
+	      if (gtk_tree_path_compare (p, root) == 0)
+		  use_idle = FALSE;
 
 	      gtk_tree_path_free (root);
 
