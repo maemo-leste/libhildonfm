@@ -262,8 +262,8 @@ handle_finished_node (GNode *node)
     {
       HildonFileSystemModelNode *model_node = child_node->data;
       /* We do not want to ever kick permanent special locations. */
-#if 0 /* for debug */
-      g_warning ("!!!!!!!!! %s %p %d %p %d %d", g_file_get_uri (model_node->file),model_node,
+#if 0 /* for debug, leaks memory */
+      g_warning ("%s %p %d %p %d %d", g_file_get_uri (model_node->file),model_node,
 		 model_node->present_flag, model_node->location,
 		 model_node->location ? model_node->location->permanent:0,
 		 model_node->linking);
@@ -910,7 +910,6 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
     GNode *node;
     GFileInfo *info;
     GFile *file;
-    GtkFileSystem *fs;
     HildonFileSystemModelNode *model_node;
     HildonFileSystemModelPrivate *priv = CAST_GET_PRIVATE(model);
 
@@ -935,7 +934,6 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
 
     info = model_node->info;
     file = model_node->file;
-    fs = priv->filesystem;
     g_assert(file != NULL);
 
     switch (column) {
@@ -1592,8 +1590,7 @@ static void hildon_file_system_model_files_added(GtkFolder * monitor,
 
 	    //search whether this node already exists
 	    if ((n = hildon_file_system_model_search_path_internal (node, real_file, FALSE)) &&
-		!g_str_has_prefix (gtk_file_path_get_string(real_file), "upnpav://") &&
-		!g_str_has_prefix (gtk_file_path_get_string(real_file), "file:///media/"))
+		!g_file_has_uri_scheme(real_file, "upnpav"))
 	      {
 		//node already exists no need to add
 		HildonFileSystemModelNode *mn = n->data;
@@ -1766,7 +1763,7 @@ unlink_file_folder(GNode *node)
 
   if (model_node->cancellable)
     {
-      DEBUG_GFILE_URI("!!!!!! CANCEL %s %p", model_node->file, model_node->cancellable);
+      DEBUG_GFILE_URI("CANCEL %s %p", model_node->file, model_node->cancellable);
       g_cancellable_cancel (model_node->cancellable);
       g_object_unref (model_node->cancellable);
       model_node->cancellable = NULL;
@@ -2845,13 +2842,10 @@ static void
 location_rescan(HildonFileSystemSpecialLocation *location, GNode *node)
 {
     HildonFileSystemModelNode *model_node;
-    HildonFileSystemModel *model;
 
     g_assert(node != NULL && node->data != NULL);
 
     model_node = node->data;
-    model = model_node->model;
-
     unlink_file_folder(node);
     link_file_folder(node, model_node->file);
 }

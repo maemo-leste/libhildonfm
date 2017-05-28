@@ -37,7 +37,7 @@ static void
 hildon_file_system_upnp_init (HildonFileSystemUpnp *device);
 HildonFileSystemSpecialLocation*
 hildon_file_system_upnp_create_child_location (HildonFileSystemSpecialLocation
-                                               *location, gchar *uri);
+					       *location, GFile *file);
 
 static gboolean
 hildon_file_system_upnp_is_visible (HildonFileSystemSpecialLocation *location,
@@ -116,31 +116,22 @@ hildon_file_system_upnp_finalize (GObject *obj)
 
 HildonFileSystemSpecialLocation*
 hildon_file_system_upnp_create_child_location (HildonFileSystemSpecialLocation
-                                               *location, gchar *uri)
+					       *location, GFile *file)
 {
     HildonFileSystemSpecialLocation *child = NULL;
-    gchar *skipped, *found;
 
-    /* We need to check if the given uri is our immediate child. It's
-     * guaranteed that it's our child (this is checked by the caller) */
-    skipped = uri + strlen (location->basepath);
-
-    /* Now the path is our immediate child if it contains separator chars
-     * in the middle (not in the ends) */
-    while (*skipped == G_DIR_SEPARATOR) skipped++;
-    found = strchr (skipped, G_DIR_SEPARATOR);
-
-    if (found == NULL || found[1] == 0) {
-      /* No middle separators found. That's our child!! */
-      child = g_object_new(HILDON_TYPE_FILE_SYSTEM_DYNAMIC_DEVICE, NULL);
-      HILDON_FILE_SYSTEM_REMOTE_DEVICE (child)->accessible =
-          HILDON_FILE_SYSTEM_REMOTE_DEVICE (location)->accessible;
-      hildon_file_system_special_location_set_icon
-        (child, "filemanager_media_server");
-      child->failed_access_message = _("sfil_ib_cannot_connect_device");
-      child->basepath = g_strdup (uri);
-      child->permanent = FALSE;
-    }
+    if (g_file_has_prefix (file, location->basepath))
+      {
+	/* That's our immediate child!! */
+	child = g_object_new(HILDON_TYPE_FILE_SYSTEM_DYNAMIC_DEVICE, NULL);
+	HILDON_FILE_SYSTEM_REMOTE_DEVICE (child)->accessible =
+	    HILDON_FILE_SYSTEM_REMOTE_DEVICE (location)->accessible;
+	hildon_file_system_special_location_set_icon
+	    (child, "filemanager_media_server");
+	child->failed_access_message = _("sfil_ib_cannot_connect_device");
+	child->basepath = g_object_ref (file);
+	child->permanent = FALSE;
+      }
 
     return child;
 }
