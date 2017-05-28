@@ -44,7 +44,9 @@
 #include "hildon-file-system-root.h"
 #include "hildon-file-system-local-device.h"
 #include "hildon-file-system-upnp.h"
+#if 0
 #include "hildon-file-system-smb.h"
+#endif
 #include "hildon-file-system-obex.h"
 
 extern GtkFileSystem *gtk_file_system_unix_new();

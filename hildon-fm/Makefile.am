@@ -44,12 +44,13 @@ libhildonfm_la_SOURCES =			\
 	hildon-file-system-dynamic-device.c	\
 	hildon-file-system-upnp.c		\
 	hildon-file-system-obex.c		\
-	hildon-file-system-smb.c		\
 	hildon-file-system-voldev.c		\
 	hildon-fm1-compat.c			\
 	$(hildonfm_HEADERS)			\
 	$(hildonfm_built_headers)		\
 	$(hildonfm_built_cfiles)
+
+#	hildon-file-system-smb.c
 
 hildonincludeinstdir=$(includedir)/hildon-fm-2/hildon
 hildonincludeinst_HEADERS =			\

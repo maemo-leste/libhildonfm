@@ -22,7 +22,9 @@
 #include "hildon-file-system-obex.h"
 #include "hildon-file-system-remote-device.h"
 #include "hildon-file-system-root.h"
+#if 0
 #include "hildon-file-system-smb.h"
+#endif
 #include "hildon-file-system-special-location.h"
 #include "hildon-file-system-storage-dialog.h"
 #include "hildon-file-system-upnp.h"
