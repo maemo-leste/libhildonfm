@@ -1,3 +1,9 @@
+libhildonfm (1:2.28.22) unstable; urgency=medium
+
+  * enable git builds
+
+ -- Ivan J. <parazyd@dyne.org>  Sun, 17 Sep 2017 21:25:00 +0200
+
 libhildonfm (1:2.28.22+0cssu4) unstable; urgency=low
 
   * Show correct name for "Bluetooth"
