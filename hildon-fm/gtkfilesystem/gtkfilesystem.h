@@ -61,8 +61,8 @@ GtkFileInfo *gtk_file_info_copy (GtkFileInfo *info);
 void         gtk_file_info_free (GtkFileInfo *info);
 
 
-G_CONST_RETURN gchar *gtk_file_info_get_display_name      (const GtkFileInfo *info);
-G_CONST_RETURN gchar *gtk_file_info_get_display_key       (const GtkFileInfo *info);
+const gchar *gtk_file_info_get_display_name      (const GtkFileInfo *info);
+const gchar *gtk_file_info_get_display_key       (const GtkFileInfo *info);
 void                  gtk_file_info_set_display_name      (GtkFileInfo       *info,
 							   const gchar       *display_name);
 gboolean              gtk_file_info_get_is_folder         (const GtkFileInfo *info);
@@ -71,7 +71,7 @@ void                  gtk_file_info_set_is_folder         (GtkFileInfo       *in
 gboolean              gtk_file_info_get_is_hidden         (const GtkFileInfo *info);
 void                  gtk_file_info_set_is_hidden         (GtkFileInfo       *info,
 							   gboolean           is_hidden);
-G_CONST_RETURN gchar *gtk_file_info_get_mime_type         (const GtkFileInfo *info);
+const gchar *gtk_file_info_get_mime_type         (const GtkFileInfo *info);
 void                  gtk_file_info_set_mime_type         (GtkFileInfo       *info,
 							   const gchar       *mime_type);
 GtkFileTime           gtk_file_info_get_modification_time (const GtkFileInfo *info);
@@ -83,7 +83,7 @@ void                  gtk_file_info_set_size              (GtkFileInfo       *in
 
 void                  gtk_file_info_set_icon_name         (GtkFileInfo       *info,
 							   const gchar       *con_name);
-G_CONST_RETURN gchar *gtk_file_info_get_icon_name         (const GtkFileInfo *info);
+const gchar *gtk_file_info_get_icon_name         (const GtkFileInfo *info);
 GdkPixbuf            *gtk_file_info_render_icon           (GFileInfo *info,
 							   GtkWidget *widget,
 							   gint       icon_size);
