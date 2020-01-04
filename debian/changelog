@@ -1,3 +1,9 @@
+libhildonfm (1:2.28.24) unstable; urgency=medium
+
+  * Do not use deprecated macro, part 2
+
+ -- Merlijn Wajer <merlijn@wizzup.org>  Sat, 04 Jan 2020 23:02:58 +0100
+
 libhildonfm (1:2.28.23) unstable; urgency=medium
 
   * Do not use deprecated macro
