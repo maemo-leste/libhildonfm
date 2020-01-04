@@ -115,7 +115,7 @@ gtk_file_info_free (GtkFileInfo *info)
   g_free (info);
 }
 
-G_CONST_RETURN gchar *
+const gchar *
 gtk_file_info_get_display_name (const GtkFileInfo *info)
 {
   g_return_val_if_fail (info != NULL, NULL);
@@ -134,7 +134,7 @@ gtk_file_info_get_display_name (const GtkFileInfo *info)
  * Return value: The collate key for the display name, or %NULL
  *   if the display name hasn't been set.
  **/
-G_CONST_RETURN gchar *
+const gchar *
 gtk_file_info_get_display_key (const GtkFileInfo *info)
 {
   g_return_val_if_fail (info != NULL, NULL);
@@ -202,7 +202,7 @@ gtk_file_info_set_is_hidden (GtkFileInfo *info,
   info->is_hidden = is_hidden != FALSE;
 }
 
-G_CONST_RETURN gchar *
+const gchar *
 gtk_file_info_get_mime_type (const GtkFileInfo *info)
 {
   g_return_val_if_fail (info != NULL, NULL);
@@ -267,7 +267,7 @@ gtk_file_info_set_icon_name (GtkFileInfo *info,
   info->icon_name = g_strdup (icon_name);
 }
 
-G_CONST_RETURN gchar *
+const gchar *
 gtk_file_info_get_icon_name (const GtkFileInfo *info)
 {
   g_return_val_if_fail (info != NULL, NULL);
