@@ -70,7 +70,11 @@ AC_SUBST(GIO_LIBS)
 ##################################################
 # Check for gtk-doc.
 ##################################################
-GTK_DOC_CHECK
+m4_ifdef([GTK_DOC_CHECK], [
+GTK_DOC_CHECK([1.14])
+],[
+AM_CONDITIONAL([ENABLE_GTK_DOC], false)
+])
 
 
 # Disable rebuild of glib-mkenum -generated source code:
