@@ -2265,7 +2265,10 @@ hildon_file_system_model_add_node (GtkTreeModel * model,
         {
           GFileError code = g_file_error_from_errno(errno);
           if (code == G_FILE_ERROR_ACCES)
-            g_set_error(&model_node->error, G_FILE_ERROR, code, local_path);
+          {
+            g_set_error(&model_node->error, G_FILE_ERROR, code,
+                        "%s", local_path);
+          }
         }
 	g_free (local_path);
       }
