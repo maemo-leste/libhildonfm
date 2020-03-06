@@ -1,68 +1,21 @@
 #!/usr/bin/make -f
+%:
+	dh $@
 
-# These are used for cross-compiling and for saving the configure script
-# from having to guess our platform (since we know it already)
-DEB_HOST_GNU_TYPE   ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
-DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
-
-CFG_OPTS := --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE)
-CFG_OPTS += --prefix=/usr
 CFG_OPTS += $(if $(findstring nodoc,$(DEB_BUILD_OPTIONS)),\
               --disable-gtk-doc,\
               --enable-gtk-doc)
 
-CFLAGS := -Wall -g
-CFLAGS += $(if $(findstring noopt,$(DEB_BUILD_OPTIONS)),-O0,-O2)
+DEB_CFLAGS_MAINT_APPEND += -Wall -g
+DEB_CFLAGS_MAINT_APPEND += $(if $(findstring noopt,$(DEB_BUILD_OPTIONS)),-O0,-O2)
 
-configure:
-	NOCONFIGURE=1 ./autogen.sh
+export DEB_CFLAGS_MAINT_APPEND
 
-config.status: configure
-	dh_testdir
-	./configure $(CFG_OPTS) CFLAGS="$(CFLAGS)"
+override_dh_auto_configure:
+	dh_auto_configure -- $(CFG_OPTS)
 
-build: build-stamp
-build-stamp: config.status
-	dh_testdir
-	$(MAKE)
-	touch $@
-
-clean:
-	dh_testdir
-	dh_testroot
-	rm -f build-stamp
-	-$(MAKE) distclean
-	rm -rf debian/build
-	dh_clean
-
-install: build
-	dh_testdir
-	dh_testroot
-	dh_clean -k
-	dh_installdirs
-	$(MAKE) install DESTDIR=$(CURDIR)/debian/build
-
-binary-indep: build install
-
-binary-arch: build install
-	dh_testdir
-	dh_testroot
-	dh_installchangelogs
-	dh_installdocs
-	dh_install --sourcedir=debian/build -v
-	dh_link
-	dh_strip --dbg-package="libhildonfm2-dbg"
-	dh_compress -Xindex.sgml
-	dh_fixperms
-#	dh_perl
-#	dh_python
+override_dh_makeshlibs:
 	dh_makeshlibs -plibhildonfm2 -V"libhildonfm2 (>= 1:2.28+0m5)"
-	dh_installdeb
-	dh_shlibdeps
-	dh_gencontrol
-	dh_md5sums
-	dh_builddeb
 
-binary: binary-indep binary-arch
-build-arch: build
-.PHONY: build clean binary-indep binary-arch binary install
+# dh_auto_test fails with qemu segfault when cross-compiling, disable it
+override_dh_auto_test:
