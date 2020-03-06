@@ -13,7 +13,6 @@ CFG_OPTS += $(if $(findstring nodoc,$(DEB_BUILD_OPTIONS)),\
 
 CFLAGS := -Wall -g
 CFLAGS += $(if $(findstring noopt,$(DEB_BUILD_OPTIONS)),-O0,-O2)
-CFLAGS += $(if $(findstring thumb,$(DEB_BUILD_OPTIONS)),-mthumb)
 
 configure:
 	NOCONFIGURE=1 ./autogen.sh
