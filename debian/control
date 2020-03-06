@@ -3,7 +3,7 @@ Section: x11
 Priority: optional
 Maintainer: Richard Sun <richard.sun@nokia.com>
 Build-Depends:
- debhelper (>= 4.0.0),
+ debhelper (>= 10),
  pkg-config,
  gtk-doc-tools,
  libgtk2.0-dev,
@@ -16,7 +16,7 @@ Build-Depends:
  libhildon1-dev (>= 2.2.21),
  libhildonmime-dev,
  mce-dev,
-Standards-Version: 3.6.0
+Standards-Version: 4.3.0
 
 Package: libhildonfm2
 Section: libs
