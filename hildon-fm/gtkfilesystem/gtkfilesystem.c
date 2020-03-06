@@ -1234,7 +1234,7 @@ gtk_file_system_module_load (GTypeModule *module)
   fs_module->library = g_module_open (fs_module->path, G_MODULE_BIND_LAZY | G_MODULE_BIND_LOCAL);
   if (!fs_module->library)
     {
-      g_warning (g_module_error());
+      g_warning ("%s", g_module_error());
       return FALSE;
     }
   
@@ -1246,7 +1246,7 @@ gtk_file_system_module_load (GTypeModule *module)
       !g_module_symbol (fs_module->library, "fs_module_create", 
 			(gpointer *)&fs_module->create))
     {
-      g_warning (g_module_error());
+      g_warning ("%s", g_module_error());
       g_module_close (fs_module->library);
       
       return FALSE;
