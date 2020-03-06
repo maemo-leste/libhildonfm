@@ -21,6 +21,7 @@ Standards-Version: 4.3.0
 Package: libhildonfm2
 Section: libs
 Architecture: any
+Multi-arch: same
 Depends:
  ${shlibs:Depends},
  ${misc:Depends},
@@ -31,7 +32,8 @@ Description: Hildon file management libraries.
 
 Package: libhildonfm2-dev
 Section: devel
-Architecture: all
+Architecture: any
+Multi-arch: same
 Conflicts: hildon-fm-dev (<= 2.10)
 Depends:
  libhildonfm2 (= ${source:Version}),
@@ -43,6 +45,7 @@ Description: Development files for libhildonfm2.
 
 Package: libhildonfm2-doc
 Architecture: all
+Multi-arch: foreign
 Section: doc
 Description: Documentation for libhildonfm2
  Contains the generated gtk-doc documentation.
@@ -50,11 +53,13 @@ Description: Documentation for libhildonfm2
 Package: hildon-fm1
 Section: libs
 Architecture: any
+Multi-arch: same
 Depends: libhildonfm2 (= ${source:Version})
 Description: hildon-fm1 compatibility kluge.
 
 Package: hildon-fm-dev
 Section: devel
 Architecture: any
+Multi-arch: same
 Depends: libhildonfm2-dev (= ${source:Version})
 Description: hildon-fm1 compatibility kluge.
