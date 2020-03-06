@@ -1,0 +1,7 @@
+Hildon file management libraries
+================================
+
+Hildon file management widgets: Hildon file chooser, file selector,
+File Open/Save dialog, file details dialog.
+
+API: http://maemo.org/api_refs/5.0/5.0-final/hildonfm/
