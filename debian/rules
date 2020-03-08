@@ -8,8 +8,13 @@ CFG_OPTS += $(if $(findstring nodoc,$(DEB_BUILD_OPTIONS)),\
 
 DEB_CFLAGS_MAINT_APPEND += -Wall -g
 DEB_CFLAGS_MAINT_APPEND += $(if $(findstring noopt,$(DEB_BUILD_OPTIONS)),-O0,-O2)
+DEB_LDFLAGS_MAINT_APPEND += -Wl,--as-needed
 
 export DEB_CFLAGS_MAINT_APPEND
+export DEB_LDFLAGS_MAINT_APPEND
+
+override_dh_autoreconf:
+	dh_autoreconf --as-needed
 
 override_dh_auto_configure:
 	dh_auto_configure -- $(CFG_OPTS)
