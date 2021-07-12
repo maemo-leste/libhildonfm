@@ -1,3 +1,10 @@
+libhildonfm (1:2.28.27) unstable; urgency=medium
+
+  * Fix memory leak
+  * do not try to use missing environment variable
+
+ -- Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>  Mon, 12 Jul 2021 14:44:52 +0300
+
 libhildonfm (1:2.28.26) unstable; urgency=medium
 
   * Update compat level to 10
