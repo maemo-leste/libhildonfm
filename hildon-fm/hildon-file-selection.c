@@ -4398,17 +4398,20 @@ GSList *_hildon_file_selection_get_selected_files(HildonFileSelection* self)
     if (GTK_IS_TREE_VIEW(view) && self->priv->content_pane_last_used) {
         model = gtk_tree_view_get_model(GTK_TREE_VIEW(view));
         if (gtk_tree_row_reference_valid(self->priv->current_row)) {
-            if (gtk_tree_model_get_iter(model, &iter, gtk_tree_row_reference_get_path(self->priv->current_row))) {
+            GtkTreePath *path = gtk_tree_row_reference_get_path(self->priv->current_row);
+            if (gtk_tree_model_get_iter(model, &iter, path)) {
                 gtk_tree_model_get(model, &iter,
                                    HILDON_FILE_SYSTEM_MODEL_COLUMN_IS_FOLDER,
                                    &folder, -1);
                 if (!folder) {
                     gtk_tree_model_get(model, &iter,
                                        HILDON_FILE_SYSTEM_MODEL_COLUMN_GTK_PATH_INTERNAL,
-				       &file, -1);
-		    return g_slist_append(NULL, file);
+                                       &file, -1);
+                    gtk_tree_path_free(path);
+                    return g_slist_append(NULL, file);
                 }
             }
+            gtk_tree_path_free(path);
         }
     }
     return NULL;
