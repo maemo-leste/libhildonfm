@@ -683,6 +683,7 @@ static gboolean navigation_pane_filter_func(GtkTreeModel *model,
   gboolean folder, hidden, local, upnp = FALSE;
   char *uri = NULL;
   const char *upnp_root;
+  const char *mydocsdir;
   HildonFileSelectionPrivate *priv = data;
 
   gtk_tree_model_get(model, iter,
@@ -694,13 +695,14 @@ static gboolean navigation_pane_filter_func(GtkTreeModel *model,
 
   if (uri != NULL)
   {
+      mydocsdir = g_getenv ("MYDOCSDIR");
       upnp_root = g_getenv ("UPNP_ROOT");
       upnp = upnp_root && g_str_has_prefix (uri, upnp_root);
       //Fremantle hack: never filter out root of roots with weird uri
       if (g_str_has_prefix (uri, "files:///"))
           local = TRUE;
-      if (g_str_has_prefix (uri, "file:///") && !priv->show_localdevice
-        && g_str_has_prefix (&uri[7], g_getenv ("MYDOCSDIR")))
+      if (mydocsdir && g_str_has_prefix (uri, "file:///") &&
+          !priv->show_localdevice && g_str_has_prefix (&uri[7], mydocsdir))
       {
           g_free (uri);
 	  return FALSE;
@@ -767,7 +769,7 @@ static gboolean filter_func(GtkTreeModel * model, GtkTreeIter * iter,
     gboolean is_folder, result, has_local_path, is_hidden;
     GtkFileFilterInfo info;
     char *uri = NULL;
-    const char *upnp_root;
+    const char *prefix;
     GtkTreePath *root_path;
     GtkTreePath *tree_path;
 
@@ -812,14 +814,16 @@ static gboolean filter_func(GtkTreeModel * model, GtkTreeIter * iter,
     gtk_tree_model_get(model, iter,
 		       HILDON_FILE_SYSTEM_MODEL_COLUMN_URI, &uri, -1);
 
-    upnp_root = g_getenv ("UPNP_ROOT");
-    if (uri && upnp_root && g_str_has_prefix (uri, upnp_root) && !priv->show_upnp) {
+    prefix = g_getenv ("UPNP_ROOT");
+    if (uri && prefix && g_str_has_prefix (uri, prefix) && !priv->show_upnp) {
        g_free (uri);
        return FALSE;
     }
 
-    if (uri && g_str_has_prefix(uri, "file:///") && g_str_has_prefix(&uri[7], g_getenv("MYDOCSDIR")) && 
-      (priv->show_localdevice == FALSE)) {
+    prefix = g_getenv("MYDOCSDIR");
+    if (uri && prefix && g_str_has_prefix(uri, "file:///") &&
+        g_str_has_prefix(&uri[7], prefix) &&
+        (priv->show_localdevice == FALSE)) {
       return FALSE;
     }
     if (uri) {
